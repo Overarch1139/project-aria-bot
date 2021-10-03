@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+}
+
+group 'org.echo2124'
+version '1.0-SNAPSHOT'
+def mainClassName = 'com.github.echo2124.Main'
+def jdaVersion = '4.3.0_277'
+
+repositories {
+    mavenCentral()
+    maven { // on kotlin dsl use `maven("https://m2.dv8tion.net/releases")` instead
+        url "https://m2.dv8tion.net/releases"
+    }
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+    implementation("net.dv8tion:JDA:$jdaVersion")
+    implementation 'com.google.api-client:google-api-client-servlet:1.32.1'
+    implementation 'com.google.oauth-client:google-oauth-client-jetty:1.32.1'
+    implementation 'com.rometools:rome:1.16.0'
+    implementation 'org.twitter4j:twitter4j-core:4.0.7'
+    implementation 'org.twitter4j:twitter4j-stream:4.0.7'
+}
+
+test {
+    useJUnitPlatform()
+}
