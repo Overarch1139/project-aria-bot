@@ -24,7 +24,7 @@ public class News {
     // fallback if author is not available from rss feed
     private String[] defaultAuthors= {"Monash University", "ABC News"};
     private SyndFeed feed;
-    private final int feedIndex =2;
+    private final int feedIndex =0;
     public News(String newsType, Message msg) {
         this.msg = msg;
         switch (newsType) {
@@ -123,7 +123,8 @@ public class News {
         this.feed=feed;
     }
 
-    public void buildMSG(SyndFeed feed) {
+    // compares prev posted msg to current to see if there's an update
+    public void pushNewMsg(SyndFeed feed) {
         // compare this to cached prev feed. If different then push update
         System.out.println(feed.getEntries().get(feedIndex));
         if (cachedTitle == "") {

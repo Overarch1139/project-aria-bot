@@ -29,17 +29,17 @@ public class Main extends ListenerAdapter {
         Message msg = event.getMessage();
         News news;
         String msgContents=msg.getContentRaw();
-        if (msgContents.contains("!")) {
+        if (msgContents.contains(">")) {
             switch (msgContents) {
-                case "!verify":
+                case ">verify":
                     SSOVerify newSSO = new SSOVerify();
                     break;
-                case "!test":
+                case ">test":
                     break;
-                case "!covid":
+                case ">covid":
                     news = new News("Covid", msg);
                     break;
-                case "!monashUpdates":
+                case ">monashUpdates":
                     news = new News("Monash", msg);
                     break;
 
