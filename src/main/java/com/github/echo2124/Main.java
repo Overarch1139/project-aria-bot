@@ -14,9 +14,12 @@ public class Main extends ListenerAdapter {
     //******************************
     //****CONFIG***
     //******************************
-    public final boolean enableSocialForwarding=false;
-    public final boolean enableSSOVerification=false;
-    public final boolean enableTesting=true;
+    public static class constants {
+        public static final String[] logPrefixes={"Module", "ERROR"};
+        public static final boolean enableSocialForwarding=false;
+        public static final boolean enableSSOVerification=false;
+        public static final boolean enableTesting=true;
+    }
 
     static String BOT_TOKEN = "ODc4OTQyNzk2MjYwNzI0NzY2.YSIhRA.ybuEYxDoa8VjfJQa0rC81W-ay4o";
     public static void main(String[] arguments) throws Exception {
@@ -47,7 +50,9 @@ public class Main extends ListenerAdapter {
                     System.out.println("Invalid command");
             }
         }
-        if (enableTesting==true) {
+
+
+        if (constants.enableTesting==true) {
             if (msg.getContentRaw().equals("!ping")) {
                 MessageChannel channel = event.getChannel();
                 long time = System.currentTimeMillis();

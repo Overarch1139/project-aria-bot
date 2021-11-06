@@ -1,33 +1,35 @@
 package com.github.echo2124;
 
-import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
-import com.google.api.client.extensions.java6.auth.oauth2.VerificationCodeReceiver;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.http.apache.v2.ApacheHttpTransport;
+
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
+import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.util.Preconditions;
-import net.dv8tion.jda.api.entities.Message;
-import java.io.IOException;
+import com.google.api.client.json.JsonFactory;
+import jack
 
 public class SSOVerify {
+
     public SSOVerify() {
-
     }
 
-    public String initRedirectReceiver() {
-        String redirectUri="";
-        VerificationCodeReceiver receiver = new LocalServerReceiver();
-        receiver = Preconditions.checkNotNull(receiver);
-        try {
-            redirectUri = receiver.getRedirectUri();
-        } catch (Exception e) {
-            System.out.println("[SSOVerify] ERROR: Retrieving Redirect URI failed");
-        }
-        return redirectUri;
+    public void SSOTest() {
+        JsonFactory jsonFactory = new JacksonFactory();
+        HttpTransport httpTransport = new NetHttpTransport();
+        GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
+                httpTransport, jsonFactory,
+                /* Client ID and Secret */
+                ,
+                code, “postmessage”).execute();
+        GoogleCredential credential = new GoogleCredential.Builder()
+                .setJsonFactory(jsonFactory)
+                .setTransport(httpTransport)
+                .setClientSecrets( /* Client ID and Secret */ ).build()
+                .setFromTokenResponse(tokenResponse);
+        Oauth2 oauth2 = new Oauth2.Builder(httpTransport, jsonFactory, credential).setApplicationName(“YourAppName”).build();
+        Tokeninfo tokenInfo = oauth2.tokeninfo().setAccessToken(credential.getAccessToken()).execute();
+        return oauth2.userinfo().get().execute();
     }
-
-
 
 }
