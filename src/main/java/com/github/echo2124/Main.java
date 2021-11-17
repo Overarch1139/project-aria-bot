@@ -1,9 +1,7 @@
 package com.github.echo2124;
 
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -30,12 +28,14 @@ public class Main extends ListenerAdapter {
     }
     public void onMessageReceived(MessageReceivedEvent event) {
         Message msg = event.getMessage();
+        User user= event.getAuthor();
+        MessageChannel channel=event.getChannel();
         News news;
         String msgContents=msg.getContentRaw();
         if (msgContents.contains(">")) {
             switch (msgContents) {
                 case ">verify":
-                    SSOVerify newSSO = new SSOVerify();
+                    SSOVerify newSSO = new SSOVerify(user, event.getGuild(), channel);
                     break;
                 case ">test":
                     break;
@@ -53,14 +53,6 @@ public class Main extends ListenerAdapter {
 
 
         if (constants.enableTesting==true) {
-            if (msg.getContentRaw().equals("!ping")) {
-                MessageChannel channel = event.getChannel();
-                long time = System.currentTimeMillis();
-                channel.sendMessage("Pong!") /* => RestAction<Message> */
-                        .queue(response /* => Message */ -> {
-                            response.editMessageFormat("Pong: %d ms", System.currentTimeMillis() - time).queue();
-                        });
             }
         }
     }
-}

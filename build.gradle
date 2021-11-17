@@ -21,15 +21,18 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
     implementation("net.dv8tion:JDA:$jdaVersion")
-    // https://mvnrepository.com/artifact/com.google.api-client/google-api-client
-    implementation 'com.google.api-client:google-api-client:1.32.2'
-// https://mvnrepository.com/artifact/com.google.oauth-client/google-oauth-client-servlet
-    implementation 'com.google.oauth-client:google-oauth-client-servlet:1.32.1'
-
     implementation 'javax.servlet:javax.servlet-api:4.0.1'
     implementation 'com.rometools:rome:1.16.0'
     implementation 'org.twitter4j:twitter4j-core:4.0.7'
     implementation 'org.twitter4j:twitter4j-stream:4.0.7'
+    // https://mvnrepository.com/artifact/com.github.scribejava/scribejava-apis
+    implementation 'com.github.scribejava:scribejava-apis:8.3.1'
+    // https://mvnrepository.com/artifact/com.github.scribejava/scribejava-core
+    implementation 'com.github.scribejava:scribejava-core:8.3.1'
+    // https://mvnrepository.com/artifact/org.json/json
+    implementation 'org.json:json:20210307'
+
+
 }
 
 test {
