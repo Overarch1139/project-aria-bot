@@ -31,6 +31,8 @@ dependencies {
     implementation 'com.github.scribejava:scribejava-core:8.3.1'
     // https://mvnrepository.com/artifact/org.json/json
     implementation 'org.json:json:20210307'
+// https://mvnrepository.com/artifact/org.postgresql/postgresql
+    implementation 'org.postgresql:postgresql:42.3.1'
 
 
 }

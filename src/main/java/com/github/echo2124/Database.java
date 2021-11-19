@@ -1,22 +1,71 @@
 package com.github.echo2124;
 
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
+import net.dv8tion.jda.api.EmbedBuilder;
+
+import java.sql.*;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.sql.Timestamp;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 public class Database {
+    private Connection connection;
     // this class is used for all instances of communication between db and application
     public Database() {
+        if (dbExists()) {
+            connection=openDB();
+        } else {
+            connection=openDB();
+            setupDB(connection);
+        }
+    }
+
+
+    public Boolean dbExists() {
+        Connection connection = null;
+        Statement statement = null;
+        boolean exists=false;
+        try {
+            Class.forName("org.postgresql.Driver");
+            connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres",
+                    "postgres", "2008");
+            statement = connection.createStatement();
+            String sql = "CREATE DATABASE BOT";
+            statement.executeUpdate(sql);
+            sql = "DROP DATABASE BOT";
+            statement.executeUpdate(sql);
+            System.out.println("Database created!");
+        } catch (SQLException sqlException) {
+            if (sqlException.getErrorCode() == 1007) {
+                // Database already exists error
+                exists=true;
+                System.out.println(sqlException.getMessage());
+                System.out.println("[DB Module] DB has been found");
+            } else {
+                // Some other problems, e.g. Server down, no permission, etc
+                sqlException.printStackTrace();
+            }
+        } catch (ClassNotFoundException e) {
+            // No driver class found!
+        }
+        try {
+            connection.close();
+        } catch (Exception x) {
+            System.out.println("Unable to close DB");
+        }
+        return exists;
     }
 
     public Connection openDB() {
         Connection connect = null;
+        Statement statement = null;
         try {
             Class.forName("org.postgresql.Driver");
             connect= DriverManager
-                    .getConnection("jdbc:postgresql://localhost:5432/masterDB",
-                            "admin", "2008");
+                    .getConnection("jdbc:postgresql://localhost:5432/postgres",
+                            "postgres", "2008");
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println(e.getClass().getName()+": "+e.getMessage());
@@ -30,31 +79,54 @@ public class Database {
             // handles setting up database if blank
         try {
             Statement stmt = connect.createStatement();
-            String sqlQuery = "CREATE TABLE WARN_MODULE (discordID int, issuerID int, warnDesc text, time DATETIME);"+
-                            "CREATE TABLE CERT_MODULE (discordID int, name VARCHAR(50), emailAddr VARCHAR(50), time DATETIME);"+
+            String sqlQuery = "CREATE TABLE WARN_MODULE (discordID bigint, issuerID bigint, warnDesc text, issueTime TIMESTAMP);"+
+                            "CREATE TABLE CERT_MODULE (discordID bigint, name VARCHAR(2048), emailAddr VARCHAR(100), isVerified bool, verifiedTime TIMESTAMP);"+
                             "CREATE TABLE NEWS (origin VARCHAR(50), lastTitle text);";
             stmt.executeUpdate(sqlQuery);
             stmt.close();
 
         } catch (Exception e) {
-            System.err.println("Unable to setup DB " + e.getMessage());
+            if (!e.getMessage().contains("warn_module")) {
+                System.err.println("Unable to setup DB " + e.getMessage());
+            }
         }
     }
 
-    public void modifyDB(Connection connect, String originModule, String action, String data) {
+    public void modifyDB(String originModule, String action, HashMap data) {
+        String sqlQuery="";
+        switch (originModule) {
+            case "CERT":
+                    if (action.equals("add")) {
+                        Date date = new Date();
+                        Timestamp ts=new Timestamp(date.getTime());
+                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        sqlQuery = "INSERT INTO CERT_MODULE VALUES ('" + data.get("discordID") + "','" + data.get("name") + "','" + data.get("emailAddr") + "','" + data.get("isVerified") + "','" + formatter.format(ts) +"');";
+                    }
+                break;
+            default:
+                System.out.println("[DB] Invalid Origin Module");
+        }
         try {
-            String sqlQuery;
-            Statement st = connect.createStatement();
+            if (!sqlQuery.equals("")) {
+                Statement st = connection.createStatement();
+                st.executeUpdate(sqlQuery);
+                st.close();
+            }
         } catch (Exception e) {
             System.err.println(this.getClass().getName()+"Modify DB failed"+e.getMessage());
         }
+        // need to add execute statement
     }
 
-    public void getDBEntry(Connection connect, String originModule, String req) {
+    // todo this will need to be refactored to work universally with other tables.
+    public String getDBEntry(String originModule, String req) {
+        String ret="";
+        String sqlQuery="";
         try {
             switch (originModule) {
                 case "CERT":
                     // build sql query here
+                    sqlQuery="SELECT * FROM CERT_MODULE WHERE discordID="+req;
                     break;
                 case "NEWS":
                     break;
@@ -63,8 +135,32 @@ public class Database {
                 default:
                     System.err.println("[Database Module] Invalid origin module selected");
             }
-        } catch (Exception e) {
+                     Statement stmt  = this.connection.createStatement();
+                     if (!sqlQuery.equals("")) {
+                     ResultSet rs = stmt.executeQuery(sqlQuery);
+                        // loop through the result set
+                         if (rs.next()) {
+                             while (rs.next()) {
+                                 ret="Name: "+rs.getString("name")+"\n";
+                                 ret+="Email: "+rs.getString("emailAddr")+"\n";
+                                 ret+="Verified Status: "+rs.getBoolean("isVerified")+"\n";
+                             }
+                         } else {
+                             ret="No results found";
+                         }
+                    }
+
+        } catch (SQLException e) {
             System.err.println(this.getClass().getName()+"Unable to get Entry"+e.getMessage());
+        }
+        return ret;
+    }
+
+    public void closeDB() {
+        try {
+            connection.close();
+        } catch (Exception e) {
+            throw new Error("DB close failure: " + e.getMessage());
         }
     }
 

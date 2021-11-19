@@ -9,6 +9,7 @@ import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Response;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import com.iwebpp.crypto.TweetNaclFast;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import org.json.JSONArray;
@@ -16,6 +17,11 @@ import org.json.JSONObject;
 
 import java.awt.*;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 
@@ -26,10 +32,12 @@ public class SSOVerify {
     private User user;
     private Guild guild;
     private MessageChannel msgChannel;
-    public SSOVerify(User user, Guild guild, MessageChannel channel) {
+    private Database db;
+    public SSOVerify(User user, Guild guild, MessageChannel channel, Database db) {
         this.user=user;
         this.guild=guild;
         this.msgChannel=channel;
+        this.db=db;
         try {
             verify();
         } catch (Exception e) {
@@ -90,9 +98,16 @@ public class SSOVerify {
             service.signRequest(accessToken, request);
             try (Response response = service.execute(request)) {
                 JSONObject parsedObj = new JSONObject(response.getBody());
+
                 if (verifyEmail(parsedObj) == true) {
                    /// insert into db > add role > notify user
                     addVerifiedRole();
+                    HashMap<String, String> parsedData= new HashMap<String, String>();
+                    parsedData.put("discordID", user.getId());
+                    parsedData.put("name", parsedObj.getString("given_name"));
+                    parsedData.put("emailAddr", parsedObj.getString("email"));
+                    parsedData.put("isVerified", "true");
+                    db.modifyDB("CERT", "add", parsedData);
                     sendVerifiedNotification(parsedObj.getString("given_name"));
                 } else {
                     sendFailureNotification();
