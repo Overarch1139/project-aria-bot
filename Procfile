@@ -1,1 +1,1 @@
-Worker: java com.github.echo2124.Main
+worker: java -jar out/artifacts/monash_bot_jar/monash_bot.jar
