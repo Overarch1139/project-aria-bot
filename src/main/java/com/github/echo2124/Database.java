@@ -3,6 +3,7 @@ package com.github.echo2124;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 
+import java.net.URI;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -11,9 +12,13 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 
 public class Database {
+    private String DB_URL;
+    private String USERNAME;
+    private String PASSWORD;
     private Connection connection;
     // this class is used for all instances of communication between db and application
     public Database() {
+        checkEnv();
         if (dbExists()) {
             connection=openDB();
         } else {
@@ -22,6 +27,25 @@ public class Database {
         }
     }
 
+    public void checkEnv() {
+        // this method checks whether running localhost or on server
+        try {
+            URI dbUri = new URI(System.getenv("DATABASE_URL"));
+            if (dbUri!=null) {
+                DB_URL= dbUri.getHost();
+                USERNAME=dbUri.getUserInfo().split(":")[0];
+                PASSWORD = dbUri.getUserInfo().split(":")[1];
+            } else {
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            DB_URL="localhost:5432/postgres";
+            USERNAME="postgres";
+            PASSWORD="2008";
+        }
+        }
+
+
 
     public Boolean dbExists() {
         Connection connection = null;
@@ -29,8 +53,8 @@ public class Database {
         boolean exists=false;
         try {
             Class.forName("org.postgresql.Driver");
-            connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres",
-                    "postgres", "2008");
+            connection = DriverManager.getConnection(DB_URL,
+                    USERNAME, PASSWORD);
             statement = connection.createStatement();
             String sql = "CREATE DATABASE BOT";
             statement.executeUpdate(sql);
@@ -63,9 +87,8 @@ public class Database {
         Statement statement = null;
         try {
             Class.forName("org.postgresql.Driver");
-            connect= DriverManager
-                    .getConnection("jdbc:postgresql://localhost:5432/postgres",
-                            "postgres", "2008");
+            connect = DriverManager.getConnection(DB_URL,
+                    USERNAME, PASSWORD);
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println(e.getClass().getName()+": "+e.getMessage());
