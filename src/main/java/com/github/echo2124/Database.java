@@ -18,13 +18,11 @@ public class Database {
     private Connection connection;
     // this class is used for all instances of communication between db and application
     public Database() {
-        checkEnv();
-        if (dbExists()) {
+            checkEnv();
             connection=openDB();
-        } else {
-            connection=openDB();
-            setupDB(connection);
-        }
+            if (!tableExists("CERT_MODULE", connection)) {
+                setupDB(connection);
+            }
     }
 
     // still crash, check if its switching between the different creds for postgres based on whether its a server or not
@@ -46,9 +44,26 @@ public class Database {
         }
         }
 
+    public boolean tableExists(String tableName, Connection conn) {
+        boolean found = false;
+        try {
+        DatabaseMetaData databaseMetaData = conn.getMetaData();
+        ResultSet rs = databaseMetaData.getTables(null, null, tableName, null);
+        while (rs.next()) {
+            String name = rs.getString("TABLE_NAME");
+            if (tableName.equals(name)) {
+                found = true;
+                break;
+            }
+        }} catch (Exception e ) {
+            System.out.println("Error thrown trying to see if table exists. Error: "+e.getMessage());
+        }
+
+        return found;
+    }
 
 
-    public Boolean dbExists() {
+ /*   public Boolean dbExists() {
         Connection connection = null;
         Statement statement = null;
         boolean exists=false;
@@ -71,6 +86,11 @@ public class Database {
                 // Some other problems, e.g. Server down, no permission, etc
                 sqlException.printStackTrace();
             }
+            try {
+                connection.close();
+            } catch (Exception e) {
+                System.out.println("Unable to close connection");
+            }
         }
         try {
             connection.close();
@@ -78,11 +98,10 @@ public class Database {
             System.out.println("Unable to close DB");
         }
         return exists;
-    }
+    }*/
 
     public Connection openDB() {
         Connection connect = null;
-        Statement statement = null;
         try {
             connect = DriverManager.getConnection(DB_URL,
                     USERNAME, PASSWORD);
