@@ -27,6 +27,7 @@ public class Database {
         }
     }
 
+    // still crash, check if its switching between the different creds for postgres based on whether its a server or not
     public void checkEnv() {
         // this method checks whether running localhost or on server
         try {
