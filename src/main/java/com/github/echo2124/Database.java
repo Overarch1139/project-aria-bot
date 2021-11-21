@@ -33,7 +33,7 @@ public class Database {
         try {
             URI dbUri = new URI(System.getenv("DATABASE_URL"));
             if (dbUri!=null) {
-                DB_URL= dbUri.getHost();
+                DB_URL= "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath() + "?sslmode=require";
                 USERNAME=dbUri.getUserInfo().split(":")[0];
                 PASSWORD = dbUri.getUserInfo().split(":")[1];
             } else {
@@ -53,7 +53,6 @@ public class Database {
         Statement statement = null;
         boolean exists=false;
         try {
-            Class.forName("org.postgresql.Driver");
             connection = DriverManager.getConnection(DB_URL,
                     USERNAME, PASSWORD);
             statement = connection.createStatement();
@@ -72,8 +71,6 @@ public class Database {
                 // Some other problems, e.g. Server down, no permission, etc
                 sqlException.printStackTrace();
             }
-        } catch (ClassNotFoundException e) {
-            // No driver class found!
         }
         try {
             connection.close();
@@ -87,7 +84,6 @@ public class Database {
         Connection connect = null;
         Statement statement = null;
         try {
-            Class.forName("org.postgresql.Driver");
             connect = DriverManager.getConnection(DB_URL,
                     USERNAME, PASSWORD);
         } catch (Exception e) {
