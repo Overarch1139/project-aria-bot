@@ -1,3 +1,5 @@
+// update codename ARIA - Administrate, Relay, Identify, Attest.
+
 package com.github.echo2124;
 
 
@@ -50,7 +52,7 @@ public class Database {
         DatabaseMetaData databaseMetaData = conn.getMetaData();
         ResultSet rs = databaseMetaData.getTables(null, null, tableName, null);
         while (rs.next()) {
-            String name = rs.getString("TABLE_NAME");
+            String name = rs.getString("CERT_MODULE");
             if (tableName.equals(name)) {
                 found = true;
                 break;

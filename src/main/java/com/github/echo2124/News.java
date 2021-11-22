@@ -18,15 +18,14 @@ import java.util.List;
 
 // Based around grabbing RSS feeds
 public class News {
-    private Message msg;
+    private String NEWS_CHANNEL="912355120723943424";
     private String cachedTitle="";
     private String feedOrg;
     // fallback if author is not available from rss feed
     private String[] defaultAuthors= {"Monash University", "ABC News"};
     private SyndFeed feed;
     private final int feedIndex =0;
-    public News(String newsType, Message msg) {
-        this.msg = msg;
+    public News(String newsType) {
         switch (newsType) {
             case "Monash":
                 feedOrg="Monash";
@@ -139,7 +138,7 @@ public class News {
     }
 
     public void sendMsg(SyndFeed feed) {
-        MessageChannel channel= msg.getChannel();
+        MessageChannel channel= Main.constants.jda.getTextChannelById(NEWS_CHANNEL);
         EmbedBuilder newEmbed = new EmbedBuilder();
         if (feed.getEntries().get(feedIndex).getAuthor().equals("") || feed.getAuthor()==null) {
             if (feedOrg.equals("Monash")) {
@@ -160,7 +159,7 @@ public class News {
 
     public void buildMsgFromTweet(Status status) {
         System.out.println("Building MSG From tweet");
-        MessageChannel channel = msg.getChannel();
+        MessageChannel channel = Main.constants.jda.getTextChannelById(NEWS_CHANNEL);
         EmbedBuilder newEmbed = new EmbedBuilder();
         newEmbed.setTitle("Victoria Covid Update");
         newEmbed.setDescription(status.getText());
