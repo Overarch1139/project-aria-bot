@@ -87,15 +87,21 @@ public class SSOVerify {
     }
 
     public void sendAuthRequest(String link, String code) {
-        EmbedBuilder embed = new EmbedBuilder();
-        embed.setColor(Color.BLUE);
-        embed.setTitle("Authorisation Request");
-        embed.setDescription("Frequently Asked Questions (FAQs): \nWhat does this do?\n This OAuth request will ask access for two main scopes (Email & Profile). \n What information will this Aria store? \n"+
-                "Aria will store the following information: Email Address, First Name, DiscordID, Time of Verification and Verification Status.\n"+"Why do we need this data? \n"+
-                "In order to verify whether you are a Monash student we need to check the Email Domain in order to see if it would match a student's Monash email domain. If it does, then you are likely a student.\n"+
-                "We store your first name, as Aria will be able to refer to you in a more personalised manner. This name will only be used when Aria sends you a private message\n"+"This code will expire in 5 mins:\n" + "Link: " + link +"\nCode: "+code);
-        embed.setFooter("Any issues contact Echo2124#3778 with screenshot");
-        this.user.openPrivateChannel().flatMap(channel -> channel.sendMessage(embed.build())).queue();
+        EmbedBuilder authEmbed = new EmbedBuilder();
+        EmbedBuilder faqEmbed = new EmbedBuilder();
+        faqEmbed.setColor(Color.BLUE);
+        faqEmbed.setTitle("Frequently Asked Questions (FAQs)");
+        faqEmbed.addField("What does this do?", "This OAuth request will ask access for two main scopes (Email & Profile).", false);
+        faqEmbed.addField("What information will this Aria store?", "Aria will store the following information: Email Address, First Name, DiscordID, Time of Verification and Verification Status.", false);
+        faqEmbed.addField("Why do we need this data?", "In order to verify whether you are a Monash student we need to check the Email Domain in order to see if it would match a student's Monash email domain. If it does, then you are likely a student. We store your first name, as Aria will be able to refer to you in a more personalised manner. This name will only be used when Aria sends you a private message", false);
+        authEmbed.setColor(Color.YELLOW);
+        authEmbed.setTitle("Authorisation Request");
+        authEmbed.setDescription("Steps to verify yourself:\n **1)** Open provided link in your browser \n **2)** Paste provided code into input. **3)** Select your Monash Google Account. **4)** Done!");
+        authEmbed.addField("Link: ", link, false);
+        authEmbed.addField("Code: ", code, false);
+        authEmbed.setFooter("Any issues contact Echo2124#3778 with screenshot");
+        this.user.openPrivateChannel().flatMap(channel -> channel.sendMessage(faqEmbed.build())).queue();
+        this.user.openPrivateChannel().flatMap(channel -> channel.sendMessage(authEmbed.build())).queue();
     }
 
     public void verify() throws IOException, InterruptedException, ExecutionException {
