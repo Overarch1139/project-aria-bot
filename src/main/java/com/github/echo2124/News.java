@@ -51,7 +51,7 @@ public class News {
         StatusListener listener = new StatusListener() {
             @Override
             public void onStatus(Status status) {
-                if (status.getUser().getId()==43064490) {
+                if (status.getUser().getId()==43064490 && status.getText().contains("#COVID19VicData")) {
                     buildMsgFromTweet(status);
                 }
             }

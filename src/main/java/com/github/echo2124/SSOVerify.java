@@ -39,11 +39,20 @@ public class SSOVerify {
         this.msgChannel=channel;
         this.db=db;
         try {
-            verify();
+            if (!checkVerification()) {
+                verify();
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
 
+    public boolean checkVerification() {
+        boolean isVerified = false;
+        if (db.getDBEntry("CERT", user.getId()).contains("true")) {
+            isVerified=true;
+        }
+        return isVerified;
     }
 
 
