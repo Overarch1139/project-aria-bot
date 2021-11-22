@@ -8,6 +8,8 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
+import java.awt.*;
+
 // config
 
 public class Main extends ListenerAdapter {
@@ -56,6 +58,14 @@ public class Main extends ListenerAdapter {
             if (channel.getId().equals(permittedChannels[0])) {
                 if (msgContents.equals(">verify")) {
                     SSOVerify newSSO = new SSOVerify(user, event.getGuild(), channel, db);
+                } else if (msgContents.equals(">about")) {
+                    EmbedBuilder embed = new EmbedBuilder();
+                    embed.setColor(Color.CYAN);
+                    embed.setTitle("Hi there, "+user.getAsMention());
+                    embed.setDescription("I am Aria, I help out the staff on the server with various administrative tasks and other stuff. \n Why am I called Aria? \n"+
+                            "My name is actually an acronym: **A**dministrate, **R**elay, **I**dentify, **A**ttest. I was built to cater to this functionality. \n Who built me? \n"
+                    +"I was built entirely by Echo2124 (Joshua) as a side project that aims to automate many different tasks, such as verifying users, automatically relaying local COVID information & announcements from Monash Uni.");
+                    channel.sendMessage(embed.build()).queue();
                 }
 
             }

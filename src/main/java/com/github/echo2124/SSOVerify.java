@@ -41,6 +41,8 @@ public class SSOVerify {
         try {
             if (!checkVerification()) {
                 verify();
+            } else {
+                sendMsg(user.getAsMention()+", You have already been verified!");
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -71,8 +73,8 @@ public class SSOVerify {
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle("Verified!");
         embed.setColor(Color.green);
-        embed.setDescription("Hi " +name +",\n you have been successfully verified, you can now access channels that are exclusive for verified Monash University students only.");
-        embed.setFooter("If you have any problems please contact Echo2124#3778 (creator of bot)");
+        embed.setDescription("Hi " +name +",\n you have been successfully verified, you can now access channels that are exclusive for verified Monash University students only. \n Thanks for verifying, Aria");
+        embed.setFooter("If you have any problems please contact Echo2124#3778 (creator of Aria)");
         this.user.openPrivateChannel().flatMap(channel -> channel.sendMessage(embed.build())).queue();
     }
 
@@ -80,7 +82,19 @@ public class SSOVerify {
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle("Invalid Google Account");
         embed.setColor(Color.red);
-        embed.setDescription("Please ensure that you are using a Monash Google Account, it should have an email that ends in @student.monash.edu.au . If the issues persist please contact Echo2124#3778 with a screenshot and description of the issue that you are experiencing..");
+        embed.setDescription("Aria was unable to verify you. Please ensure that you are using a Monash Google Account, it should have an email that ends in @student.monash.edu.au . If the issues persist please contact Echo2124#3778 with a screenshot and description of the issue that you are experiencing. \n Best Regards, Aria. ");
+        this.user.openPrivateChannel().flatMap(channel -> channel.sendMessage(embed.build())).queue();
+    }
+
+    public void sendAuthRequest(String link, String code) {
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setColor(Color.BLUE);
+        embed.setTitle("Authorisation Request");
+        embed.setDescription("Frequently Asked Questions (FAQs): \nWhat does this do?\n This OAuth request will ask access for two main scopes (Email & Profile). \n What information will this Aria store? \n"+
+                "Aria will store the following information: Email Address, First Name, DiscordID, Time of Verification and Verification Status.\n"+"Why do we need this data? \n"+
+                "In order to verify whether you are a Monash student we need to check the Email Domain in order to see if it would match a student's Monash email domain. If it does, then you are likely a student.\n"+
+                "We store your first name, as Aria will be able to refer to you in a more personalised manner. This name will only be used when Aria sends you a private message\n"+"This code will expire in 5 mins:\n" + "Link: " + link +"\nCode: "+code);
+        embed.setFooter("Any issues contact Echo2124#3778 with screenshot");
         this.user.openPrivateChannel().flatMap(channel -> channel.sendMessage(embed.build())).queue();
     }
 
@@ -96,7 +110,7 @@ public class SSOVerify {
         System.out.println("Requesting a set of verification codes...");
         final DeviceAuthorization deviceAuthorization = service.getDeviceAuthorizationCodes();
         sendPublicMsg();
-        sendMsg("Link: "+deviceAuthorization.getVerificationUri()+"\n Token: " +deviceAuthorization.getUserCode());
+        sendAuthRequest(deviceAuthorization.getVerificationUri(),deviceAuthorization.getUserCode());
         if (deviceAuthorization.getVerificationUriComplete() != null) {
             System.out.println("Or visit " + deviceAuthorization.getVerificationUriComplete());
         }
@@ -121,8 +135,8 @@ public class SSOVerify {
                 } else {
                     sendFailureNotification();
                 }
-                sendMsg(response.getBody());
-
+                // for debug (sends response as priv message)
+                //sendMsg(response.getBody());
             }
         }
 
