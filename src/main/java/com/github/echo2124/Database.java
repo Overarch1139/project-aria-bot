@@ -144,7 +144,7 @@ public class Database {
                         PreparedStatement stmt;
                         try {
                              sqlQuery=connection.prepareStatement("INSERT INTO CERT_MODULE VALUES (?,?,?,?,?)");
-                            sqlQuery.setLong(1, (long) data.get("discordID"));
+                            sqlQuery.setLong(1, Long.parseLong(data.get("discordID").toString()));
                             sqlQuery.setString(2, data.get("name").toString());
                             sqlQuery.setString(3, data.get("emailAddr").toString());
                             sqlQuery.setBoolean(4, Boolean.parseBoolean(data.get("isVerified").toString()));
