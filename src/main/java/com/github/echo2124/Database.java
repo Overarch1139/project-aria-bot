@@ -173,8 +173,7 @@ public class Database {
             switch (originModule) {
                 case "CERT":
                     // build sql query here
-                    sqlQuery=connection.prepareStatement("SELECT * FROM CERT_MODULE WHERE discordID=?");
-                    sqlQuery.setLong(1,Long.parseLong(req));
+
                     break;
                 case "NEWS":
                     break;
@@ -183,6 +182,8 @@ public class Database {
                 default:
                     System.err.println("[Database Module] Invalid origin module selected");
             }
+            sqlQuery=connection.prepareStatement("SELECT * FROM CERT_MODULE WHERE discordID=?");
+            sqlQuery.setLong(1,Long.parseLong(req));
                      if (sqlQuery!=null) {
                      ResultSet rs = sqlQuery.executeQuery();
                          System.out.println("Ran query");
