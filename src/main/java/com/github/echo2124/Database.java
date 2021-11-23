@@ -168,20 +168,8 @@ public class Database {
     // todo this will need to be refactored to work universally with other tables.
     public String getDBEntry(String originModule, String req) {
         String ret="";
-        PreparedStatement sqlQuery=null;
+        PreparedStatement sqlQuery;
         try {
-            switch (originModule) {
-                case "CERT":
-                    // build sql query here
-
-                    break;
-                case "NEWS":
-                    break;
-                case "WARN":
-                    break;
-                default:
-                    System.err.println("[Database Module] Invalid origin module selected");
-            }
             sqlQuery=connection.prepareStatement("SELECT * FROM CERT_MODULE WHERE discordID=?");
             sqlQuery.setLong(1,Long.parseLong(req));
                      if (sqlQuery!=null) {

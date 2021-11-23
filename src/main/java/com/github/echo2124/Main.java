@@ -47,12 +47,14 @@ public class Main extends ListenerAdapter {
     }
 
 
+    // TODO: need to setup rate limiting. Also prevent users from spamming >verify, once it has been done don't allow for another 5 mins.
     public void onMessageReceived(MessageReceivedEvent event) {
         Message msg = event.getMessage();
         User user = event.getAuthor();
         MessageChannel channel = event.getChannel();
         News news;
         String msgContents = msg.getContentRaw();
+        // todo this could be a problem. As we are creating a new instance everytime a msg is received
         db = new Database();
         if (msgContents.contains(">")) {
             if (channel.getId().equals(permittedChannels[0])) {
