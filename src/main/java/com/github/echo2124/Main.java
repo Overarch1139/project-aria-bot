@@ -82,8 +82,15 @@ public class Main extends ListenerAdapter {
                         String discordName = name;
                         EmbedBuilder embed = new EmbedBuilder();
                         embed.setTitle("User lookup: ");
-                        embed.setDescription("Discord Name: " + name + "\n" + db.getDBEntry("CERT", parsedContents[1]));
-                        embed.setFooter("data sourced from internal database");
+                        try {
+                            Long.parseLong(parsedContents[1]);
+                            embed.setDescription("Discord Name: " + name + "\n" + db.getDBEntry("CERT", parsedContents[1]));
+                            embed.setFooter("data sourced from internal database");
+                        } catch (Exception e ){
+                            embed.setDescription("**Lookup failed, please ensure you've correctly copied the discord ID**");
+                            embed.setFooter("data sourced from internal database");
+                        }
+
                         channel.sendMessage(embed.build()).queue();
                     });
 

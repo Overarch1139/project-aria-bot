@@ -134,24 +134,32 @@ public class Database {
     }
 
     public void modifyDB(String originModule, String action, HashMap data) {
-        String sqlQuery="";
+        PreparedStatement sqlQuery=null;
         switch (originModule) {
             case "CERT":
                     if (action.equals("add")) {
                         Date date = new Date();
                         Timestamp ts=new Timestamp(date.getTime());
                         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        sqlQuery = "INSERT INTO CERT_MODULE VALUES ('" + data.get("discordID") + "','" + data.get("name") + "','" + data.get("emailAddr") + "','" + data.get("isVerified") + "','" + formatter.format(ts) +"');";
+                        PreparedStatement stmt;
+                        try {
+                             sqlQuery=connection.prepareStatement("INSERT INTO CERT_MODULE VALUES (?,?,?,?,?)");
+                            sqlQuery.setLong(1, (long) data.get("discordID"));
+                            sqlQuery.setString(2, data.get("name").toString());
+                            sqlQuery.setString(3, data.get("emailAddr").toString());
+                            sqlQuery.setBoolean(4, Boolean.parseBoolean(data.get("isVerified").toString()));
+                            sqlQuery.setTimestamp(5, ts);
+                        } catch (Exception e) {
+                            System.out.println("Unable to Modify DB: "+ e.getMessage());
+                        }
                     }
                 break;
             default:
                 System.out.println("[DB] Invalid Origin Module");
         }
         try {
-            if (!sqlQuery.equals("")) {
-                Statement st = connection.createStatement();
-                st.executeUpdate(sqlQuery);
-                st.close();
+            if (sqlQuery!=null) {
+                ResultSet rs = sqlQuery.executeQuery();
             }
         } catch (Exception e) {
             System.err.println(this.getClass().getName()+"Modify DB failed"+e.getMessage());
@@ -162,12 +170,13 @@ public class Database {
     // todo this will need to be refactored to work universally with other tables.
     public String getDBEntry(String originModule, String req) {
         String ret="";
-        String sqlQuery="";
+        PreparedStatement sqlQuery=null;
         try {
             switch (originModule) {
                 case "CERT":
                     // build sql query here
-                    sqlQuery="SELECT * FROM CERT_MODULE WHERE discordID="+req;
+                    sqlQuery=connection.prepareStatement("SELECT * FROM CERT_MODULE WHERE discordID=?");
+                    sqlQuery.setLong(1,Long.parseLong(req));
                     break;
                 case "NEWS":
                     break;
@@ -176,9 +185,8 @@ public class Database {
                 default:
                     System.err.println("[Database Module] Invalid origin module selected");
             }
-                     Statement stmt  = this.connection.createStatement();
-                     if (!sqlQuery.equals("")) {
-                     ResultSet rs = stmt.executeQuery(sqlQuery);
+                     if (sqlQuery!=null) {
+                     ResultSet rs = sqlQuery.executeQuery();
                         // loop through the result set
                          if (rs.next()) {
                              while (rs.next()) {
