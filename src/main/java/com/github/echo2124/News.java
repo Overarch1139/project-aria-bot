@@ -18,7 +18,8 @@ import java.util.List;
 
 // Based around grabbing RSS feeds
 public class News {
-    private String NEWS_CHANNEL="912355120723943424";
+    private final String NEWS_CHANNEL="912355120723943424";
+    private final String COVID_UPDATE_CHANNEL="912726004886294569";
     private String cachedTitle="";
     private String feedOrg;
     // fallback if author is not available from rss feed
@@ -51,8 +52,12 @@ public class News {
         StatusListener listener = new StatusListener() {
             @Override
             public void onStatus(Status status) {
-                if (status.getUser().getId()==43064490 && status.getText().contains("#COVID19VicData")) {
-                    buildMsgFromTweet(status);
+                if (status.getUser().getId()==43064490){
+                   if (status.getText().contains("#COVID19VicData")) {
+                       buildMsgFromTweet(status, "covid_update");
+                   } else {
+                        buildMsgFromTweet(status, "news");
+                   }
                 }
             }
 
@@ -157,9 +162,14 @@ public class News {
        channel.sendMessage(newEmbed.build()).queue();
     }
 
-    public void buildMsgFromTweet(Status status) {
+    public void buildMsgFromTweet(Status status, String type) {
         System.out.println("Building MSG From tweet");
-        MessageChannel channel = Main.constants.jda.getTextChannelById(NEWS_CHANNEL);
+        MessageChannel channel;
+        if (type.equals("covid_update")) {
+            channel = Main.constants.jda.getTextChannelById(COVID_UPDATE_CHANNEL);
+        } else {
+            channel = Main.constants.jda.getTextChannelById(NEWS_CHANNEL);
+        }
         EmbedBuilder newEmbed = new EmbedBuilder();
         newEmbed.setTitle("Victoria Covid Update");
         newEmbed.setDescription(status.getText());

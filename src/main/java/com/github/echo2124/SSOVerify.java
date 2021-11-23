@@ -29,6 +29,7 @@ public class SSOVerify {
     private static final String VERIFIED_ROLE_ID="909827233194070039";
     private static final String NETWORK_NAME = "Google";
     private static final String PROTECTED_RESOURCE_URL = "https://www.googleapis.com/oauth2/v3/userinfo";
+    private static final int MAX_NAME_LEN=2048;
     private User user;
     private Guild guild;
     private MessageChannel msgChannel;
@@ -78,11 +79,20 @@ public class SSOVerify {
         this.user.openPrivateChannel().flatMap(channel -> channel.sendMessage(embed.build())).queue();
     }
 
-    public void sendFailureNotification() {
+    public void sendFailureNotification(String type) {
         EmbedBuilder embed = new EmbedBuilder();
-        embed.setTitle("Invalid Google Account");
-        embed.setColor(Color.red);
-        embed.setDescription("Aria was unable to verify you. Please ensure that you are using a Monash Google Account, it should have an email that ends in @student.monash.edu.au . If the issues persist please contact Echo2124#3778 with a screenshot and description of the issue that you are experiencing. \n Best Regards, Aria. ");
+        switch (type) {
+            case "invalid_account":
+                embed.setTitle("Invalid Google Account");
+                embed.setColor(Color.red);
+             embed.setDescription("Aria was unable to verify you. Please ensure that you are using a Monash Google Account, it should have an email that ends in @student.monash.edu.au . If the issues persist please contact Echo2124#3778 with a screenshot and description of the issue that you are experiencing. \n Best Regards, Aria. ");
+            break;
+            case "invalid_name":
+                embed.setTitle("Invalid First Name");
+                embed.setColor(Color.red);
+                embed.setDescription("Your profile name too large, therefore verification has failed. You can change your first name in the Google Account settings. Please ensure that your account firstname is under 2048 characters.");
+                break;
+        }
         this.user.openPrivateChannel().flatMap(channel -> channel.sendMessage(embed.build())).queue();
     }
 
@@ -96,7 +106,7 @@ public class SSOVerify {
         faqEmbed.addField("Why do we need this data?", "In order to verify whether you are a Monash student we need to check the Email Domain in order to see if it would match a student's Monash email domain. If it does, then you are likely a student. We store your first name, as Aria will be able to refer to you in a more personalised manner. This name will only be used when Aria sends you a private message", false);
         authEmbed.setColor(Color.YELLOW);
         authEmbed.setTitle("Authorisation Request");
-        authEmbed.setDescription("Steps to verify yourself:\n **1)** Open provided link in your browser \n **2)** Paste provided code into input. **3)** Select your Monash Google Account. **4)** Done!");
+        authEmbed.setDescription("Steps to verify yourself:\n **1)** Open provided link in your browser. \n **2)** Paste provided code into input. \n **3)** Select your Monash Google Account. \n **4)** Done!");
         authEmbed.addField("Link: ", link, false);
         authEmbed.addField("Code: ", code, false);
         authEmbed.setFooter("Any issues contact Echo2124#3778 with screenshot");
@@ -130,16 +140,20 @@ public class SSOVerify {
 
                 if (verifyEmail(parsedObj) == true) {
                    /// insert into db > add role > notify user
-                    addVerifiedRole();
-                    HashMap<String, String> parsedData= new HashMap<String, String>();
-                    parsedData.put("discordID", user.getId());
-                    parsedData.put("name", parsedObj.getString("given_name"));
-                    parsedData.put("emailAddr", parsedObj.getString("email"));
-                    parsedData.put("isVerified", "true");
-                    db.modifyDB("CERT", "add", parsedData);
-                    sendVerifiedNotification(parsedObj.getString("given_name"));
+                    if (parsedObj.getString("given_name").length()<=MAX_NAME_LEN) {
+                        addVerifiedRole();
+                        HashMap<String, String> parsedData = new HashMap<String, String>();
+                        parsedData.put("discordID", user.getId());
+                        parsedData.put("name", parsedObj.getString("given_name"));
+                        parsedData.put("emailAddr", parsedObj.getString("email"));
+                        parsedData.put("isVerified", "true");
+                        db.modifyDB("CERT", "add", parsedData);
+                        sendVerifiedNotification(parsedObj.getString("given_name"));
+                    } else {
+                        sendFailureNotification("invalid_name");
+                    }
                 } else {
-                    sendFailureNotification();
+                    sendFailureNotification("invalid_account");
                 }
                 // for debug (sends response as priv message)
                 //sendMsg(response.getBody());
