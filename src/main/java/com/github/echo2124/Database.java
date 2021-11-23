@@ -140,8 +140,6 @@ public class Database {
                     if (action.equals("add")) {
                         Date date = new Date();
                         Timestamp ts=new Timestamp(date.getTime());
-                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        PreparedStatement stmt;
                         try {
                              sqlQuery=connection.prepareStatement("INSERT INTO CERT_MODULE VALUES (?,?,?,?,?)");
                             sqlQuery.setLong(1, Long.parseLong(data.get("discordID").toString()));
@@ -159,7 +157,7 @@ public class Database {
         }
         try {
             if (sqlQuery!=null) {
-                ResultSet rs = sqlQuery.executeQuery();
+                sqlQuery.executeQuery();
             }
         } catch (Exception e) {
             System.err.println(this.getClass().getName()+"Modify DB failed"+e.getMessage());
@@ -194,6 +192,7 @@ public class Database {
                                  ret+="Email: "+rs.getString("emailAddr")+"\n";
                                  ret+="Verified Status: "+rs.getBoolean("isVerified")+"\n";
                              }
+                             System.out.println("Query result: \n"+req);
                          } else {
                              ret="No results found";
                          }
