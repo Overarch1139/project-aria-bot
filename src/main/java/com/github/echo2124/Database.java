@@ -185,6 +185,7 @@ public class Database {
             }
                      if (sqlQuery!=null) {
                      ResultSet rs = sqlQuery.executeQuery();
+                         System.out.println("Ran query");
                         // loop through the result set
                          if (rs.next()) {
                              while (rs.next()) {
