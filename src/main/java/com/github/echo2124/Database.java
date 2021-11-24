@@ -167,6 +167,7 @@ public class Database {
 
     // todo this will need to be refactored to work universally with other tables.
     public String getDBEntry(String originModule, String req) {
+        System.out.println("Grabbing DB Entry");
         String ret="";
         PreparedStatement sqlQuery;
         try {
