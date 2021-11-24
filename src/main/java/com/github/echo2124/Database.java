@@ -177,17 +177,16 @@ public class Database {
                      ResultSet rs = sqlQuery.executeQuery();
                          System.out.println("Ran query");
                         // loop through the result set
-                         if (rs.next()) {
                              while (rs.next()) {
-                                 ret="Name: "+rs.getString("name")+"\n";
-                                 ret+="Email: "+rs.getString("emailAddr")+"\n";
-                                 ret+="Verified Status: "+rs.getBoolean("isVerified")+"\n";
+                                 ret="Name: "+rs.getString(2)+"\n";
+                                 ret+="Email: "+rs.getString(3)+"\n";
+                                 ret+="Verified Status: "+rs.getBoolean(4)+"\n";
                              }
                              System.out.println("Query result: \n"+req);
-                         } else {
-                             ret="No results found";
-                         }
-                    }
+                             if (ret=="") {
+                                 ret = "No results found";
+                             }
+                     }
 
         } catch (SQLException e) {
             System.err.println(this.getClass().getName()+"Unable to get Entry"+e.getMessage());
