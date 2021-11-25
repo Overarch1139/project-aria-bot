@@ -80,21 +80,30 @@ public class Main extends ListenerAdapter {
                     String[] parsedContents = msgContents.split(" ");
 
                     // return discord side of things like nickname, etc.
-                    constants.jda.retrieveUserById(parsedContents[1]).map(User::getName).queue(name -> {
-                        String discordName = name;
+                    try {
+
                         EmbedBuilder embed = new EmbedBuilder();
                         embed.setTitle("User lookup: ");
-                        try {
-                            Long.parseLong(parsedContents[1]);
-                            embed.setDescription("Discord Name: " + name + "\n" + db.getDBEntry("CERT", parsedContents[1]));
-                            embed.setFooter("data sourced from internal database");
-                        } catch (Exception e ){
-                            embed.setDescription("**Lookup failed, please ensure you've correctly copied the discord ID**");
-                            embed.setFooter("data sourced from internal database");
-                        }
+                        constants.jda.retrieveUserById(parsedContents[1]).map(User::getName).queue(name -> {
+                            String discordName = name;
+                            try {
+                                Long.parseLong(parsedContents[1]);
+                                embed.setDescription("Discord Name: " + name + "\n" + db.getDBEntry("CERT", parsedContents[1]));
+                                embed.setFooter("data sourced from internal database");
+                            } catch (Exception e) {
+                                embed.setDescription("**Lookup failed, please ensure you've correctly copied the discord ID**");
+                                embed.setFooter("data sourced from internal database");
+                            }
+                            channel.sendMessage(embed.build()).queue();
 
+                        });
+                    } catch (Exception e) {
+                        EmbedBuilder embed = new EmbedBuilder();
+                        embed.setTitle("User lookup: ");
+                        embed.setDescription("**Lookup failed, please ensure you've correctly copied the discord ID**");
+                        embed.setFooter("data sourced from internal database");
                         channel.sendMessage(embed.build()).queue();
-                    });
+                    }
 
 
                 } else if (msgContents.contains(">manualUpdate")) {
