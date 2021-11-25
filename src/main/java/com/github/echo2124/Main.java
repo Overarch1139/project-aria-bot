@@ -78,14 +78,13 @@ public class Main extends ListenerAdapter {
                     System.out.println("Running userLookup cmd");
                     // todo move this to a different class to prevent function envy
                     String[] parsedContents = msgContents.split(" ");
-
+                    EmbedBuilder embed = new EmbedBuilder();
+                    embed.setTitle("User lookup: ");
                     // return discord side of things like nickname, etc.
-                    try {
-
-                        EmbedBuilder embed = new EmbedBuilder();
-                        embed.setTitle("User lookup: ");
+                    if (parsedContents[1].matches("\\d*") && constants.jda.getUserById(parsedContents[1])!=null) {
                         constants.jda.retrieveUserById(parsedContents[1]).map(User::getName).queue(name -> {
                             String discordName = name;
+
                             try {
                                 Long.parseLong(parsedContents[1]);
                                 embed.setDescription("Discord Name: " + name + "\n" + db.getDBEntry("CERT", parsedContents[1]));
@@ -94,17 +93,14 @@ public class Main extends ListenerAdapter {
                                 embed.setDescription("**Lookup failed, please ensure you've correctly copied the discord ID**");
                                 embed.setFooter("data sourced from internal database");
                             }
-                            channel.sendMessage(embed.build()).queue();
+
 
                         });
-                    } catch (Exception e) {
-                        EmbedBuilder embed = new EmbedBuilder();
-                        embed.setTitle("User lookup: ");
+                    } else {
                         embed.setDescription("**Lookup failed, please ensure you've correctly copied the discord ID**");
                         embed.setFooter("data sourced from internal database");
-                        channel.sendMessage(embed.build()).queue();
                     }
-
+                    channel.sendMessage(embed.build()).queue();
 
                 } else if (msgContents.contains(">manualUpdate")) {
                     // this might be a pain, will need a delimiter or set many params for fields
