@@ -179,8 +179,8 @@ public class Database {
                         // loop through the result set
                              while (rs.next()) {
                                  ret="Name: "+rs.getString(2)+"\n";
-                                 ret+="Email: "+rs.getString(3)+"\n";
                                  ret+="Verified Status: "+rs.getBoolean(4)+"\n";
+                                 ret+="Time of Verification: "+rs.getTimestamp(5)+"\n";
                              }
                              System.out.println("Query result: \n"+req);
                              if (ret=="") {

@@ -13,7 +13,7 @@ import java.awt.*;
 // config
 
 public class Main extends ListenerAdapter {
-    private Database db;
+    private static Database db;
 
 
 
@@ -58,6 +58,7 @@ public class Main extends ListenerAdapter {
         News covid_news = new News("Covid");
        // todo detect new articles. Currently pushes whatever is the latest without checking.
         // News monash_news = new News("Monash");
+        db = new Database();
     }
 
 
@@ -69,7 +70,7 @@ public class Main extends ListenerAdapter {
         News news;
         String msgContents = msg.getContentRaw();
         // todo this could be a problem. As we are creating a new instance everytime a msg is received
-        db = new Database();
+
         if (msgContents.contains(">")) {
             if (channel.getId().equals(constants.permittedChannels[0])) {
                 if (msgContents.equals(">verify")) {
