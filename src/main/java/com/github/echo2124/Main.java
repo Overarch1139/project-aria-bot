@@ -81,27 +81,15 @@ public class Main extends ListenerAdapter {
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.setTitle("User lookup: ");
                     // return discord side of things like nickname, etc.
-                    if (constants.jda.getUserById(parsedContents[1])!=null) {
-                        constants.jda.retrieveUserById(parsedContents[1]).map(User::getName).queue(name -> {
-                            String discordName = name;
-
                             try {
                                 Long.parseLong(parsedContents[1]);
-                                embed.setDescription("Discord Name: " + name + "\n" + db.getDBEntry("CERT", parsedContents[1]));
+                                embed.setDescription("Results for: "+parsedContents[1]+"\n"+db.getDBEntry("CERT", parsedContents[1]));
                                 embed.setFooter("data sourced from internal database");
                             } catch (Exception e) {
                                 System.out.println("Long failed");
                                 embed.setDescription("**Lookup failed, please ensure you've correctly copied the discord ID**");
                                 embed.setFooter("data sourced from internal database");
                             }
-
-
-                        });
-                    } else {
-                        embed.setDescription("**Lookup failed, please ensure you've correctly copied the discord ID**");
-                        embed.setFooter("data sourced from internal database");
-                        System.out.println("Regex match failure");
-                    }
                     channel.sendMessage(embed.build()).queue();
 
                 } else if (msgContents.contains(">manualUpdate")) {
