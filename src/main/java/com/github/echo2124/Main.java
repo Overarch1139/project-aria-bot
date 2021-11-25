@@ -81,7 +81,7 @@ public class Main extends ListenerAdapter {
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.setTitle("User lookup: ");
                     // return discord side of things like nickname, etc.
-                    if (parsedContents[1].matches("\\d*") && constants.jda.getUserById(parsedContents[1])!=null) {
+                    if (constants.jda.getUserById(parsedContents[1])!=null) {
                         constants.jda.retrieveUserById(parsedContents[1]).map(User::getName).queue(name -> {
                             String discordName = name;
 
