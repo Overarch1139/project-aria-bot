@@ -15,10 +15,8 @@ import java.awt.*;
 public class Main extends ListenerAdapter {
     private Database db;
 
-    private final String[] permittedChannels = {
-            "912353229285765172",  // verify channel
-            "912353440749985852" // admin channel
-    };
+
+
 
     //******************************
     //****CONFIG***
@@ -29,6 +27,22 @@ public class Main extends ListenerAdapter {
         public static final boolean enableSSOVerification = false;
         public static final boolean enableTesting = true;
         public static JDA jda;
+        public final static String[] permittedChannelsTest = {
+                "912353229285765172",  // verify channel
+                "912353440749985852" // admin channel
+        };
+        // for actual location
+        public static final String[] permittedChannels = {
+                "913081082298114058",  // verify channel
+                "913082023483174922" // admin channel
+        };
+        public static final String VERIFIED_ROLE_ID_TEST="909827233194070039";
+        public static final String VERIFIED_ROLE_ID="912001525432320031";
+        public static final String NEWS_CHANNEL_TEST="912355120723943424";
+        public static final String NEWS_CHANNEL="913081610205798440";
+        public static final String COVID_UPDATE_CHANNEL_TEST="912726004886294569";
+        public static final String COVID_UPDATE_CHANNEL="913081128188014592";
+
     }
 
     static String BOT_TOKEN = "ODc4OTQyNzk2MjYwNzI0NzY2.YSIhRA.ybuEYxDoa8VjfJQa0rC81W-ay4o";
@@ -38,7 +52,7 @@ public class Main extends ListenerAdapter {
         Runtime.getRuntime().addShutdownHook(close);
         JDA jda = JDABuilder.createLight(BOT_TOKEN, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES)
                 .addEventListeners(new Main())
-                .setActivity(Activity.playing("Being Built"))
+                .setActivity(Activity.playing("Closed Beta - WIP"))
                 .build();
         constants.jda = jda;
         News covid_news = new News("Covid");
@@ -57,7 +71,7 @@ public class Main extends ListenerAdapter {
         // todo this could be a problem. As we are creating a new instance everytime a msg is received
         db = new Database();
         if (msgContents.contains(">")) {
-            if (channel.getId().equals(permittedChannels[0])) {
+            if (channel.getId().equals(constants.permittedChannels[0])) {
                 if (msgContents.equals(">verify")) {
                     SSOVerify newSSO = new SSOVerify(user, event.getGuild(), channel, db);
                 } else if (msgContents.equals(">about")) {
@@ -68,12 +82,24 @@ public class Main extends ListenerAdapter {
                         embed.addField("Why am I called Aria?", "My name is actually an acronym: **A**dministrate, **R**elay, **I**dentify, **A**ttest. I was built to cater to this functionality.", false);
                         embed.addField("Who built me?", "I was built entirely by Echo2124 (Joshua) as a side project that aims to automate many different tasks, such as verifying users, automatically relaying local COVID information & announcements from Monash Uni.", false);
                         channel.sendMessage(embed.build()).queue();
+                    } else if (msgContents.equals(">help")) {
+                    EmbedBuilder embed = new EmbedBuilder();
+                    embed.setColor(Color.MAGENTA);
+                    embed.setTitle("Commands");
+                    embed.setDescription("Here are the following commands that you are able to use");
+                    embed.addField(">verify", "This command will initiate a verification check for the user. You will be sent a private message with information related to this.",false);
+                    embed.addField(">about","Details information about the bot", false);
+                    embed.addField("[ADMIN ONLY] >userLookup <discordID>", "This command will lookup a user's verification status and other recorded details.", false);
+                    embed.addField("[WIP - ADMIN ONLY] >userUpdate <discordID>", "Will be used by staff to update information or manually verify a user", false);
+                    embed.addField("[WIP - ADMIN ONLY] >scheduleMsg <Message> <Timestamp>","Can be used to schedule an announcement for a particular time.", false);
+                    channel.sendMessage(embed.build()).queue();
+
                     }
                 }
 
             }
             // for commands with params
-            if (channel.getId().equals(permittedChannels[1])) {
+            if (channel.getId().equals(constants.permittedChannels[1])) {
                 if (msgContents.contains(">userLookup")) {
                     System.out.println("Running userLookup cmd");
                     // todo move this to a different class to prevent function envy

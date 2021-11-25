@@ -18,8 +18,7 @@ import java.util.List;
 
 // Based around grabbing RSS feeds
 public class News {
-    private final String NEWS_CHANNEL="912355120723943424";
-    private final String COVID_UPDATE_CHANNEL="912726004886294569";
+
     private String cachedTitle="";
     private String feedOrg;
     // fallback if author is not available from rss feed
@@ -143,7 +142,7 @@ public class News {
     }
 
     public void sendMsg(SyndFeed feed) {
-        MessageChannel channel= Main.constants.jda.getTextChannelById(NEWS_CHANNEL);
+        MessageChannel channel= Main.constants.jda.getTextChannelById(Main.constants.NEWS_CHANNEL);
         EmbedBuilder newEmbed = new EmbedBuilder();
         if (feed.getEntries().get(feedIndex).getAuthor().equals("") || feed.getAuthor()==null) {
             if (feedOrg.equals("Monash")) {
@@ -166,9 +165,9 @@ public class News {
         System.out.println("Building MSG From tweet");
         MessageChannel channel;
         if (type.equals("covid_update")) {
-            channel = Main.constants.jda.getTextChannelById(COVID_UPDATE_CHANNEL);
+            channel = Main.constants.jda.getTextChannelById(Main.constants.COVID_UPDATE_CHANNEL);
         } else {
-            channel = Main.constants.jda.getTextChannelById(NEWS_CHANNEL);
+            channel = Main.constants.jda.getTextChannelById(Main.constants.NEWS_CHANNEL);
         }
         EmbedBuilder newEmbed = new EmbedBuilder();
         newEmbed.setTitle("Victoria Covid Update");

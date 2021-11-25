@@ -26,7 +26,6 @@ import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 
 public class SSOVerify {
-    private static final String VERIFIED_ROLE_ID="909827233194070039";
     private static final String NETWORK_NAME = "Google";
     private static final String PROTECTED_RESOURCE_URL = "https://www.googleapis.com/oauth2/v3/userinfo";
     private static final int MAX_NAME_LEN=2048;
@@ -173,7 +172,7 @@ public class SSOVerify {
         // TODO Might be worth switching to ID instead encase someone changes the name of the role
         public void addVerifiedRole() {
         try {
-            guild.addRoleToMember(user.getIdLong(), guild.getRoleById(VERIFIED_ROLE_ID)).queue();
+            guild.addRoleToMember(user.getIdLong(), guild.getRoleById(Main.constants.VERIFIED_ROLE_ID)).queue();
             System.out.println("[VERBOSE] Added role");
         } catch (Exception e) {
             System.out.println(e.getMessage());
