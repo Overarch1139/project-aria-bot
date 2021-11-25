@@ -90,6 +90,7 @@ public class Main extends ListenerAdapter {
                                 embed.setDescription("Discord Name: " + name + "\n" + db.getDBEntry("CERT", parsedContents[1]));
                                 embed.setFooter("data sourced from internal database");
                             } catch (Exception e) {
+                                System.out.println("Long failed");
                                 embed.setDescription("**Lookup failed, please ensure you've correctly copied the discord ID**");
                                 embed.setFooter("data sourced from internal database");
                             }
@@ -99,6 +100,7 @@ public class Main extends ListenerAdapter {
                     } else {
                         embed.setDescription("**Lookup failed, please ensure you've correctly copied the discord ID**");
                         embed.setFooter("data sourced from internal database");
+                        System.out.println("Regex match failure");
                     }
                     channel.sendMessage(embed.build()).queue();
 
