@@ -162,7 +162,7 @@ public class SSOVerify {
         public Boolean verifyEmail(JSONObject obj) {
             boolean isValid = false;
             if (obj.has("hd")) {
-                if (obj.getString("hd").equals("student.monash.edu")) {
+                if (obj.getString("hd").equals("student.monash.edu") || obj.getString("hd").equals("monash.edu")) {
                     isValid = true;
                 }
             }

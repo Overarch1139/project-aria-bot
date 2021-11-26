@@ -39,7 +39,8 @@ public class Main extends ListenerAdapter {
         public static final String VERIFIED_ROLE_ID_TEST="909827233194070039";
         public static final String VERIFIED_ROLE_ID="912001525432320031";
         public static final String NEWS_CHANNEL_TEST="912355120723943424";
-          public static final String NEWS_CHANNEL="913081610205798440";
+        // for monash news
+          public static final String NEWS_CHANNEL="913082864080392213";
         public static final String COVID_UPDATE_CHANNEL_TEST="912726004886294569";
         public static final String COVID_UPDATE_CHANNEL="913081128188014592";
 
