@@ -17,14 +17,24 @@ public class Database {
     private String DB_URL;
     private String USERNAME;
     private String PASSWORD;
-    private Connection connection;
     // this class is used for all instances of communication between db and application
     public Database() {
             checkEnv();
-            connection=openDB();
-            if (!tableExists("CERT_MODULE", connection)) {
-                setupDB(connection);
+            Connection tempConnection=connect();
+            if (!tableExists("CERT_MODULE", tempConnection)) {
+                setupDB(tempConnection);
             }
+            disconnect(tempConnection);
+    }
+
+
+
+    public void disconnect(Connection connection) {
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            System.out.println("Unable to disconnect from db");
+        }
     }
 
     // still crash, check if its switching between the different creds for postgres based on whether its a server or not
@@ -102,7 +112,7 @@ public class Database {
         return exists;
     }*/
 
-    public Connection openDB() {
+    public Connection connect() {
         Connection connect = null;
         try {
             connect = DriverManager.getConnection(DB_URL,
@@ -135,6 +145,7 @@ public class Database {
 
     public void modifyDB(String originModule, String action, HashMap data) {
         PreparedStatement sqlQuery=null;
+        Connection connection = connect();
         switch (originModule) {
             case "CERT":
                     if (action.equals("add")) {
@@ -159,6 +170,7 @@ public class Database {
             if (sqlQuery!=null) {
                 sqlQuery.executeQuery();
             }
+            disconnect(connection);
         } catch (Exception e) {
             System.err.println(this.getClass().getName()+"Modify DB failed"+e.getMessage());
         }
@@ -170,6 +182,7 @@ public class Database {
         System.out.println("Grabbing DB Entry");
         String ret="";
         PreparedStatement sqlQuery;
+        Connection connection=connect();
         try {
             sqlQuery=connection.prepareStatement("SELECT * FROM CERT_MODULE WHERE discordID=?");
             sqlQuery.setLong(1,Long.parseLong(req));
@@ -191,15 +204,9 @@ public class Database {
         } catch (SQLException e) {
             System.err.println(this.getClass().getName()+"Unable to get Entry"+e.getMessage());
         }
+        disconnect(connection);
         return ret;
     }
 
-    public void closeDB() {
-        try {
-            connection.close();
-        } catch (Exception e) {
-            throw new Error("DB close failure: " + e.getMessage());
-        }
-    }
 
 }
