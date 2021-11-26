@@ -54,8 +54,6 @@ public class News {
                 if (status.getUser().getId()==43064490){
                    if (status.getText().contains("#COVID19VicData")) {
                        buildMsgFromTweet(status, "covid_update");
-                   } else {
-                        buildMsgFromTweet(status, "news");
                    }
                 }
             }
@@ -163,11 +161,11 @@ public class News {
 
     public void buildMsgFromTweet(Status status, String type) {
         System.out.println("Building MSG From tweet");
-        MessageChannel channel;
+        MessageChannel channel =null;
         if (type.equals("covid_update")) {
             channel = Main.constants.jda.getTextChannelById(Main.constants.COVID_UPDATE_CHANNEL);
         } else {
-            channel = Main.constants.jda.getTextChannelById(Main.constants.NEWS_CHANNEL);
+           // channel = Main.constants.jda.getTextChannelById(Main.constants.NEWS_CHANNEL);
         }
         EmbedBuilder newEmbed = new EmbedBuilder();
         newEmbed.setTitle("Victoria Covid Update");

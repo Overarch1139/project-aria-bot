@@ -39,7 +39,7 @@ public class Main extends ListenerAdapter {
         public static final String VERIFIED_ROLE_ID_TEST="909827233194070039";
         public static final String VERIFIED_ROLE_ID="912001525432320031";
         public static final String NEWS_CHANNEL_TEST="912355120723943424";
-        public static final String NEWS_CHANNEL="913081610205798440";
+          public static final String NEWS_CHANNEL="913081610205798440";
         public static final String COVID_UPDATE_CHANNEL_TEST="912726004886294569";
         public static final String COVID_UPDATE_CHANNEL="913081128188014592";
 
@@ -107,16 +107,20 @@ public class Main extends ListenerAdapter {
                     String[] parsedContents = msgContents.split(" ");
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.setTitle("User lookup: ");
-                    // return discord side of things like nickname, etc.
-                            try {
-                                Long.parseLong(parsedContents[1]);
-                                embed.setDescription("Results for: "+parsedContents[1]+"\n"+db.getDBEntry("CERT", parsedContents[1]));
-                                embed.setFooter("data sourced from internal database");
-                            } catch (Exception e) {
-                                System.out.println("Long failed");
-                                embed.setDescription("**Lookup failed, please ensure you've correctly copied the discord ID**");
-                                embed.setFooter("data sourced from internal database");
+                        try {
+                            Long.parseLong(parsedContents[1]);
+                            if (!msg.getMentionedUsers().isEmpty()) {
+                                User x= msg.getMentionedUsers().get(0);
+                                embed.setDescription("Results for: " +  x.getId()+"\n" + db.getDBEntry("CERT", x.getId()));
+                            } else {
+                                embed.setDescription("Results for: " + parsedContents[1] + "\n" + db.getDBEntry("CERT", parsedContents[1]));
                             }
+                            embed.setFooter("data sourced from internal database");
+                        } catch (Exception e) {
+                            System.out.println("Long failed");
+                            embed.setDescription("**Lookup failed, please ensure you've correctly copied the discord ID**");
+                            embed.setFooter("data sourced from internal database");
+                        }
                     channel.sendMessage(embed.build()).queue();
 
                 } else if (msgContents.contains(">manualUpdate")) {
