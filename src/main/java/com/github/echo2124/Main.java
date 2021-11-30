@@ -27,6 +27,7 @@ public class Main extends ListenerAdapter {
         public static final boolean enableSSOVerification = false;
         public static final boolean enableTesting = true;
         public static JDA jda;
+        public static final String IT_SERVER="802526304745553930";
         public final static String[] permittedChannelsTest = {
                 "912353229285765172",  // verify channel
                 "912353440749985852" // admin channel
@@ -38,9 +39,10 @@ public class Main extends ListenerAdapter {
         };
         public static final String VERIFIED_ROLE_ID_TEST="909827233194070039";
         public static final String VERIFIED_ROLE_ID="912001525432320031";
+        public static final String VERIFY_TIMEOUT_ROLE_ID="914896421965148160";
         public static final String NEWS_CHANNEL_TEST="912355120723943424";
         // for monash news
-          public static final String NEWS_CHANNEL="913082864080392213";
+        public static final String NEWS_CHANNEL="913082864080392213";
         public static final String COVID_UPDATE_CHANNEL_TEST="912726004886294569";
         public static final String COVID_UPDATE_CHANNEL="913081128188014592";
 
@@ -76,6 +78,7 @@ public class Main extends ListenerAdapter {
             if (channel.getId().equals(constants.permittedChannels[0])) {
                 if (msgContents.equals(">verify")) {
                     SSOVerify newSSO = new SSOVerify(user, event.getGuild(), channel, db);
+                    // add timeout here. After 5 mins check if user is verified if not then return failure msg (timeout)
                 } else if (msgContents.equals(">about")) {
                         EmbedBuilder embed = new EmbedBuilder();
                         embed.setColor(Color.CYAN);
@@ -100,6 +103,8 @@ public class Main extends ListenerAdapter {
                 }
 
             }
+
+        // TODO: Move this to database class
             // for commands with params
             if (channel.getId().equals(constants.permittedChannels[1])) {
                 if (msgContents.contains(">userLookup")) {

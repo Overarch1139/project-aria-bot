@@ -19,10 +19,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 public class SSOVerify {
@@ -38,15 +35,32 @@ public class SSOVerify {
         this.guild=guild;
         this.msgChannel=channel;
         this.db=db;
+
         try {
             if (!checkVerification()) {
                 verify();
             } else {
-                sendMsg(user.getAsMention()+", You have already been verified!");
+                sendMsg(user.getAsMention()+", have already been verified! Aria.");
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public void timeout() {
+        setTimeoutRole(true);
+        TimerTask task = new TimerTask() {
+            public void run() {
+                if (!checkVerification()) {
+                    sendFailureNotification("timeout");
+                }
+                setTimeoutRole(false);
+            }
+        };
+        Timer timer = new Timer("Timer");
+        // Equiv to 5mins and 10 secs.
+        long delay = 306000L;
+        timer.schedule(task, delay);
     }
 
     public boolean checkVerification() {
@@ -80,17 +94,20 @@ public class SSOVerify {
 
     public void sendFailureNotification(String type) {
         EmbedBuilder embed = new EmbedBuilder();
+        embed.setColor(Color.red);
         switch (type) {
             case "invalid_account":
                 embed.setTitle("Invalid Google Account");
-                embed.setColor(Color.red);
-             embed.setDescription("Aria was unable to verify you. Please ensure that you are using a Monash Google Account, it should have an email that ends in @student.monash.edu.au . If the issues persist please contact Echo2124#3778 with a screenshot and description of the issue that you are experiencing. \n Best Regards, Aria. ");
+                embed.setDescription("Aria was unable to verify you. Please ensure that you are using a Monash Google Account, it should have an email that ends in @student.monash.edu.au . If the issues persist please contact Echo2124#3778 with a screenshot and description of the issue that you are experiencing. \n Best Regards, Aria. ");
             break;
             case "invalid_name":
                 embed.setTitle("Invalid First Name");
-                embed.setColor(Color.red);
                 embed.setDescription("Your profile name too large, therefore verification has failed. You can change your first name in the Google Account settings. Please ensure that your account firstname is under 2048 characters.");
                 break;
+            case "timeout":
+                embed.setTitle("Verification timeout");
+                embed.setDescription("Aria has noticed that the provided token was not used within the allocated timeframe. This is likely because you might of not followed the aforementioned steps. Please try to generate a new token by typing >verify at the specified verification channel on the IT @ Monash server.");
+            break;
         }
         this.user.openPrivateChannel().flatMap(channel -> channel.sendMessage(embed.build())).queue();
     }
@@ -125,6 +142,7 @@ public class SSOVerify {
         System.out.println("Requesting a set of verification codes...");
         final DeviceAuthorization deviceAuthorization = service.getDeviceAuthorizationCodes();
         sendPublicMsg();
+        timeout();
         sendAuthRequest(deviceAuthorization.getVerificationUri(),deviceAuthorization.getUserCode());
         if (deviceAuthorization.getVerificationUriComplete() != null) {
             System.out.println("Or visit " + deviceAuthorization.getVerificationUriComplete());
@@ -168,8 +186,6 @@ public class SSOVerify {
             }
             return isValid;
         }
-
-        // TODO Might be worth switching to ID instead encase someone changes the name of the role
         public void addVerifiedRole() {
         try {
             guild.addRoleToMember(user.getIdLong(), guild.getRoleById(Main.constants.VERIFIED_ROLE_ID)).queue();
@@ -178,6 +194,22 @@ public class SSOVerify {
             System.out.println(e.getMessage());
             System.out.println("[ERROR] Probably a permission issue");
         }
+        }
+
+        // state = false (removes role)
+        public void setTimeoutRole(Boolean state) {
+            try {
+                if (state=true) {
+                    guild.addRoleToMember(user.getIdLong(), guild.getRoleById(Main.constants.VERIFY_TIMEOUT_ROLE_ID)).queue();
+                    System.out.println("[VERBOSE] Added timeout role");
+                } else if (state=false) {
+                    guild.removeRoleFromMember(user.getIdLong(), guild.getRoleById(Main.constants.VERIFY_TIMEOUT_ROLE_ID)).queue();
+                    System.out.println("[VERBOSE] Added timeout role");
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                System.out.println("[ERROR] Probably a permission issue");
+            }
         }
 
     }
