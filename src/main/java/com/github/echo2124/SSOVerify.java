@@ -48,13 +48,11 @@ public class SSOVerify {
     }
 
     public void timeout() {
-        setTimeoutRole(true);
         TimerTask task = new TimerTask() {
             public void run() {
                 if (!checkVerification()) {
                     sendFailureNotification("timeout");
                 }
-                setTimeoutRole(false);
             }
         };
         Timer timer = new Timer("Timer");
@@ -196,20 +194,4 @@ public class SSOVerify {
         }
         }
 
-        // state = false (removes role)
-        public void setTimeoutRole(Boolean state) {
-            try {
-                if (state=true) {
-                    guild.addRoleToMember(user.getIdLong(), guild.getRoleById(Main.constants.VERIFY_TIMEOUT_ROLE_ID)).queue();
-                    System.out.println("[VERBOSE] Added timeout role");
-                } else if (state=false) {
-                    guild.removeRoleFromMember(user.getIdLong(), guild.getRoleById(Main.constants.VERIFY_TIMEOUT_ROLE_ID)).queue();
-                    System.out.println("[VERBOSE] Added timeout role");
-                }
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                System.out.println("[ERROR] Probably a permission issue");
-            }
-        }
-
-    }
+}

@@ -1,5 +1,7 @@
 TODOs:
 
-- Add remove role & add role functionality
-- Add ability to forward content from socials including monash website
-- Implement SSO verification
+- Move constant values & static vars to either an XML or JSON then parse that.
+  (Should help with cleaning up the code)
+- Setup testing environment
+- Test out new timeout functionality
+- Remove existing sensitive access credentials and set them as environment variables

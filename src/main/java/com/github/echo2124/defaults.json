@@ -1,0 +1,122 @@
+"config":[
+    "roles":[
+        "VERIFIED_ROLE_ID":912001525432320031,
+    ],
+    "channels":[
+        "NEWS_CHANNEL_ID":913082864080392213,
+        "COVID_UPDATE_CHANNEL_ID":913081128188014592,
+        "VERIFY_CHANNEL_ID":913081082298114058,
+        "ADMIN_CHANNEL_ID":913082023483174922,
+    ],
+    "guild":[
+        "DEFAULT_GUILD_ID":802526304745553930,
+        "TEST_GUILD_ID": null,
+    ],
+    "bot_config":[
+        "ACTIVITY":"Closed Beta - WIP"
+    ],
+
+    "database":[
+        "connection": [
+            "env_var": "DATABASE_URL",
+            "protocol":"jdbc:postgresql://",
+            "params":"?sslmode=require"
+        ],
+        "setup": [
+            "query":"CREATE TABLE WARN_MODULE (discordID bigint, issuerID bigint, warnDesc text, issueTime TIMESTAMP);
+                     CREATE TABLE CERT_MODULE (discordID bigint, name VARCHAR(2048), emailAddr VARCHAR(100), isVerified bool, verifiedTime TIMESTAMP);
+                     CREATE TABLE NEWS (origin VARCHAR(50), lastTitle text);"
+        ],
+        "modify": [
+            "query": "INSERT INTO CERT_MODULE VALUES (?,?,?,?,?)"
+        ]
+        "getUser":[
+            "query":"SELECT * FROM CERT_MODULE WHERE discordID=?"
+        ]
+    ],
+    "verify": [
+        "NETWORK_NAME":"Google",
+        "PROTECTED_RESOURCE_URL":"https://www.googleapis.com/oauth2/v3/userinfo",
+        "MAX_NAME_LEN":2048,
+        "VERIFIED_MSG": ", you have already been verified from Aria"
+    ],
+    "msgs": [
+        "about": [
+            "title":"About me",
+            "description":"I am Aria, I help out the staff on the server with various administrative tasks and other stuff. ",
+            "fields": [
+                "header_1":"Why am I called Aria?",
+                "description_1":"My name is actually an acronym: **A**dministrate, **R**elay, **I**dentify, **A**ttest. I was built to cater to this functionality",
+                "header_2":"Who built me?",
+                "description_2":"I was built entirely by Echo2124 (Joshua) as a side project that aims to automate many different tasks, such as verifying users, automatically relaying local COVID information & announcements from Monash Uni"
+            ]
+        ],
+        "help": [
+            "title":"Commands",
+            "description":"Here are the following commands that you are able to use",
+            "fields": [
+            "header_1":">verify",
+            "description_1":"This command will initiate a verification check for the user. You will be sent a private message with information related to this",
+            "header_2":">about",
+            "description_2":"Details information about the bot",
+            "header_3":">[ADMIN ONLY] >userLookup <discordID>",
+            "description_3":"This command will lookup a user's verification status and other recorded details",
+            "header_4":"[WIP - ADMIN ONLY] >userUpdate <discordID>",
+            "description_4":"Will be used by staff to update information or manually verify a user",
+            "header_5":"[WIP - ADMIN ONLY] >scheduleMsg <Message> <Timestamp>",
+            "description_5":"Can be used to schedule an announcement for a particular time."
+                ]
+        ],
+        "userlookup": [
+            "title":"User Lookup",
+            "description":"Results for: ",
+            "on_failure_description": "**Lookup failed, please ensure you've correctly copied the discord ID**",
+            "footer":"Sourced from Aria's internal DB"
+
+        ],
+        "covid_update": [
+            "author":"Victorian Department of Health",
+            "title":"Victoria Covid Update"
+        ],
+        "verified_msg": [
+            "title": "Verified!",
+            "footer":"For any queries please contact Echo2124#3778"
+        ],
+        "failure_msg": [
+            "types": [
+                "invalid_account": [
+                    "title":"Invalid Google Account",
+                    "description":"Aria was unable to verify you. Please ensure that you are using a Monash Google Account, it should have an email that ends in @student.monash.edu.au . If the issues persist please contact Echo2124#3778 with a screenshot and description of the issue that you are experiencing. \n From, Aria."
+                ],
+                "invalid_name" : [
+                    "title":"Invalid First Name",
+                    "description":"Your profile name too large, therefore verification has failed. You can change your first name in the Google Account settings. Please ensure that your account firstname is under 2048 characters"
+                ],
+                "timeout": [
+                    "title":"Verification Timeout",
+                    "description":"Aria has noticed that the provided token was not used within the allocated timeframe. This is likely because you might of not followed the aforementioned steps. Please try to generate a new token by typing >verify at the specified verification channel on the IT @ Monash server"
+                ]
+            ]
+        ]
+            "auth_faq_msg": [
+                "title":"Frequently Asked Questions (FAQs)",
+                "fields": [
+                    "header_1":"What does this do?",
+                    "description_1":"This OAuth request will ask access for two main scopes (Email & Profile)",
+                    "header_2":"What information will Aria store?",
+                    "description_2": "Aria will store the following information: Email Address, First Name, DiscordID, Time of Verification and Verification Status",
+                    "header_3":"Why do we need this data?",
+                    "description_3":"In order to verify whether you are a Monash student we need to check the Email Domain in order to see if it would match a student's Monash email domain. If it does, then you are likely a student. We store your first name, as Aria will be able to refer to you in a more personalised manner. This name will only be used when Aria sends you a private message"
+                ]
+            ],
+        "auth_req_msg":[
+            "title":"Authorisation Request",
+            "description":"Steps to verify yourself:\n **1)** Open provided link in your browser. \n **2)** Paste provided code into input. \n **3)** Select your Monash Google Account. \n **4)** Done!",
+            "fields": [
+                "header_1":"Link: ",
+                "header_2":"Code: "
+            ],
+            "footer":"If you experience any issues please contact Echo2124#3778"
+        ]
+    ]
+]
