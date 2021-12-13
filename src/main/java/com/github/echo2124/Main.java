@@ -57,7 +57,7 @@ public class Main extends ListenerAdapter {
         // setters for various props
         String BOT_TOKEN = "ODc4OTQyNzk2MjYwNzI0NzY2.YSIhRA.ybuEYxDoa8VjfJQa0rC81W-ay4o";
         if (Boolean.parseBoolean(System.getenv("IS_DEV"))) {
-            BOT_TOKEN = "aOTEzNDUxMTY2MzcxODQwMDIw.YZ-rsQ.jO6C-N-7dRKJPjMXkfrWTrEFd4I";
+            BOT_TOKEN = "OTEzNDUxMTY2MzcxODQwMDIw.YZ-rsQ.jO6C-N-7dRKJPjMXkfrWTrEFd4I";
             constants.VERIFIED_ROLE_ID="909827233194070039";
             constants.COVID_UPDATE_CHANNEL="912726004886294569";
             constants.permittedChannels[0]="912353229285765172";
