@@ -10,6 +10,8 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import java.awt.*;
 
+import static java.lang.System.getenv;
+
 // config
 
 public class Main extends ListenerAdapter {
@@ -33,25 +35,34 @@ public class Main extends ListenerAdapter {
                 "912353440749985852" // admin channel
         };
         // for actual location
-        public static final String[] permittedChannels = {
+        public static String[] permittedChannels = {
                 "913081082298114058",  // verify channel
                 "913082023483174922" // admin channel
         };
         public static final String VERIFIED_ROLE_ID_TEST="909827233194070039";
-        public static final String VERIFIED_ROLE_ID="912001525432320031";
-        public static final String VERIFY_TIMEOUT_ROLE_ID="914896421965148160";
+        public static String VERIFIED_ROLE_ID="912001525432320031";
+        public static String VERIFY_TIMEOUT_ROLE_ID="914896421965148160";
         public static final String NEWS_CHANNEL_TEST="912355120723943424";
         // for monash news
-        public static final String NEWS_CHANNEL="913082864080392213";
+        public static String NEWS_CHANNEL="913082864080392213";
         public static final String COVID_UPDATE_CHANNEL_TEST="912726004886294569";
-        public static final String COVID_UPDATE_CHANNEL="913081128188014592";
+        public static String COVID_UPDATE_CHANNEL="913081128188014592";
 
     }
     // actual bot ODc4OTQyNzk2MjYwNzI0NzY2.YSIhRA.ybuEYxDoa8VjfJQa0rC81W-ay4o
     // test bot aOTEzNDUxMTY2MzcxODQwMDIw.YZ-rsQ.jO6C-N-7dRKJPjMXkfrWTrEFd4I
-    static String BOT_TOKEN = "aOTEzNDUxMTY2MzcxODQwMDIw.YZ-rsQ.jO6C-N-7dRKJPjMXkfrWTrEFd4I";
+
 
     public static void main(String[] arguments) throws Exception {
+        // setters for various props
+        String BOT_TOKEN = "ODc4OTQyNzk2MjYwNzI0NzY2.YSIhRA.ybuEYxDoa8VjfJQa0rC81W-ay4o";
+        if (Boolean.parseBoolean(System.getenv("IS_DEV"))) {
+            BOT_TOKEN = "aOTEzNDUxMTY2MzcxODQwMDIw.YZ-rsQ.jO6C-N-7dRKJPjMXkfrWTrEFd4I";
+            constants.VERIFIED_ROLE_ID="909827233194070039";
+            constants.COVID_UPDATE_CHANNEL="912726004886294569";
+            constants.permittedChannels[0]="912353229285765172";
+            constants.permittedChannels[1]="912353440749985852";
+        }
         Close close = new Close();
         Runtime.getRuntime().addShutdownHook(close);
         JDA jda = JDABuilder.createLight(BOT_TOKEN, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES)
