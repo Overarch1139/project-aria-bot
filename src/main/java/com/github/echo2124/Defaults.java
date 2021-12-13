@@ -1,4 +1,4 @@
-public class Defaults {
+/*public class Defaults {
 
     JSONObject data;
 
@@ -33,3 +33,4 @@ public class Defaults {
   }
     }
 }
+*/
