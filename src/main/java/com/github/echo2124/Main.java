@@ -47,8 +47,9 @@ public class Main extends ListenerAdapter {
         public static final String COVID_UPDATE_CHANNEL="913081128188014592";
 
     }
-
-    static String BOT_TOKEN = "ODc4OTQyNzk2MjYwNzI0NzY2.YSIhRA.ybuEYxDoa8VjfJQa0rC81W-ay4o";
+    // actual bot ODc4OTQyNzk2MjYwNzI0NzY2.YSIhRA.ybuEYxDoa8VjfJQa0rC81W-ay4o
+    // test bot aOTEzNDUxMTY2MzcxODQwMDIw.YZ-rsQ.jO6C-N-7dRKJPjMXkfrWTrEFd4I
+    static String BOT_TOKEN = "aOTEzNDUxMTY2MzcxODQwMDIw.YZ-rsQ.jO6C-N-7dRKJPjMXkfrWTrEFd4I";
 
     public static void main(String[] arguments) throws Exception {
         Close close = new Close();

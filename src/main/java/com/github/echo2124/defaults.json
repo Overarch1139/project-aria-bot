@@ -29,7 +29,7 @@
         ],
         "modify": [
             "query": "INSERT INTO CERT_MODULE VALUES (?,?,?,?,?)"
-        ]
+        ],
         "getUser":[
             "query":"SELECT * FROM CERT_MODULE WHERE discordID=?"
         ]
