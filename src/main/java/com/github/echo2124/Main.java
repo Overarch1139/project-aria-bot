@@ -78,20 +78,19 @@ public class Main extends ListenerAdapter {
         db = new Database();
     }
 
-
-    // TODO: need to setup rate limiting. Also prevent users from spamming >verify, once it has been done don't allow for another 5 mins.
     public void onMessageReceived(MessageReceivedEvent event) {
         Message msg = event.getMessage();
         User user = event.getAuthor();
         MessageChannel channel = event.getChannel();
         News news;
         String msgContents = msg.getContentRaw();
-        // todo this could be a problem. As we are creating a new instance everytime a msg is received
 
         if (msgContents.contains(">")) {
             if (channel.getId().equals(constants.permittedChannels[0])) {
                 if (msgContents.equals(">verify")) {
-                    SSOVerify newSSO = new SSOVerify(user, event.getGuild(), channel, db);
+                    // TODO Will need to move to a thread based implementation
+                   SSOVerify newVerify= new SSOVerify(user, event.getGuild(), channel, db);
+                   newVerify.start();
                     // add timeout here. After 5 mins check if user is verified if not then return failure msg (timeout)
                 } else if (msgContents.equals(">about")) {
                         EmbedBuilder embed = new EmbedBuilder();

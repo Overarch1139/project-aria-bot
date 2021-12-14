@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
-public class SSOVerify {
+public class SSOVerify extends Thread {
     private static final String NETWORK_NAME = "Google";
     private static final String PROTECTED_RESOURCE_URL = "https://www.googleapis.com/oauth2/v3/userinfo";
     private static final int MAX_NAME_LEN=2048;
@@ -35,7 +35,10 @@ public class SSOVerify {
         this.guild=guild;
         this.msgChannel=channel;
         this.db=db;
+    }
 
+    public void run() {
+        System.out.println("[CERT MODULE] Thread #"+ Thread.currentThread().getId()+" is active!");
         try {
             if (!checkVerification()) {
                 verify();
@@ -53,6 +56,8 @@ public class SSOVerify {
                 if (!checkVerification()) {
                     sendFailureNotification("timeout");
                 }
+                System.out.println("[CERT MODULE] Thread #"+ Thread.currentThread().getId()+" has stopped!");
+                Thread.currentThread().interrupt();
             }
         };
         Timer timer = new Timer("Timer");
