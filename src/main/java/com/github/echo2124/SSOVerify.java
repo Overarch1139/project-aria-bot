@@ -135,7 +135,7 @@ public class SSOVerify extends Thread {
         authEmbed.setDescription("Steps to verify yourself:\n **1)** Open provided link in your browser. \n **2)** Paste provided code into input. \n **3)** Select your Monash Google Account. \n **4)** Done!");
         authEmbed.addField("Link: ", link, false);
         authEmbed.addField("Code: ", code, false);
-        authEmbed.setFooter("Any issues contact Echo2124#3778 with screenshot");
+        authEmbed.setFooter("This access token will expire in **5 Mins!**");
         this.user.openPrivateChannel().flatMap(channel -> channel.sendMessage(faqEmbed.build())).queue();
         this.user.openPrivateChannel().flatMap(channel -> channel.sendMessage(authEmbed.build())).queue();
     }
@@ -150,7 +150,7 @@ public class SSOVerify extends Thread {
                 .defaultScope(new ScopeBuilder("profile", "email")) // replace with desired scope
                 .build(GoogleApi20.instance());
         System.out.println("Requesting a set of verification codes...");
-        final DeviceAuthorization deviceAuthorization = service.getDeviceAuthorizationCodes();
+        final DeviceAuthorization deviceAuthorization = new DeviceAuthorization(service.getDeviceAuthorizationCodes().getDeviceCode(), service.getDeviceAuthorizationCodes().getUserCode(), service.getDeviceAuthorizationCodes().getVerificationUri(), 300);
         sendPublicMsg();
         timeout();
         sendAuthRequest(deviceAuthorization.getVerificationUri(),deviceAuthorization.getUserCode());
@@ -158,6 +158,7 @@ public class SSOVerify extends Thread {
             System.out.println("Or visit " + deviceAuthorization.getVerificationUriComplete());
         }
         final OAuth2AccessToken accessToken = service.pollAccessTokenDeviceAuthorizationGrant(deviceAuthorization);
+
             final String requestUrl;
                 requestUrl = PROTECTED_RESOURCE_URL;
             final OAuthRequest request = new OAuthRequest(Verb.GET, requestUrl);
