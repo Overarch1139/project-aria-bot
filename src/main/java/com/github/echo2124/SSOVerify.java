@@ -30,6 +30,7 @@ public class SSOVerify extends Thread {
     private Guild guild;
     private MessageChannel msgChannel;
     private Database db;
+    private OAuth20Service service =null;
     public SSOVerify(User user, Guild guild, MessageChannel channel, Database db) {
         this.user=user;
         this.guild=guild;
@@ -55,6 +56,12 @@ public class SSOVerify extends Thread {
             public void run() {
                 if (!checkVerification()) {
                     sendFailureNotification("timeout");
+                }
+                try {
+                    System.out.println("Closed #"+Thread.currentThread().getId()+"'s oauth service");
+                    service.close();
+                } catch (Exception e) {
+                    System.out.println("Unable to close thread #"+Thread.currentThread().getId()+"'s oauth service");
                 }
                 System.out.println("[CERT MODULE] Thread #"+ Thread.currentThread().getId()+" has stopped!");
                 Thread.currentThread().interrupt();
@@ -137,7 +144,7 @@ public class SSOVerify extends Thread {
         // Replace these with your client id and secret
         final String clientId = "977901865384-ofgaulegobvdvu0um2i9l9n68cg6db66.apps.googleusercontent.com";
         final String clientSecret = "XUaViKEXt140sprNyUYkawF-";
-        final OAuth20Service service = new ServiceBuilder(clientId)
+        service = new ServiceBuilder(clientId)
                 .debug()
                 .apiSecret(clientSecret)
                 .defaultScope(new ScopeBuilder("profile", "email")) // replace with desired scope
