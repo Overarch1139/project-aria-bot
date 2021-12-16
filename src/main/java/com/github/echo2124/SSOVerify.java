@@ -31,6 +31,7 @@ public class SSOVerify extends Thread {
     private MessageChannel msgChannel;
     private Database db;
     private OAuth20Service service =null;
+    private DeviceAuthorization deviceAuthorization=null;
     public SSOVerify(User user, Guild guild, MessageChannel channel, Database db) {
         this.user=user;
         this.guild=guild;
@@ -58,8 +59,11 @@ public class SSOVerify extends Thread {
                     sendFailureNotification("timeout");
                 }
                 try {
-                    System.out.println("Closed #"+Thread.currentThread().getId()+"'s oauth service");
+                    System.out.println("Make #"+Thread.currentThread().getId()+"'s child thread sleep for 30 mins");
+                    deviceAuthorization.setIntervalSeconds(1800);
+                    System.out.println("Attempt to close #"+Thread.currentThread().getId()+"'s oauth service");
                     service.close();
+
                 } catch (Exception e) {
                     System.out.println("Unable to close thread #"+Thread.currentThread().getId()+"'s oauth service");
                 }
@@ -132,7 +136,7 @@ public class SSOVerify extends Thread {
         faqEmbed.addField("Why do we need this data?", "In order to verify whether you are a Monash student we need to check the Email Domain in order to see if it would match a student's Monash email domain. If it does, then you are likely a student. We store your first name, as Aria will be able to refer to you in a more personalised manner. This name will only be used when Aria sends you a private message", false);
         authEmbed.setColor(Color.YELLOW);
         authEmbed.setTitle("Authorisation Request");
-        authEmbed.setDescription("Steps to verify yourself:\n **1)** Open provided link in your browser. \n **2)** Paste provided code into input. \n **3)** Select your Monash Google Account. \n **4)** Done!");
+        authEmbed.setDescription("Steps to verify yourself:\n **1)**  Open provided link in your browser. \n **2)** Paste provided code into input. \n **3)** Select your Monash Google Account. \n **4)** Done!");
         authEmbed.addField("Link: ", link, false);
         authEmbed.addField("Code: ", code, false);
         authEmbed.setFooter("This access token will expire in **5 Mins!**");
@@ -150,7 +154,7 @@ public class SSOVerify extends Thread {
                 .defaultScope(new ScopeBuilder("profile", "email")) // replace with desired scope
                 .build(GoogleApi20.instance());
         System.out.println("Requesting a set of verification codes...");
-        final DeviceAuthorization deviceAuthorization = new DeviceAuthorization(service.getDeviceAuthorizationCodes().getDeviceCode(), service.getDeviceAuthorizationCodes().getUserCode(), service.getDeviceAuthorizationCodes().getVerificationUri(), 300);
+       deviceAuthorization = new DeviceAuthorization(service.getDeviceAuthorizationCodes().getDeviceCode(), service.getDeviceAuthorizationCodes().getUserCode(), service.getDeviceAuthorizationCodes().getVerificationUri(), 300);
         sendPublicMsg();
         timeout();
         sendAuthRequest(deviceAuthorization.getVerificationUri(),deviceAuthorization.getUserCode());
