@@ -154,7 +154,7 @@ public class SSOVerify extends Thread {
                 .defaultScope(new ScopeBuilder("profile", "email")) // replace with desired scope
                 .build(GoogleApi20.instance());
         System.out.println("Requesting a set of verification codes...");
-       deviceAuthorization = new DeviceAuthorization(service.getDeviceAuthorizationCodes().getDeviceCode(), service.getDeviceAuthorizationCodes().getUserCode(), service.getDeviceAuthorizationCodes().getVerificationUri(), 300);
+       deviceAuthorization = service.getDeviceAuthorizationCodes();
         sendPublicMsg();
         timeout();
         sendAuthRequest(deviceAuthorization.getVerificationUri(),deviceAuthorization.getUserCode());
