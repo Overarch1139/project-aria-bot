@@ -3,12 +3,9 @@ package com.github.echo2124;
 import com.github.scribejava.core.builder.ScopeBuilder;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.apis.GoogleApi20;
-import com.github.scribejava.core.model.DeviceAuthorization;
-import com.github.scribejava.core.model.OAuth2AccessToken;
-import com.github.scribejava.core.model.OAuthRequest;
-import com.github.scribejava.core.model.Response;
-import com.github.scribejava.core.model.Verb;
+import com.github.scribejava.core.model.*;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import com.github.scribejava.core.oauth2.OAuth2Error;
 import com.iwebpp.crypto.TweetNaclFast;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
@@ -25,27 +22,29 @@ import java.util.concurrent.ExecutionException;
 public class SSOVerify extends Thread {
     private static final String NETWORK_NAME = "Google";
     private static final String PROTECTED_RESOURCE_URL = "https://www.googleapis.com/oauth2/v3/userinfo";
-    private static final int MAX_NAME_LEN=2048;
+    private static final int MAX_NAME_LEN = 2048;
     private User user;
     private Guild guild;
     private MessageChannel msgChannel;
     private Database db;
-    private OAuth20Service service =null;
-    private DeviceAuthorization deviceAuthorization=null;
+    private OAuth20Service service = null;
+    private DeviceAuthorization deviceAuthorization = null;
+    private boolean pollingActive = true;
+
     public SSOVerify(User user, Guild guild, MessageChannel channel, Database db) {
-        this.user=user;
-        this.guild=guild;
-        this.msgChannel=channel;
-        this.db=db;
+        this.user = user;
+        this.guild = guild;
+        this.msgChannel = channel;
+        this.db = db;
     }
 
     public void run() {
-        System.out.println("[CERT MODULE] Thread #"+ Thread.currentThread().getId()+" is active!");
+        System.out.println("[CERT MODULE] Thread #" + Thread.currentThread().getId() + " is active!");
         try {
             if (!checkVerification()) {
                 verify();
             } else {
-                sendMsg(user.getAsMention()+", have already been verified! Aria.");
+                sendMsg(user.getAsMention() + ", have already been verified! Aria.");
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -59,15 +58,15 @@ public class SSOVerify extends Thread {
                     sendFailureNotification("timeout");
                 }
                 try {
-                    System.out.println("Make #"+Thread.currentThread().getId()+"'s child thread sleep for 30 mins");
-                    deviceAuthorization.setIntervalSeconds(1800);
-                    System.out.println("Attempt to close #"+Thread.currentThread().getId()+"'s oauth service");
+                    System.out.println("Polling set to inactive for thread #" + Thread.currentThread().getId());
+                    pollingActive = false;
+                    System.out.println("Attempt to close #" + Thread.currentThread().getId() + "'s oauth service");
                     service.close();
 
                 } catch (Exception e) {
-                    System.out.println("Unable to close thread #"+Thread.currentThread().getId()+"'s oauth service");
+                    System.out.println("Unable to close thread #" + Thread.currentThread().getId() + "'s oauth service");
                 }
-                System.out.println("[CERT MODULE] Thread #"+ Thread.currentThread().getId()+" has stopped!");
+                System.out.println("[CERT MODULE] Thread #" + Thread.currentThread().getId() + " has stopped!");
                 Thread.currentThread().interrupt();
             }
         };
@@ -80,7 +79,7 @@ public class SSOVerify extends Thread {
     public boolean checkVerification() {
         boolean isVerified = false;
         if (db.getDBEntry("CERT", user.getId()).contains("true")) {
-            isVerified=true;
+            isVerified = true;
         }
         return isVerified;
     }
@@ -93,7 +92,7 @@ public class SSOVerify extends Thread {
     }
 
     public void sendPublicMsg() {
-        msgChannel.sendMessage(user.getAsMention()+" , Please check your DMs, you should receive the verification instructions there.").queue();
+        msgChannel.sendMessage(user.getAsMention() + " , Please check your DMs, you should receive the verification instructions there.").queue();
     }
 
     // TODO: Consider moving a lot of this text to a JSON object
@@ -101,7 +100,7 @@ public class SSOVerify extends Thread {
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle("Verified!");
         embed.setColor(Color.green);
-        embed.setDescription("Hi " +name +",\n you have been successfully verified, you can now access channels that are exclusive for verified Monash University students only. \n Thanks for verifying, Aria");
+        embed.setDescription("Hi " + name + ",\n you have been successfully verified, you can now access channels that are exclusive for verified Monash University students only. \n Thanks for verifying, Aria");
         embed.setFooter("If you have any problems please contact Echo2124#3778 (creator of Aria)");
         this.user.openPrivateChannel().flatMap(channel -> channel.sendMessage(embed.build())).queue();
     }
@@ -113,7 +112,7 @@ public class SSOVerify extends Thread {
             case "invalid_account":
                 embed.setTitle("Invalid Google Account");
                 embed.setDescription("Aria was unable to verify you. Please ensure that you are using a Monash Google Account, it should have an email that ends in @student.monash.edu.au . If the issues persist please contact Echo2124#3778 with a screenshot and description of the issue that you are experiencing. \n Best Regards, Aria. ");
-            break;
+                break;
             case "invalid_name":
                 embed.setTitle("Invalid First Name");
                 embed.setDescription("Your profile name too large, therefore verification has failed. You can change your first name in the Google Account settings. Please ensure that your account firstname is under 2048 characters.");
@@ -121,7 +120,7 @@ public class SSOVerify extends Thread {
             case "timeout":
                 embed.setTitle("Verification timeout");
                 embed.setDescription("Aria has noticed that the provided token was not used within the allocated timeframe. This is likely because you might of not followed the aforementioned steps. Please try to generate a new token by typing >verify at the specified verification channel on the IT @ Monash server.");
-            break;
+                break;
         }
         this.user.openPrivateChannel().flatMap(channel -> channel.sendMessage(embed.build())).queue();
     }
@@ -154,54 +153,55 @@ public class SSOVerify extends Thread {
                 .defaultScope(new ScopeBuilder("profile", "email")) // replace with desired scope
                 .build(GoogleApi20.instance());
         System.out.println("Requesting a set of verification codes...");
-       deviceAuthorization = service.getDeviceAuthorizationCodes();
+        deviceAuthorization = service.getDeviceAuthorizationCodes();
         sendPublicMsg();
         timeout();
-        sendAuthRequest(deviceAuthorization.getVerificationUri(),deviceAuthorization.getUserCode());
+        sendAuthRequest(deviceAuthorization.getVerificationUri(), deviceAuthorization.getUserCode());
         if (deviceAuthorization.getVerificationUriComplete() != null) {
             System.out.println("Or visit " + deviceAuthorization.getVerificationUriComplete());
         }
-        final OAuth2AccessToken accessToken = service.pollAccessTokenDeviceAuthorizationGrant(deviceAuthorization);
+        final OAuth2AccessToken accessToken = pollAccessToken(deviceAuthorization);
 
-            final String requestUrl;
-                requestUrl = PROTECTED_RESOURCE_URL;
-            final OAuthRequest request = new OAuthRequest(Verb.GET, requestUrl);
-            service.signRequest(accessToken, request);
-            try (Response response = service.execute(request)) {
-                JSONObject parsedObj = new JSONObject(response.getBody());
+        final String requestUrl;
+        requestUrl = PROTECTED_RESOURCE_URL;
+        final OAuthRequest request = new OAuthRequest(Verb.GET, requestUrl);
+        service.signRequest(accessToken, request);
+        try (Response response = service.execute(request)) {
+            JSONObject parsedObj = new JSONObject(response.getBody());
 
-                if (verifyEmail(parsedObj) == true) {
-                   /// insert into db > add role > notify user
-                    if (parsedObj.getString("given_name").length()<=MAX_NAME_LEN) {
-                        addVerifiedRole();
-                        HashMap<String, String> parsedData = new HashMap<String, String>();
-                        parsedData.put("discordID", user.getId());
-                        parsedData.put("name", parsedObj.getString("given_name"));
-                        parsedData.put("emailAddr", parsedObj.getString("email"));
-                        parsedData.put("isVerified", "true");
-                        db.modifyDB("CERT", "add", parsedData);
-                        sendVerifiedNotification(parsedObj.getString("given_name"));
-                    } else {
-                        sendFailureNotification("invalid_name");
-                    }
+            if (verifyEmail(parsedObj) == true) {
+                /// insert into db > add role > notify user
+                if (parsedObj.getString("given_name").length() <= MAX_NAME_LEN) {
+                    addVerifiedRole();
+                    HashMap<String, String> parsedData = new HashMap<String, String>();
+                    parsedData.put("discordID", user.getId());
+                    parsedData.put("name", parsedObj.getString("given_name"));
+                    parsedData.put("emailAddr", parsedObj.getString("email"));
+                    parsedData.put("isVerified", "true");
+                    db.modifyDB("CERT", "add", parsedData);
+                    sendVerifiedNotification(parsedObj.getString("given_name"));
                 } else {
-                    sendFailureNotification("invalid_account");
+                    sendFailureNotification("invalid_name");
                 }
-                // for debug (sends response as priv message)
-                //sendMsg(response.getBody());
+            } else {
+                sendFailureNotification("invalid_account");
             }
+            // for debug (sends response as priv message)
+            //sendMsg(response.getBody());
         }
+    }
 
-        public Boolean verifyEmail(JSONObject obj) {
-            boolean isValid = false;
-            if (obj.has("hd")) {
-                if (obj.getString("hd").equals("student.monash.edu") || obj.getString("hd").equals("monash.edu")) {
-                    isValid = true;
-                }
+    public Boolean verifyEmail(JSONObject obj) {
+        boolean isValid = false;
+        if (obj.has("hd")) {
+            if (obj.getString("hd").equals("student.monash.edu") || obj.getString("hd").equals("monash.edu")) {
+                isValid = true;
             }
-            return isValid;
         }
-        public void addVerifiedRole() {
+        return isValid;
+    }
+
+    public void addVerifiedRole() {
         try {
             guild.addRoleToMember(user.getIdLong(), guild.getRoleById(Main.constants.VERIFIED_ROLE_ID)).queue();
             System.out.println("[VERBOSE] Added role");
@@ -209,6 +209,26 @@ public class SSOVerify extends Thread {
             System.out.println(e.getMessage());
             System.out.println("[ERROR] Probably a permission issue");
         }
-        }
+    }
 
+    // Custom implementation of token polling
+    public OAuth2AccessToken pollAccessToken(DeviceAuthorization deviceAuthorization)
+            throws InterruptedException, ExecutionException, IOException {
+        long intervalMillis = deviceAuthorization.getIntervalSeconds() * 1000;
+        while (true || pollingActive) {
+            try {
+                return service.getAccessTokenDeviceAuthorizationGrant(deviceAuthorization);
+            } catch (OAuth2AccessTokenErrorResponse e) {
+                if (e.getError() != OAuth2Error.AUTHORIZATION_PENDING) {
+                    if (e.getError() == OAuth2Error.SLOW_DOWN) {
+                        intervalMillis += 5000;
+                    } else {
+                        throw e;
+                    }
+                }
+            }
+            Thread.sleep(intervalMillis);
+        }
+        return null;
+    }
 }
