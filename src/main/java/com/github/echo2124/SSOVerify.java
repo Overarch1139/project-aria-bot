@@ -29,7 +29,7 @@ public class SSOVerify extends Thread {
     private Database db;
     private OAuth20Service service = null;
     private DeviceAuthorization deviceAuthorization = null;
-    private boolean pollingActive = true;
+    private long intervalMillis=5000;
 
     public SSOVerify(User user, Guild guild, MessageChannel channel, Database db) {
         this.user = user;
@@ -58,8 +58,8 @@ public class SSOVerify extends Thread {
                     sendFailureNotification("timeout");
                 }
                 try {
-                    System.out.println("Polling set to inactive for thread #" + Thread.currentThread().getId());
-                    pollingActive = false;
+                    System.out.println("Put polling thread #" + Thread.currentThread().getId()+" into inactive state");
+                    intervalMillis=1800*1000;
                     System.out.println("Attempt to close #" + Thread.currentThread().getId() + "'s oauth service");
                     service.close();
 
@@ -214,8 +214,7 @@ public class SSOVerify extends Thread {
     // Custom implementation of token polling
     public OAuth2AccessToken pollAccessToken(DeviceAuthorization deviceAuthorization)
             throws InterruptedException, ExecutionException, IOException {
-        long intervalMillis = deviceAuthorization.getIntervalSeconds() * 1000;
-        while (true || pollingActive) {
+        while (true) {
             try {
                 return service.getAccessTokenDeviceAuthorizationGrant(deviceAuthorization);
             } catch (OAuth2AccessTokenErrorResponse e) {
@@ -229,6 +228,5 @@ public class SSOVerify extends Thread {
             }
             Thread.sleep(intervalMillis);
         }
-        return null;
     }
 }
