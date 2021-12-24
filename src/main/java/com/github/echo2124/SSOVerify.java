@@ -44,6 +44,7 @@ public class SSOVerify extends Thread {
             if (!checkVerification()) {
                 verify();
             } else {
+                sendPublicMsg();
                 sendMsg(user.getAsMention() + ", have already been verified! Aria.");
             }
         } catch (Exception e) {
