@@ -26,17 +26,22 @@ public class News {
     private SyndFeed feed;
     private final int feedIndex =0;
     public News(String newsType) {
-        switch (newsType) {
-            case "Monash":
-                feedOrg="Monash";
+        if (newsType.equals("Covid")) {
+            feedOrg = "ABC";
+            getLatestTweet();
+        }
+    }
+
+    public News(String auth, String category) {
+        if (auth.equals("Monash")) {
+            feedOrg="Monash";
+            if (category.equalsIgnoreCase("technology")) {
+                initRSS("https://www.monash.edu/_webservices/news/rss?category=engineering+%26+technology");
+            } else if (category.equalsIgnoreCase("covid")) {
                 initRSS("https://www.monash.edu/_webservices/news/rss?query=covid");
-                break;
-            case "Covid":
-                feedOrg="ABC";
-                getLatestTweet();
-                break;
-            default:
-                System.out.println("[News] Invalid news type");
+            } else if (category.equalsIgnoreCase("news")) {
+                initRSS("https://www.monash.edu/_webservices/news/rss?category=university+%26+news");
+            }
         }
     }
 

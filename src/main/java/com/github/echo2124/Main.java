@@ -113,8 +113,9 @@ public class Main extends ListenerAdapter {
 
                     }
                 } else if (channel.getId().equals(constants.NEWS_CHANNEL)) {
-                           if (msgContents.equals(">monashUpdate")) {
-                                new News("Monash");
+                            String[] parsedContents = msgContents.split(" ");
+                           if (msgContents.contains(">monashUpdate")) {
+                                new News("Monash",parsedContents[1]);
                         }
                 }
             }
