@@ -88,7 +88,6 @@ public class Main extends ListenerAdapter {
         if (msgContents.contains(">")) {
             if (channel.getId().equals(constants.permittedChannels[0])) {
                 if (msgContents.equals(">verify")) {
-                    // TODO Will need to move to a thread based implementation
                    SSOVerify newVerify= new SSOVerify(user, event.getGuild(), channel, db);
                    newVerify.start();
                     // add timeout here. After 5 mins check if user is verified if not then return failure msg (timeout)
@@ -113,8 +112,11 @@ public class Main extends ListenerAdapter {
                     channel.sendMessage(embed.build()).queue();
 
                     }
+                } else if (channel.getId().equals(constants.NEWS_CHANNEL)) {
+                           if (msgContents.equals(">monashUpdate")) {
+                                new News("Monash");
+                        }
                 }
-
             }
 
         // TODO: Move this to database class

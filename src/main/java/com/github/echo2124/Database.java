@@ -129,6 +129,7 @@ public class Database {
     public void setupDB(Connection connect) {
             // handles setting up database if blank
         try {
+            // sanitisation not needed here as no inputs are received
             Statement stmt = connect.createStatement();
             String sqlQuery = "CREATE TABLE WARN_MODULE (discordID bigint, issuerID bigint, warnDesc text, issueTime TIMESTAMP);"+
                             "CREATE TABLE CERT_MODULE (discordID bigint, name VARCHAR(2048), emailAddr VARCHAR(100), isVerified bool, verifiedTime TIMESTAMP);"+
