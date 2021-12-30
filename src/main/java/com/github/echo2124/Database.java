@@ -147,11 +147,11 @@ public class Database {
     public void modifyDB(String originModule, String action, HashMap data) {
         PreparedStatement sqlQuery=null;
         Connection connection = connect();
+        Date date = new Date();
+        Timestamp ts=new Timestamp(date.getTime());
         switch (originModule) {
             case "CERT":
                     if (action.equals("add")) {
-                        Date date = new Date();
-                        Timestamp ts=new Timestamp(date.getTime());
                         try {
                              sqlQuery=connection.prepareStatement("INSERT INTO CERT_MODULE VALUES (?,?,?,?,?)");
                             sqlQuery.setLong(1, Long.parseLong(data.get("discordID").toString()));
@@ -162,6 +162,16 @@ public class Database {
                         } catch (Exception e) {
                             System.out.println("Unable to Modify DB: "+ e.getMessage());
                         }
+                    }
+                break;
+            case "NEWS":
+                // if entry exists --> update entry [else] build new entry
+                    try {
+                        sqlQuery = connection.prepareStatement("INSERT INTO NEWS_MODULE VALUES (?,?)");
+                        sqlQuery.setString(1, action);
+                        sqlQuery.setString(2, data.get(0).toString());
+                    } catch (Exception e) {
+                        System.out.println("Unable to Modify DB: " + e.getMessage());
                     }
                 break;
             default:

@@ -45,6 +45,7 @@ public class News {
         }
     }
 
+
     public void getLatestTweet() {
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
