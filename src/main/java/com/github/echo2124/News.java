@@ -35,6 +35,7 @@ public class News {
     public News(String auth, String category) {
         if (auth.equals("Monash")) {
             feedOrg="Monash";
+
             if (category.equalsIgnoreCase("technology")) {
                 initRSS("https://www.monash.edu/_webservices/news/rss?category=engineering+%26+technology");
             } else if (category.equalsIgnoreCase("covid")) {

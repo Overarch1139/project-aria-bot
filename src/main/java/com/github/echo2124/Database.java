@@ -194,22 +194,57 @@ public class Database {
         PreparedStatement sqlQuery;
         Connection connection=connect();
         try {
-            sqlQuery=connection.prepareStatement("SELECT * FROM CERT_MODULE WHERE discordID=?");
-            sqlQuery.setLong(1,Long.parseLong(req));
-                     if (sqlQuery!=null) {
-                     ResultSet rs = sqlQuery.executeQuery();
-                         System.out.println("Ran query");
-                        // loop through the result set
-                             while (rs.next()) {
-                                 ret="Name: "+rs.getString(2)+"\n";
-                                 ret+="Verified Status: "+rs.getBoolean(4)+"\n";
-                                 ret+="Time of Verification: "+rs.getTimestamp(5)+"\n";
-                             }
-                             System.out.println("Query result: \n"+req);
-                             if (ret=="") {
-                                 ret = "No results found";
-                             }
-                     }
+            switch (originModule) {
+                case "CERT":
+                sqlQuery=connection.prepareStatement("SELECT * FROM CERT_MODULE WHERE discordID=?");
+                sqlQuery.setLong(1,Long.parseLong(req));
+                if (sqlQuery!=null) {
+                    ResultSet rs = sqlQuery.executeQuery();
+                    System.out.println("Ran query");
+                    // loop through the result set
+                    while (rs.next()) {
+                        ret="Name: "+rs.getString(2)+"\n";
+                        ret+="Verified Status: "+rs.getBoolean(4)+"\n";
+                        ret+="Time of Verification: "+rs.getTimestamp(5)+"\n";
+                    }
+                    System.out.println("Query result: \n"+req);
+                    if (ret=="") {
+                        ret = "No results found";
+                    }
+                }
+                break;
+                case "NEWS_CHECK_CATEGORY":
+                    sqlQuery=connection.prepareStatement("SELECT * FROM NEWS_MODULE WHERE origin=?");
+                    sqlQuery.setString(1, req);
+                    if (sqlQuery!=null) {
+                        ResultSet rs = sqlQuery.executeQuery();
+                        while (rs.next()) {
+                            ret=rs.getString(1);
+                        }
+                        if (ret.equals(req)) {
+                            ret="true";
+                        } else {
+                            ret="false";
+                        }
+                    }
+
+                    break;
+                case "NEWS_CHECK_LASTITLE":
+                    sqlQuery=connection.prepareStatement("SELECT * FROM NEWS_MODULE WHERE lastTitle=?");
+                    sqlQuery.setString(1, req);
+                    if (sqlQuery!=null) {
+                        ResultSet rs = sqlQuery.executeQuery();
+                        while (rs.next()) {
+                            ret=rs.getString(2);
+                        }
+                        if (ret.equals(req)) {
+                            ret="true";
+                        } else {
+                            ret="false";
+                        }
+                    }
+                    break;
+            }
 
         } catch (SQLException e) {
             System.err.println(this.getClass().getName()+"Unable to get Entry"+e.getMessage());
