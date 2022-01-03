@@ -10,12 +10,12 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import java.awt.*;
 
+import static com.github.echo2124.Main.constants.db;
 import static java.lang.System.getenv;
 
 // config
 
 public class Main extends ListenerAdapter {
-    private static Database db;
 
 
 
@@ -47,6 +47,7 @@ public class Main extends ListenerAdapter {
         public static String NEWS_CHANNEL="913082864080392213";
         public static final String COVID_UPDATE_CHANNEL_TEST="912726004886294569";
         public static String COVID_UPDATE_CHANNEL="913081128188014592";
+        public static Database db=null;
 
     }
     // actual bot ODc4OTQyNzk2MjYwNzI0NzY2.YSIhRA.ybuEYxDoa8VjfJQa0rC81W-ay4o
@@ -72,10 +73,11 @@ public class Main extends ListenerAdapter {
                 .setActivity(Activity.playing(activity))
                 .build();
         constants.jda = jda;
-        News covid_news = new News("Covid");
-       // todo detect new articles. Currently pushes whatever is the latest without checking.
-        // News monash_news = new News("Monash");
+
+       // todo detect new articles. Currently pushes whatever is the latest without checking
         db = new Database();
+         new News("Covid", db);
+        new News("Monash", db);
     }
 
     public void onMessageReceived(MessageReceivedEvent event) {
@@ -112,11 +114,6 @@ public class Main extends ListenerAdapter {
                     channel.sendMessage(embed.build()).queue();
 
                     }
-                } else if (channel.getId().equals(constants.NEWS_CHANNEL)) {
-                            String[] parsedContents = msgContents.split(" ");
-                           if (msgContents.contains(">monashUpdate")) {
-                                new News("Monash",parsedContents[1]);
-                        }
                 }
             }
 

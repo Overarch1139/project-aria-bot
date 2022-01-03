@@ -168,7 +168,7 @@ public class Database {
                     try {
                         sqlQuery = connection.prepareStatement("REPLACE INTO NEWS_MODULE VALUES (?,?)");
                         sqlQuery.setString(1, action);
-                        sqlQuery.setString(2, data.get(0).toString());
+                        sqlQuery.setString(2, data.get("title").toString());
                     } catch (Exception e) {
                         System.out.println("Unable to Modify DB: " + e.getMessage());
                     }
@@ -230,8 +230,10 @@ public class Database {
 
                     break;
                 case "NEWS_CHECK_LASTITLE":
-                    sqlQuery=connection.prepareStatement("SELECT * FROM NEWS_MODULE WHERE lastTitle=?");
-                    sqlQuery.setString(1, req);
+                    sqlQuery=connection.prepareStatement("SELECT * FROM NEWS_MODULE WHERE origin=?, lastTitle=?");
+                    String[] x=req.split("|");
+                    sqlQuery.setString(1, x[0]);
+                    sqlQuery.setString(2,x[1]);
                     if (sqlQuery!=null) {
                         ResultSet rs = sqlQuery.executeQuery();
                         while (rs.next()) {

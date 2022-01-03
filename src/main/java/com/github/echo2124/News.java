@@ -14,9 +14,16 @@ import twitter4j.json.DataObjectFactory;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLOutput;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-// Based around grabbing RSS feeds
 public class News {
 
     private String cachedTitle="";
@@ -25,27 +32,44 @@ public class News {
     private String[] defaultAuthors= {"Monash University", "ABC News"};
     private SyndFeed feed;
     private final int feedIndex =0;
-    public News(String newsType) {
+    private Database db;
+    // if category not exist, push regardless, if category check for title. Match against feed title trying to be pushed
+    public News(String newsType, Database db) {
         if (newsType.equals("Covid")) {
             feedOrg = "ABC";
             getLatestTweet();
+        } else if (newsType.equals("Monash")) {
+                if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", "technology"))) {
+                    initRSS("https://www.monash.edu/_webservices/news/rss?category=engineering+%26+technology","technology", true);
+                } else {
+                    initRSS("https://www.monash.edu/_webservices/news/rss?category=engineering+%26+technology","technology", false);
+                }
+                if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", "covid"))) {
+                    initRSS("https://www.monash.edu/_webservices/news/rss?query=covid", "covid", true);
+                } else {
+                    initRSS("https://www.monash.edu/_webservices/news/rss?query=covid", "covid", false);
+                }
+                if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", "news"))) {
+                    initRSS("https://www.monash.edu/_webservices/news/rss?category=university+%26+news", "news", true);
+                } else {
+                    initRSS("https://www.monash.edu/_webservices/news/rss?category=university+%26+news", "news", false);
+                }
+                setInterval();
+
         }
     }
 
-    public News(String auth, String category) {
-        if (auth.equals("Monash")) {
-            feedOrg="Monash";
 
-            if (category.equalsIgnoreCase("technology")) {
-                initRSS("https://www.monash.edu/_webservices/news/rss?category=engineering+%26+technology");
-            } else if (category.equalsIgnoreCase("covid")) {
-                initRSS("https://www.monash.edu/_webservices/news/rss?query=covid");
-            } else if (category.equalsIgnoreCase("news")) {
-                initRSS("https://www.monash.edu/_webservices/news/rss?category=university+%26+news");
-            }
-        }
+    // checks everyday at 1am for updates. RSS Feed is scheduled to update at 12am, hence why its not worth running it constantly.
+    public void setInterval() {
+        Runnable task = () -> {
+            new News("Monash", Main.constants.db);
+        };
+        long delay = ChronoUnit.MILLIS.between(LocalTime.now(), LocalTime.of(01, 00, 00));
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.schedule(task, delay, TimeUnit.MILLISECONDS);
+
     }
-
 
     public void getLatestTweet() {
         ConfigurationBuilder cb = new ConfigurationBuilder();
@@ -111,11 +135,11 @@ public class News {
 
 
 
-    public void initRSS(String feedURL) {
+    public void initRSS(String feedURL, String category, Boolean checkLatest) {
         try {
             parseRSS(feedURL);
            // buildMSG(this.feed);
-            sendMsg(this.feed);
+            sendMsg(this.feed,category,checkLatest);
         } catch (Exception e) {
             throw new Error(e);
         }
@@ -146,25 +170,31 @@ public class News {
         }
     }
 
-    public void sendMsg(SyndFeed feed) {
-        MessageChannel channel= Main.constants.jda.getTextChannelById(Main.constants.NEWS_CHANNEL);
-        EmbedBuilder newEmbed = new EmbedBuilder();
-        if (feed.getEntries().get(feedIndex).getAuthor().equals("") || feed.getAuthor()==null) {
-            if (feedOrg.equals("Monash")) {
-                newEmbed.setAuthor(defaultAuthors[0]);
+    public void sendMsg(SyndFeed feed, String category, Boolean checkState) {
+        if (!checkState || !Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_LASTITLE",category+"|"+feed.getEntries().get(feedIndex).getTitle()))) {
+            MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.NEWS_CHANNEL);
+            EmbedBuilder newEmbed = new EmbedBuilder();
+            if (feed.getEntries().get(feedIndex).getAuthor().equals("") || feed.getAuthor() == null) {
+                if (feedOrg.equals("Monash")) {
+                    newEmbed.setAuthor(defaultAuthors[0]);
+                }
+            } else {
+                newEmbed.setAuthor(feed.getEntries().get(feedIndex).getAuthor());
             }
-        } else {
-            newEmbed.setAuthor(feed.getEntries().get(feedIndex).getAuthor());
+            newEmbed.setTitle(feed.getEntries().get(feedIndex).getTitle(), feed.getEntries().get(feedIndex).getLink());
+            newEmbed.setDescription(feed.getEntries().get(feedIndex).getDescription().getValue());
+            if (!feed.getEntries().get(feedIndex).getEnclosures().isEmpty()) {
+                newEmbed.setImage(feed.getEntries().get(feedIndex).getEnclosures().get(0).getUrl());
             }
-        newEmbed.setTitle(feed.getEntries().get(feedIndex).getTitle(), feed.getEntries().get(feedIndex).getLink());
-        newEmbed.setDescription(feed.getEntries().get(feedIndex).getDescription().getValue());
-        if (!feed.getEntries().get(feedIndex).getEnclosures().isEmpty()) {
-            newEmbed.setImage(feed.getEntries().get(feedIndex).getEnclosures().get(0).getUrl());
+            newEmbed.setThumbnail(feed.getImage().getUrl());
+            newEmbed.setFooter(feed.getDescription());
+            channel.sendMessage(newEmbed.build()).queue();
+            HashMap<String, String> data = new HashMap<String, String>();
+            data.put("title", feed.getEntries().get(feedIndex).getTitle());
+            db.modifyDB("NEWS", category,data);
         }
-       newEmbed.setThumbnail(feed.getImage().getUrl());
-       newEmbed.setFooter(feed.getDescription());
-       channel.sendMessage(newEmbed.build()).queue();
     }
+
 
     public void buildMsgFromTweet(Status status, String type) {
         System.out.println("Building MSG From tweet");
