@@ -165,9 +165,8 @@ public class Database {
                     }
                 break;
             case "NEWS":
-                // if entry exists --> update entry [else] build new entry
                     try {
-                        sqlQuery = connection.prepareStatement("INSERT INTO NEWS_MODULE VALUES (?,?)");
+                        sqlQuery = connection.prepareStatement("REPLACE INTO NEWS_MODULE VALUES (?,?)");
                         sqlQuery.setString(1, action);
                         sqlQuery.setString(2, data.get(0).toString());
                     } catch (Exception e) {
