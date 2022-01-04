@@ -166,7 +166,7 @@ public class Database {
                 break;
             case "NEWS":
                     try {
-                        sqlQuery = connection.prepareStatement("DELETE FROM NEWS WHERE category=?");
+                        sqlQuery = connection.prepareStatement("DELETE FROM NEWS WHERE origin=?");
                         sqlQuery.setString(1,action);
                         sqlQuery.executeQuery();
                         sqlQuery = connection.prepareStatement("INSERT INTO NEWS VALUES (?,?)");
