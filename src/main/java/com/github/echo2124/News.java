@@ -35,6 +35,7 @@ public class News {
     private Database db;
     // if category not exist, push regardless, if category check for title. Match against feed title trying to be pushed
     public News(String newsType, Database db) {
+        this.db=db;
         if (newsType.equals("Covid")) {
             feedOrg = "ABC";
             getLatestTweet();
