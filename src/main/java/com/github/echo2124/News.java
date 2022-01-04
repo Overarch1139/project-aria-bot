@@ -39,6 +39,7 @@ public class News {
             feedOrg = "ABC";
             getLatestTweet();
         } else if (newsType.equals("Monash")) {
+            feedOrg="Monash";
                 if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", "technology"))) {
                     initRSS("https://www.monash.edu/_webservices/news/rss?category=engineering+%26+technology","technology", true);
                 } else {

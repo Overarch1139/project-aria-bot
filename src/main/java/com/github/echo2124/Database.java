@@ -166,7 +166,7 @@ public class Database {
                 break;
             case "NEWS":
                     try {
-                        sqlQuery = connection.prepareStatement("REPLACE INTO NEWS_MODULE VALUES (?,?)");
+                        sqlQuery = connection.prepareStatement("REPLACE INTO NEWS VALUES (?,?)");
                         sqlQuery.setString(1, action);
                         sqlQuery.setString(2, data.get("title").toString());
                     } catch (Exception e) {
@@ -214,7 +214,7 @@ public class Database {
                 }
                 break;
                 case "NEWS_CHECK_CATEGORY":
-                    sqlQuery=connection.prepareStatement("SELECT * FROM NEWS_MODULE WHERE origin=?");
+                    sqlQuery=connection.prepareStatement("SELECT * FROM NEWS WHERE origin=?");
                     sqlQuery.setString(1, req);
                     if (sqlQuery!=null) {
                         ResultSet rs = sqlQuery.executeQuery();
@@ -230,7 +230,7 @@ public class Database {
 
                     break;
                 case "NEWS_CHECK_LASTITLE":
-                    sqlQuery=connection.prepareStatement("SELECT * FROM NEWS_MODULE WHERE origin=?, lastTitle=?");
+                    sqlQuery=connection.prepareStatement("SELECT * FROM NEWS WHERE origin=?, lastTitle=?");
                     String[] x=req.split("|");
                     sqlQuery.setString(1, x[0]);
                     sqlQuery.setString(2,x[1]);
