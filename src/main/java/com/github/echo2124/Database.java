@@ -166,7 +166,10 @@ public class Database {
                 break;
             case "NEWS":
                     try {
-                        sqlQuery = connection.prepareStatement("REPLACE INTO NEWS VALUES (?,?)");
+                        sqlQuery = connection.prepareStatement("DELETE FROM NEWS WHERE category=?");
+                        sqlQuery.setString(1,action);
+                        sqlQuery.executeQuery();
+                        sqlQuery = connection.prepareStatement("INSERT INTO NEWS VALUES (?,?)");
                         sqlQuery.setString(1, action);
                         sqlQuery.setString(2, data.get("title").toString());
                     } catch (Exception e) {
