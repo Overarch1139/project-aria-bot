@@ -34,6 +34,7 @@ public class News {
     private final int feedIndex =0;
     private Database db;
     // if category not exist, push regardless, if category check for title. Match against feed title trying to be pushed
+    // TODO: resolve inf loop issue. Probably something to do with setInterval method
     public News(String newsType, Database db) {
         this.db=db;
         if (newsType.equals("Covid")) {
@@ -56,7 +57,7 @@ public class News {
                 } else {
                     initRSS("https://www.monash.edu/_webservices/news/rss?category=university+%26+news", "news", false);
                 }
-                setInterval();
+             //   setInterval();
 
         }
     }
