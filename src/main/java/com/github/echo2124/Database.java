@@ -229,6 +229,7 @@ public class Database {
                         } else {
                             ret="false";
                         }
+                        System.out.println("[Database] News Category Exists="+ret);
                     }
 
                     break;
@@ -247,6 +248,7 @@ public class Database {
                         } else {
                             ret="false";
                         }
+                        System.out.println("[Database] Last News Title Exists="+ret);
                     }
                     break;
             }
