@@ -166,9 +166,11 @@ public class Database {
                 break;
             case "NEWS":
                     try {
-                        sqlQuery = connection.prepareStatement("DELETE FROM NEWS WHERE origin=?");
-                        sqlQuery.setString(1,action);
-                        sqlQuery.executeQuery();
+                        if (!Boolean.parseBoolean(this.getDBEntry("NEWS_CHECK_CATEGORY", action))) {
+                            sqlQuery = connection.prepareStatement("DELETE FROM NEWS WHERE origin=?");
+                            sqlQuery.setString(1, action);
+                            sqlQuery.executeQuery();
+                        }
                         sqlQuery = connection.prepareStatement("INSERT INTO NEWS VALUES (?,?)");
                         sqlQuery.setString(1, action);
                         sqlQuery.setString(2, data.get("title").toString());
