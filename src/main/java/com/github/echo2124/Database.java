@@ -236,7 +236,7 @@ public class Database {
 
                     break;
                 case "NEWS_CHECK_LASTITLE":
-                    sqlQuery=connection.prepareStatement("SELECT * FROM NEWS WHERE origin=?, lastTitle=?");
+                    sqlQuery=connection.prepareStatement("SELECT * FROM NEWS WHERE origin=? AND lastTitle=?");
                     String[] x=req.split("|");
                     sqlQuery.setString(1, x[0]);
                     sqlQuery.setString(2,x[1]);

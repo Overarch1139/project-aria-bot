@@ -71,7 +71,6 @@ public class News {
         long delay = ChronoUnit.MILLIS.between(LocalTime.now(), LocalTime.of(01, 00, 00));
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.schedule(task, delay, TimeUnit.MILLISECONDS);
-
     }
 
     public void getLatestTweet() {
