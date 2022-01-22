@@ -238,6 +238,8 @@ public class Database {
                 case "NEWS_CHECK_LASTITLE":
                     sqlQuery=connection.prepareStatement("SELECT * FROM NEWS WHERE origin=? AND lastTitle=?");
                     String[] x=req.split("|");
+                    System.out.println("[Database] Split value origin:"+x[0]);
+                    System.out.println("[Database] Split value lastTitle"+x[1]);
                     sqlQuery.setString(1, x[0]);
                     sqlQuery.setString(2,x[1]);
                     if (sqlQuery!=null) {
