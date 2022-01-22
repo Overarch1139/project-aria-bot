@@ -71,12 +71,18 @@ public class News {
         TimerTask updateMonashNews = new TimerTask() {
             public void run() {
                 new News("Monash", Main.constants.db);
+                sendTestingMsg();
             }
         };
         Timer timer = new Timer("Timer");
         long delay=(int) 2.16e7;
         timer.schedule(updateMonashNews, delay);
 
+    }
+
+    public void sendTestingMsg() {
+        MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.NEWS_CHANNEL);
+        channel.sendMessage("Polling successful, checked for rss feed article updates").queue();
     }
 
     public void getLatestTweet() {
