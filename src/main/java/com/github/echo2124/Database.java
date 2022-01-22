@@ -183,7 +183,7 @@ public class Database {
         }
         try {
             if (sqlQuery!=null) {
-                sqlQuery.executeQuery();
+                sqlQuery.executeUpdate();
             }
             disconnect(connection);
         } catch (Exception e) {

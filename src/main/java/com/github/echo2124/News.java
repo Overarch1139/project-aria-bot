@@ -43,16 +43,19 @@ public class News {
         } else if (newsType.equals("Monash")) {
             feedOrg="Monash";
                 if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", "technology"))) {
+                    System.out.println("[News] Technology Category Found!");
                     initRSS("https://www.monash.edu/_webservices/news/rss?category=engineering+%26+technology","technology", true);
                 } else {
                     initRSS("https://www.monash.edu/_webservices/news/rss?category=engineering+%26+technology","technology", false);
                 }
                 if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", "covid"))) {
+                    System.out.println("[News] COVID Category Found!");
                     initRSS("https://www.monash.edu/_webservices/news/rss?query=covid", "covid", true);
                 } else {
                     initRSS("https://www.monash.edu/_webservices/news/rss?query=covid", "covid", false);
                 }
                 if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", "news"))) {
+                    System.out.println("[News] News Category Found!");
                     initRSS("https://www.monash.edu/_webservices/news/rss?category=university+%26+news", "news", true);
                 } else {
                     initRSS("https://www.monash.edu/_webservices/news/rss?category=university+%26+news", "news", false);
