@@ -247,7 +247,7 @@ public class Database {
                         while (rs.next()) {
                             ret=rs.getString(2);
                         }
-                        if (ret.equals(req)) {
+                        if (ret.equals(parsed[1])) {
                             ret="true";
                         } else {
                             ret="false";
