@@ -60,7 +60,7 @@ public class News {
                 } else {
                     initRSS("https://www.monash.edu/_webservices/news/rss?category=university+%26+news", "news", false);
                 }
-             //   setInterval();
+               setInterval();
 
         }
     }
@@ -68,12 +68,15 @@ public class News {
 
     // checks everyday at 1am for updates. RSS Feed is scheduled to update at 12am, hence why its not worth running it constantly.
     public void setInterval() {
-        Runnable task = () -> {
-            new News("Monash", Main.constants.db);
+        TimerTask updateMonashNews = new TimerTask() {
+            public void run() {
+                new News("Monash", Main.constants.db);
+            }
         };
-        long delay = ChronoUnit.MILLIS.between(LocalTime.now(), LocalTime.of(01, 00, 00));
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.schedule(task, delay, TimeUnit.MILLISECONDS);
+        Timer timer = new Timer("Timer");
+        long delay=(int) 2.16e7;
+        timer.schedule(updateMonashNews, delay);
+
     }
 
     public void getLatestTweet() {
