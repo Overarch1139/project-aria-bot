@@ -169,7 +169,7 @@ public class Database {
                         if (Boolean.parseBoolean(this.getDBEntry("NEWS_CHECK_CATEGORY", action))) {
                             sqlQuery = connection.prepareStatement("DELETE FROM NEWS WHERE origin=?");
                             sqlQuery.setString(1, action);
-                            sqlQuery.executeQuery();
+                            sqlQuery.execute();
                         }
                         sqlQuery = connection.prepareStatement("INSERT INTO NEWS VALUES (?,?)");
                         sqlQuery.setString(1, action);
@@ -183,7 +183,7 @@ public class Database {
         }
         try {
             if (sqlQuery!=null) {
-                sqlQuery.executeUpdate();
+                sqlQuery.execute();
             }
             disconnect(connection);
         } catch (Exception e) {
