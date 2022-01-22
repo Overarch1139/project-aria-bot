@@ -166,7 +166,7 @@ public class Database {
                 break;
             case "NEWS":
                     try {
-                        if (!Boolean.parseBoolean(this.getDBEntry("NEWS_CHECK_CATEGORY", action))) {
+                        if (Boolean.parseBoolean(this.getDBEntry("NEWS_CHECK_CATEGORY", action))) {
                             sqlQuery = connection.prepareStatement("DELETE FROM NEWS WHERE origin=?");
                             sqlQuery.setString(1, action);
                             sqlQuery.executeQuery();
