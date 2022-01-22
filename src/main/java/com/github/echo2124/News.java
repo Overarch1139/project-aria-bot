@@ -176,7 +176,7 @@ public class News {
     }
 
     public void sendMsg(SyndFeed feed, String category, Boolean checkState) {
-        if (!checkState || !Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_LASTITLE",category+"|"+feed.getEntries().get(feedIndex).getTitle()))) {
+        if (!checkState || !Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_LASTITLE",category+"##"+feed.getEntries().get(feedIndex).getTitle()))) {
             MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.NEWS_CHANNEL);
             EmbedBuilder newEmbed = new EmbedBuilder();
             if (feed.getEntries().get(feedIndex).getAuthor().equals("") || feed.getAuthor() == null) {
