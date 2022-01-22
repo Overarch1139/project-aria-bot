@@ -39,7 +39,9 @@ public class News {
         this.db=db;
         if (newsType.equals("Covid")) {
             feedOrg = "ABC";
-            getLatestTweet();
+            if (!Boolean.parseBoolean(System.getenv("IS_DEV"))) {
+                getLatestTweet();
+            }
         } else if (newsType.equals("Monash")) {
             feedOrg="Monash";
                 if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", "technology"))) {
