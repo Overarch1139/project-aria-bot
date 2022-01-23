@@ -72,7 +72,7 @@ public class News {
         TimerTask updateMonashNews = new TimerTask() {
             public void run() {
                 new News("Monash", Main.constants.db);
-                sendTestingMsg();
+            //    sendTestingMsg();
             }
         };
         Timer timer = new Timer("Timer");

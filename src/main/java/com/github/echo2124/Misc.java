@@ -21,7 +21,7 @@ public class Misc {
     }
 
     public void sendServiceModeMsg(MessageChannel channel, String msg) {
-
+        channel.sendMessage(msg).queue();
     }
 
 }
