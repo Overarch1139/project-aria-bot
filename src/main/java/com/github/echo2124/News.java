@@ -30,6 +30,7 @@ public class News {
     private String feedOrg;
     // fallback if author is not available from rss feed
     private String[] defaultAuthors= {"Monash University", "ABC News"};
+    private String[] monashCategories={"Technology Related News", "COVID-19 Related News", "General University News"};
     private SyndFeed feed;
     private final int feedIndex =0;
     private Database db;
@@ -202,7 +203,20 @@ public class News {
                 newEmbed.setImage(feed.getEntries().get(feedIndex).getEnclosures().get(0).getUrl());
             }
             newEmbed.setThumbnail(feed.getImage().getUrl());
-            newEmbed.setFooter(feed.getDescription());
+            switch (category) {
+                case "technology":
+                    newEmbed.setFooter(monashCategories[0]);
+                    break;
+                case "covid":
+                    newEmbed.setFooter(monashCategories[1]);
+                    break;
+                case "news":
+                    newEmbed.setFooter(monashCategories[2]);
+                    break;
+                default:
+                    newEmbed.setFooter(feed.getDescription());
+                    break;
+            }
             channel.sendMessage(newEmbed.build()).queue();
             HashMap<String, String> data = new HashMap<String, String>();
             data.put("title", feed.getEntries().get(feedIndex).getTitle());
