@@ -41,12 +41,15 @@ public class SSOVerify extends Thread {
     public void run() {
         System.out.println("[CERT MODULE] Thread #" + Thread.currentThread().getId() + " is active!");
         try {
-            if (!checkVerification()) {
-                verify();
-            } else {
-                sendPublicMsg();
-                sendMsg(user.getAsMention() + ", have already been verified! Aria.");
+            if (!Main.constants.serviceMode) {
+                if (!checkVerification()) {
+                    verify();
+                } else {
+                    sendPublicMsg();
+                    sendMsg(user.getAsMention() + ", have already been verified! Aria.");
+                }
             }
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

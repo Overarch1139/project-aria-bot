@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import java.awt.*;
 
-import static com.github.echo2124.Main.constants.db;
+import static com.github.echo2124.Main.constants.*;
 import static java.lang.System.getenv;
 
 // config
@@ -48,6 +48,7 @@ public class Main extends ListenerAdapter {
         public static final String COVID_UPDATE_CHANNEL_TEST="912726004886294569";
         public static String COVID_UPDATE_CHANNEL="913081128188014592";
         public static Database db=null;
+        public static boolean serviceMode=false;
 
     }
     // actual bot ODc4OTQyNzk2MjYwNzI0NzY2.YSIhRA.ybuEYxDoa8VjfJQa0rC81W-ay4o
@@ -145,6 +146,12 @@ public class Main extends ListenerAdapter {
 
                 } else if (msgContents.contains(">manualUpdate")) {
                     // this might be a pain, will need a delimiter or set many params for fields
+                } else if (msgContents.contains(">serviceMode")) {
+                    String[] parsedContents = msgContents.split(" ");
+                    serviceMode=true;
+                    Misc misc = new Misc();
+                    MessageChannel verify= Main.constants.jda.getTextChannelById(Main.constants.permittedChannels[0]);
+                    misc.sendServiceModeMsg(verify,"Aria is currently in maintenance mode. The ability verify has now been temporarily disabled, the estimated downtime will be "+parsedContents[1]+". Sorry for any inconvenience.");
                 }
             }
         }
