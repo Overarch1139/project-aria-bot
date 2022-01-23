@@ -24,4 +24,8 @@ public class Misc {
         channel.sendMessage(msg).queue();
     }
 
+    public void sendActiveModeMsg(MessageChannel channel, String msg) {
+        channel.sendMessage(msg).queue();
+    }
+
 }

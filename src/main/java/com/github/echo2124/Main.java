@@ -151,7 +151,11 @@ public class Main extends ListenerAdapter {
                     serviceMode=true;
                     Misc misc = new Misc();
                     MessageChannel verify= Main.constants.jda.getTextChannelById(Main.constants.permittedChannels[0]);
-                    misc.sendServiceModeMsg(verify,"Aria is currently in maintenance mode. The ability verify has now been temporarily disabled, the estimated downtime will be "+parsedContents[1]+". Sorry for any inconvenience.");
+                    misc.sendServiceModeMsg(verify,"Aria is currently in maintenance mode. The ability to verify has now been temporarily disabled, the estimated downtime will be "+parsedContents[1]+". Sorry for any inconvenience.");
+                } else if (msgContents.contains(">reactivate")) {
+                    Misc misc = new Misc();
+                    MessageChannel verify= Main.constants.jda.getTextChannelById(Main.constants.permittedChannels[0]);
+                    misc.sendServiceModeMsg(verify,"Aria has reactivated the ability to verify and has exited maintenance mode.");
                 }
             }
         }
