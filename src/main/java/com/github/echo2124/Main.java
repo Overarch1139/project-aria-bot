@@ -75,8 +75,6 @@ public class Main extends ListenerAdapter {
                 .setActivity(Activity.playing(activity))
                 .build();
         constants.jda = jda;
-
-       // todo detect new articles. Currently pushes whatever is the latest without checking
         db = new Database();
          new News("Covid", db);
         new News("Monash", db);
@@ -109,12 +107,34 @@ public class Main extends ListenerAdapter {
                     embed.setTitle("Commands");
                     embed.setDescription("Here are the following commands that you are able to use");
                     embed.addField(">verify", "This command will initiate a verification check for the user. You will be sent a private message with information related to this.",false);
+                    embed.addField(">verifyinfo", "This command will return any collected information associated with your discord id when you were verified. You will be sent a private message with information related to this.",false);
                     embed.addField(">about","Details information about the bot", false);
                     embed.addField("[ADMIN ONLY] >userLookup <discordID>", "This command will lookup a user's verification status and other recorded details.", false);
                     embed.addField("[WIP - ADMIN ONLY] >userUpdate <discordID>", "Will be used by staff to update information or manually verify a user", false);
                     embed.addField("[WIP - ADMIN ONLY] >scheduleMsg <Message> <Timestamp>","Can be used to schedule an announcement for a particular time.", false);
                     channel.sendMessage(embed.build()).queue();
 
+                    } else if (msgContents.equals(">verifyinfo")) {
+                    EmbedBuilder embed = new EmbedBuilder();
+                    embed.setTitle("User lookup: ");
+                    try {
+                        String id=msg.getAuthor().getId();
+                        embed.setDescription("This command has returned **all** information associated with your account that was collected during the verification process.");
+                        if (db.getDBEntry("CERT", id).equals("No results found")) {
+                            embed.setColor(Color.RED);
+                            embed.addField("Status:", "Your account has not been verified therefore there is no collected data associated with your discord id", false);
+                        } else {
+                            embed.setColor(Color.ORANGE);
+                            embed.addField("Status:", db.getDBEntry("CERT", id), false);
+                        }
+                        embed.setFooter("Data sourced from Aria's internal database");
+                    } catch (Exception e) {
+                        System.out.println("Long failed");
+                        embed.setDescription("**Lookup failed, please try again later");
+                        embed.setFooter("data sourced from internal database");
+                    }
+                    msg.getAuthor().openPrivateChannel().flatMap(verifyinfoch -> verifyinfoch.sendMessage(embed.build())).queue();
+                    channel.sendMessage(user.getAsMention() + " , Please check your DMs, you should receive your verification data there.").queue();
                     }
                 }
             }
