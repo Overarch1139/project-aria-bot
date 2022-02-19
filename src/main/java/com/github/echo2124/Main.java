@@ -121,8 +121,10 @@ public class Main extends ListenerAdapter {
                         String id=msg.getAuthor().getId();
                         embed.setDescription("This command has returned **all** information associated with your account that was collected during the verification process.");
                         if (db.getDBEntry("CERT", id).equals("No results found")) {
+                            embed.setColor(Color.ORANGE);
                             embed.addField("Status:", "Your account has not been verified therefore there is no collected data associated with your discord id", false);
                         } else {
+                            embed.setColor(Color.RED);
                             embed.addField("Status:", db.getDBEntry("CERT", id), false);
                         }
                         embed.setFooter("Data sourced from Aria's internal database");
@@ -132,6 +134,7 @@ public class Main extends ListenerAdapter {
                         embed.setFooter("data sourced from internal database");
                     }
                     msg.getAuthor().openPrivateChannel().flatMap(verifyinfoch -> verifyinfoch.sendMessage(embed.build())).queue();
+                    channel.sendMessage(user.getAsMention() + " , Please check your DMs, you should receive your verification data there.").queue();
                     }
                 }
             }
