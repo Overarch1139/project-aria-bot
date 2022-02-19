@@ -67,7 +67,7 @@ public class News {
     }
 
 
-    // checks everyday at 1am for updates. RSS Feed is scheduled to update at 12am, hence why its not worth running it constantly.
+    // checks  every 4 hrs for RSS feed updates
     public void setInterval() {
         TimerTask updateMonashNews = new TimerTask() {
             public void run() {

@@ -75,8 +75,6 @@ public class Main extends ListenerAdapter {
                 .setActivity(Activity.playing(activity))
                 .build();
         constants.jda = jda;
-
-       // todo detect new articles. Currently pushes whatever is the latest without checking
         db = new Database();
          new News("Covid", db);
         new News("Monash", db);
@@ -115,6 +113,19 @@ public class Main extends ListenerAdapter {
                     embed.addField("[WIP - ADMIN ONLY] >scheduleMsg <Message> <Timestamp>","Can be used to schedule an announcement for a particular time.", false);
                     channel.sendMessage(embed.build()).queue();
 
+                    } else if (msgContents.equals(">verifyinfo")) {
+                    EmbedBuilder embed = new EmbedBuilder();
+                    embed.setTitle("User lookup: ");
+                    try {
+                        String id=msg.getAuthor().getId();
+                        embed.setDescription("Collected data: " + "\n" + db.getDBEntry("CERT", id));
+                        embed.setFooter("data sourced from internal database");
+                    } catch (Exception e) {
+                        System.out.println("Long failed");
+                        embed.setDescription("**Lookup failed, please ensure you've correctly copied the discord ID**");
+                        embed.setFooter("data sourced from internal database");
+                    }
+                    msg.getAuthor().openPrivateChannel().flatMap(verifyinfoch -> channel.sendMessage(embed.build())).queue();
                     }
                 }
             }
