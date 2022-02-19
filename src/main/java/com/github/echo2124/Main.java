@@ -125,7 +125,7 @@ public class Main extends ListenerAdapter {
                         embed.setDescription("**Lookup failed, please ensure you've correctly copied the discord ID**");
                         embed.setFooter("data sourced from internal database");
                     }
-                    msg.getAuthor().openPrivateChannel().flatMap(verifyinfoch -> channel.sendMessage(embed.build())).queue();
+                    msg.getAuthor().openPrivateChannel().flatMap(verifyinfoch -> verifyinfoch.sendMessage(embed.build())).queue();
                     }
                 }
             }
