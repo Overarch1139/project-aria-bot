@@ -7,6 +7,10 @@ import com.rometools.rome.io.XmlReader;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 import twitter4j.json.DataObjectFactory;
@@ -32,6 +36,7 @@ public class News {
     private String[] defaultAuthors= {"Monash University", "ABC News"};
     private SyndFeed feed;
     private final int feedIndex =0;
+    private final String targetedExposureUrl="https://www.monash.edu/news/coronavirus-updates/exposure-sites";
     private Database db;
     // if category not exist, push regardless, if category check for title. Match against feed title trying to be pushed
     public News(String newsType, Database db) {
@@ -42,27 +47,34 @@ public class News {
                 getLatestTweet();
             }
         } else if (newsType.equals("Monash")) {
-            feedOrg="Monash";
-                if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", "technology"))) {
-                    System.out.println("[News] Technology Category Found!");
-                    initRSS("https://www.monash.edu/_webservices/news/rss?category=engineering+%26+technology","technology", true);
-                } else {
-                    initRSS("https://www.monash.edu/_webservices/news/rss?category=engineering+%26+technology","technology", false);
-                }
-                if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", "covid"))) {
-                    System.out.println("[News] COVID Category Found!");
-                    initRSS("https://www.monash.edu/_webservices/news/rss?query=covid", "covid", true);
-                } else {
-                    initRSS("https://www.monash.edu/_webservices/news/rss?query=covid", "covid", false);
-                }
-                if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", "news"))) {
-                    System.out.println("[News] News Category Found!");
-                    initRSS("https://www.monash.edu/_webservices/news/rss?category=university+%26+news", "news", true);
-                } else {
-                    initRSS("https://www.monash.edu/_webservices/news/rss?category=university+%26+news", "news", false);
-                }
-               setInterval();
-
+            feedOrg = "Monash";
+            if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", "technology"))) {
+                System.out.println("[News] Technology Category Found!");
+                initRSS("https://www.monash.edu/_webservices/news/rss?category=engineering+%26+technology", "technology", true);
+            } else {
+                initRSS("https://www.monash.edu/_webservices/news/rss?category=engineering+%26+technology", "technology", false);
+            }
+            if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", "covid"))) {
+                System.out.println("[News] COVID Category Found!");
+                initRSS("https://www.monash.edu/_webservices/news/rss?query=covid", "covid", true);
+            } else {
+                initRSS("https://www.monash.edu/_webservices/news/rss?query=covid", "covid", false);
+            }
+            if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", "news"))) {
+                System.out.println("[News] News Category Found!");
+                initRSS("https://www.monash.edu/_webservices/news/rss?category=university+%26+news", "news", true);
+            } else {
+                initRSS("https://www.monash.edu/_webservices/news/rss?category=university+%26+news", "news", false);
+            }
+            setInterval();
+        } else if (newsType.equals("Exposure")) {
+            try {
+                Document doc = Jsoup.parse(targetedExposureUrl);
+                System.out.println(doc.title());
+                fetchCovidExposureInfo(doc);
+            } catch (Exception e) {
+                System.out.println("[Exposure Site] ERROR: "+e.getMessage());
+            }
         }
     }
 
@@ -234,4 +246,28 @@ public class News {
         newEmbed.setFooter(status.getUser().getDescription());
         channel.sendMessage(newEmbed.build()).queue();
     }
+
+    public void fetchCovidExposureInfo(Document doc) {
+        JSONObject jsonParentObject = new JSONObject();
+        int numExposures = 0;
+        //JSONArray list = new JSONArray();
+        for (Element table : doc.select("table")) {
+            for (Element row : table.select("tr")) {
+                JSONObject jsonObject = new JSONObject();
+                Elements tds = row.select("td");
+                String campus = tds.get(0).text();
+                String building = tds.get(1).text();
+                String exposurePeriod = tds.get(2).text();
+                String cleaningStatus = tds.get(3).text();
+                String healthAdvice = tds.get(4).text();
+                jsonObject.put("Campus", campus);
+                jsonObject.put("Building", building);
+                jsonObject.put("ExposurePeriod", exposurePeriod);
+                jsonObject.put("CleaningStatus", cleaningStatus);
+                jsonObject.put("HealthAdvice", healthAdvice);
+                jsonParentObject.put(String.valueOf(numExposures), jsonObject);
+                numExposures++;
+            }
+        }
     }
+}
