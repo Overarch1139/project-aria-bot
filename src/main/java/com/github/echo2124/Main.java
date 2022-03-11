@@ -49,6 +49,7 @@ public class Main extends ListenerAdapter {
         public static String COVID_UPDATE_CHANNEL="913081128188014592";
         public static Database db=null;
         public static boolean serviceMode=false;
+        public static String EXPOSURE_SITE_CHANNEL="951902910759977001";
 
     }
     // actual bot ODc4OTQyNzk2MjYwNzI0NzY2.YSIhRA.ybuEYxDoa8VjfJQa0rC81W-ay4o
@@ -67,6 +68,7 @@ public class Main extends ListenerAdapter {
             constants.permittedChannels[0]="912353229285765172";
             constants.permittedChannels[1]="912353440749985852";
             constants.NEWS_CHANNEL="927941422512996353";
+            constants.EXPOSURE_SITE_CHANNEL="927941422512996353";
         }
         Close close = new Close();
         Runtime.getRuntime().addShutdownHook(close);

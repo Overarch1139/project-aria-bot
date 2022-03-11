@@ -269,5 +269,16 @@ public class News {
                 numExposures++;
             }
         }
+        // check if there are new exposure sites. Use index, e.g. if there is 25 stored in db, and update happens and there is 27, then generate messages for the last two.
+    }
+
+    public void buildMsgFromWebScrape() {
+        MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.EXPOSURE_SITE_CHANNEL);
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setTitle("Exposure Sites Update!");
+        // will be the contents of above method **if** there is an update
+        //embed.setDescription()
+        embed.setAuthor("Monash University");
+
     }
 }
