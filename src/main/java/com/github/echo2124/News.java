@@ -70,7 +70,7 @@ public class News {
         } else if (newsType.equals("ExposureBuilding")) {
             try {
                 System.out.println("[NEWS] Getting Exposure Building info");
-                Document doc = Jsoup.parse(targetedExposureBuildingUrl);
+                Document doc = Jsoup.connect(targetedExposureBuildingUrl).get();
                 System.out.println(doc.title());
                 fetchCovidExposureInfo(doc);
             } catch (Exception e) {
