@@ -133,7 +133,8 @@ public class Database {
             Statement stmt = connect.createStatement();
             String sqlQuery = "CREATE TABLE WARN_MODULE (discordID bigint, issuerID bigint, warnDesc text, issueTime TIMESTAMP);"+
                             "CREATE TABLE CERT_MODULE (discordID bigint, name VARCHAR(2048), emailAddr VARCHAR(100), isVerified bool, verifiedTime TIMESTAMP);"+
-                            "CREATE TABLE NEWS (origin VARCHAR(50), lastTitle text);";
+                            "CREATE TABLE NEWS (origin VARCHAR(50), lastTitle text);"+
+                            "CREATE TABLE EXPOSURE (origin VARCHAR(50), len NUMERIC(15));";
             stmt.executeUpdate(sqlQuery);
             stmt.close();
 
@@ -178,6 +179,20 @@ public class Database {
                         System.out.println("Unable to Modify DB: " + e.getMessage());
                     }
                 break;
+            case "EXPOSURE_SITE":
+                try {
+                    DatabaseMetaData md = connection.getMetaData();
+                    ResultSet rs = md.getTables(null, null, "EXPOSURE", null);
+                    if (!rs.next()) {
+                        // ADD TABLE TO DB (EXPOSURE)
+                        connection.prepareStatement("CREATE TABLE EXPOSURE (origin VARCHAR(50), len NUMERIC(15));").executeQuery();
+                    }
+                    sqlQuery = connection.prepareStatement("INSERT INTO EXPOSURE VALUES (?,?)");
+                    sqlQuery.setString(1,originModule);
+                    sqlQuery.setInt(2,(int)data.get("size"));
+                } catch (Exception e) {
+                    System.out.println("UNABLE TO MODIFY EXPOSURE_SITE MSG:"+e.getMessage());
+                }
             default:
                 System.out.println("[DB] Invalid Origin Module");
         }

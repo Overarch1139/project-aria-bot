@@ -257,7 +257,6 @@ public class News {
             for (Element row : table.select("tr")) {
                 JSONObject jsonObject = new JSONObject();
                 Elements tds = row.select("td");
-                System.out.println("TDS:"+tds);
                 if (!tds.isEmpty()) {
                     String campus = tds.get(0).text();
                     String building = tds.get(1).text();
