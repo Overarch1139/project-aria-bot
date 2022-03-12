@@ -257,18 +257,21 @@ public class News {
             for (Element row : table.select("tr")) {
                 JSONObject jsonObject = new JSONObject();
                 Elements tds = row.select("td");
-                String campus = tds.get(0).text();
-                String building = tds.get(1).text();
-                String exposurePeriod = tds.get(2).text();
-                String cleaningStatus = tds.get(3).text();
-                String healthAdvice = tds.get(4).text();
-                jsonObject.put("Campus", campus);
-                jsonObject.put("Building", building);
-                jsonObject.put("ExposurePeriod", exposurePeriod);
-                jsonObject.put("CleaningStatus", cleaningStatus);
-                jsonObject.put("HealthAdvice", healthAdvice);
-                jsonParentObject.put(String.valueOf(numExposures), jsonObject);
-                numExposures++;
+                System.out.println("TDS:"+tds);
+                if (!tds.isEmpty()) {
+                    String campus = tds.get(0).text();
+                    String building = tds.get(1).text();
+                    String exposurePeriod = tds.get(2).text();
+                    String cleaningStatus = tds.get(3).text();
+                    String healthAdvice = tds.get(4).text();
+                    jsonObject.put("Campus", campus);
+                    jsonObject.put("Building", building);
+                    jsonObject.put("ExposurePeriod", exposurePeriod);
+                    jsonObject.put("CleaningStatus", cleaningStatus);
+                    jsonObject.put("HealthAdvice", healthAdvice);
+                    jsonParentObject.put(String.valueOf(numExposures), jsonObject);
+                    numExposures++;
+                }
         }
         System.out.println("JSON:");
         System.out.println(jsonParentObject.toString());
