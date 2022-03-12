@@ -138,8 +138,10 @@ public class Main extends ListenerAdapter {
                     msg.getAuthor().openPrivateChannel().flatMap(verifyinfoch -> verifyinfoch.sendMessage(embed.build())).queue();
                     channel.sendMessage(user.getAsMention() + " , Please check your DMs, you should receive your verification data there.").queue();
                     }
-                else if (msgContents.equals(">exposureUpdate")) {
-                    new News("Exposure",db);
+                else if (msgContents.equals(">exposureBuilding")) {
+                    new News("ExposureBuilding",db);
+                } else if (msgContents.equals(">exposureClass")) {
+                    new News("ExposureClass",db);
                 }
                 }
             }

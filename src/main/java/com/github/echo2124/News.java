@@ -36,7 +36,7 @@ public class News {
     private String[] defaultAuthors= {"Monash University", "ABC News"};
     private SyndFeed feed;
     private final int feedIndex =0;
-    private final String targetedExposureUrl="https://www.monash.edu/news/coronavirus-updates/exposure-sites";
+    private final String targetedExposureBuildingUrl="https://www.monash.edu/news/coronavirus-updates/exposure-sites";
     private Database db;
     // if category not exist, push regardless, if category check for title. Match against feed title trying to be pushed
     public News(String newsType, Database db) {
@@ -67,9 +67,10 @@ public class News {
                 initRSS("https://www.monash.edu/_webservices/news/rss?category=university+%26+news", "news", false);
             }
             setInterval();
-        } else if (newsType.equals("Exposure")) {
+        } else if (newsType.equals("ExposureBuilding")) {
             try {
-                Document doc = Jsoup.parse(targetedExposureUrl);
+                System.out.println("[NEWS] Getting Exposure Building info");
+                Document doc = Jsoup.parse(targetedExposureBuildingUrl);
                 System.out.println(doc.title());
                 fetchCovidExposureInfo(doc);
             } catch (Exception e) {
@@ -269,6 +270,8 @@ public class News {
                 numExposures++;
             }
         }
+        System.out.println("JSON:");
+        System.out.println(jsonParentObject.toString());
         // check if there are new exposure sites. Use index, e.g. if there is 25 stored in db, and update happens and there is 27, then generate messages for the last two.
     }
 
