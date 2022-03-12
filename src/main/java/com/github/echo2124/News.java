@@ -252,7 +252,8 @@ public class News {
         JSONObject jsonParentObject = new JSONObject();
         int numExposures = 0;
         //JSONArray list = new JSONArray();
-        for (Element table : doc.select("table")) {
+       Element table = doc.select("#covid-19_exposure_site__table").get(0);
+        System.out.println("[NEWS] Parsing exposure site data");
             for (Element row : table.select("tr")) {
                 JSONObject jsonObject = new JSONObject();
                 Elements tds = row.select("td");
@@ -268,7 +269,6 @@ public class News {
                 jsonObject.put("HealthAdvice", healthAdvice);
                 jsonParentObject.put(String.valueOf(numExposures), jsonObject);
                 numExposures++;
-            }
         }
         System.out.println("JSON:");
         System.out.println(jsonParentObject.toString());
