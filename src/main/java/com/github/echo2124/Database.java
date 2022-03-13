@@ -188,7 +188,7 @@ public class Database {
                         connection.prepareStatement("CREATE TABLE EXPOSURE (origin VARCHAR(50), len NUMERIC(15));").executeQuery();
                     }
                     sqlQuery = connection.prepareStatement("INSERT INTO EXPOSURE VALUES (?,?)");
-                    sqlQuery.setString(1,originModule);
+                    sqlQuery.setString(1,data.get("col_name").toString());
                     sqlQuery.setInt(2,(int)data.get("size"));
                 } catch (Exception e) {
                     System.out.println("UNABLE TO MODIFY EXPOSURE_SITE MSG:"+e.getMessage());
@@ -268,6 +268,19 @@ public class Database {
                             ret="false";
                         }
                         System.out.println("[Database] Last News Title Exists="+ret);
+                    }
+                    break;
+                case "CHECK_EXPOSURE_INDEX":
+                    System.out.println("[Database] checking db for exposure info");
+                    sqlQuery=connection.prepareStatement("SELECT * FROM EXPOSURE WHERE origin=? AND len=?");
+                    String[] j=req.split("##");
+                    sqlQuery.setString(1,j[0]);
+                    sqlQuery.setInt(2,Integer.parseInt(j[1]));
+                    if (sqlQuery!=null) {
+                        ResultSet rs = sqlQuery.executeQuery();
+                        while (rs.next()) {
+                            ret=String.valueOf(rs.getInt(2));
+                        }
                     }
                     break;
             }

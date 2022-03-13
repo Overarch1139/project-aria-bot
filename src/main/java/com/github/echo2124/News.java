@@ -274,15 +274,33 @@ public class News {
         }
         System.out.println("JSON:");
         System.out.println(jsonParentObject.toString());
+        int retrivedIndex=Integer.parseInt(db.getDBEntry("CHECK_EXPOSURE_INDEX", "EXPOSURE_SITE"));
+        if (numExposures>retrivedIndex) {
+            // do quick math here, find difference and reverse json object possibly
+            HashMap<String, String> data = new HashMap<String, String>();
+            data.put("col_name", "exposure_sites");
+            data.put("size", String.valueOf(numExposures));
+            db.modifyDB("EXPOSURE_SITE","", data);
+            for (int i=0; i<(numExposures-retrivedIndex)-1;i++) {
+                buildMsgFromWebScrape(jsonParentObject.getJSONObject(String.valueOf(i)));
+            }
+
+        }
         // check if there are new exposure sites. Use index, e.g. if there is 25 stored in db, and update happens and there is 27, then generate messages for the last two.
     }
 
-    public void buildMsgFromWebScrape() {
+    public void buildMsgFromWebScrape(JSONObject data) {
         MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.EXPOSURE_SITE_CHANNEL);
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle("Exposure Sites Update!");
         // will be the contents of above method **if** there is an update
-        //embed.setDescription()
+        embed.setDescription(
+                "Campus: "+data.getString("Campus")+
+                        "\nBuilding: "+data.getString("Building")+
+                        "\nExposure Period: "+ data.getString("ExposurePeriod")+
+                        "\nCleaning Status: "+ data.getString("CleaningStatus")+
+                        "\nHealth Advice: "+data.getString("HealthAdvice")
+        );
         embed.setAuthor("Monash University");
 
     }
