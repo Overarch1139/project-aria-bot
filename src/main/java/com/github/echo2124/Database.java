@@ -272,10 +272,8 @@ public class Database {
                     break;
                 case "CHECK_EXPOSURE_INDEX":
                     System.out.println("[Database] checking db for exposure info");
-                    sqlQuery=connection.prepareStatement("SELECT * FROM EXPOSURE WHERE origin=? AND len=?");
-                    String[] j=req.split("##");
-                    sqlQuery.setString(1,j[0]);
-                    sqlQuery.setInt(2,Integer.parseInt(j[1]));
+                    sqlQuery=connection.prepareStatement("SELECT * FROM EXPOSURE WHERE origin=?");
+                    sqlQuery.setString(1,req);
                     if (sqlQuery!=null) {
                         ResultSet rs = sqlQuery.executeQuery();
                         while (rs.next()) {

@@ -49,6 +49,8 @@ public class Main extends ListenerAdapter {
         public static String COVID_UPDATE_CHANNEL="913081128188014592";
         public static Database db=null;
         public static boolean serviceMode=false;
+        public static String ONCAMPUS_ROLE_ID="944923033729126420";
+        public static String ONCAMPUS_CHANNEL="956594020774215739";
         public static String EXPOSURE_SITE_CHANNEL="951902910759977001";
 
     }
@@ -69,6 +71,8 @@ public class Main extends ListenerAdapter {
             constants.permittedChannels[1]="912353440749985852";
             constants.NEWS_CHANNEL="927941422512996353";
             constants.EXPOSURE_SITE_CHANNEL="927941422512996353";
+            constants.ONCAMPUS_CHANNEL="927941422512996353";
+            constants.ONCAMPUS_ROLE_ID="956595184093769758";
         }
         Close close = new Close();
         Runtime.getRuntime().addShutdownHook(close);
@@ -138,11 +142,13 @@ public class Main extends ListenerAdapter {
                     msg.getAuthor().openPrivateChannel().flatMap(verifyinfoch -> verifyinfoch.sendMessage(embed.build())).queue();
                     channel.sendMessage(user.getAsMention() + " , Please check your DMs, you should receive your verification data there.").queue();
                     }
+                /*
+                **** TEMPORARILY DISABLE THIS FEATURE UNTIL TESTING COMPLETION
                 else if (msgContents.equals(">exposureBuilding")) {
                     new News("ExposureBuilding",db);
                 } else if (msgContents.equals(">exposureClass")) {
                     new News("ExposureClass",db);
-                }
+                }*/
                 }
             }
 
