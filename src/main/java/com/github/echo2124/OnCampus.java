@@ -1,5 +1,10 @@
 package com.github.echo2124;
 
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
+
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -24,7 +29,31 @@ public class OnCampus {
             @Override
             public void run() {
                 System.out.println("Running task");
-               // generate msg
+               // remove previous msgs & remove role from everyone
+                Role oncampus=Main.constants.jda.getRoleById(Main.constants.ONCAMPUS_ROLE_ID);
+                // recreating role
+                oncampus.createCopy().queue();
+                oncampus.delete().queue();
+                Emote check=Main.constants.jda.getEmoteById("955646106304413697");
+
+                TextChannel msgChannel= Main.constants.jda.getTextChannelById(Main.constants.ONCAMPUS_CHANNEL);
+                // recreating channel
+                msgChannel.createCopy().queue();
+                msgChannel.delete().queue();
+                // generate msg
+                // consider adding date to this msg
+                msgChannel.sendMessage("React below to the following emoji listed if you are heading to campus today").queue(message -> {
+                    message.addReaction(check);
+                    ListenerAdapter s = new ListenerAdapter() {
+                        @Override
+                        public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
+                            if (event.getMessageId().equals(message.getId()) && event.getReactionEmote().getId().equals(check.getId())) {
+                                event.getGuild().addRoleToMember(event.getMember(),oncampus);
+                            }
+                            super.onMessageReactionAdd(event);
+                        }
+                    };
+                });
 
             }
         };
