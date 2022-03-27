@@ -84,6 +84,7 @@ public class Main extends ListenerAdapter {
         db = new Database();
          new News("Covid", db);
         new News("Monash", db);
+        OnCampus x =new OnCampus();
     }
 
     public void onMessageReceived(MessageReceivedEvent event) {
