@@ -19,7 +19,7 @@ public class OnCampus {
 
     public void initScheduler() {
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Australia/Melbourne"));
-        ZonedDateTime nextRun = now.withHour(2).withMinute(48).withSecond(0);
+        ZonedDateTime nextRun = now.withHour(2).withMinute(59).withSecond(0);
         if(now.compareTo(nextRun) > 0)
             nextRun = nextRun.plusDays(1);
 
@@ -40,6 +40,8 @@ public class OnCampus {
                 TextChannel msgChannel= Main.constants.jda.getTextChannelsByName(Main.constants.ONCAMPUS_CHANNEL_NAME, true).get(0);
                 // recreating channel
                 msgChannel.createCopy().queue();
+
+
                 msgChannel.delete().queue();
                 // re-ref this as the channel it is pointing to no longer exists
 
