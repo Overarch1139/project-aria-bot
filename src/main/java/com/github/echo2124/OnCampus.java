@@ -19,7 +19,7 @@ public class OnCampus {
 
     public void initScheduler() {
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Australia/Melbourne"));
-        ZonedDateTime nextRun = now.withHour(3).withMinute(03).withSecond(0);
+        ZonedDateTime nextRun = now.withHour(3).withMinute(25).withSecond(0);
         if(now.compareTo(nextRun) > 0)
             nextRun = nextRun.plusDays(1);
 
@@ -32,36 +32,33 @@ public class OnCampus {
                 System.out.println("Running task");
                // remove previous msgs & remove role from everyone
                 Role oncampus=Main.constants.jda.getRolesByName(Main.constants.ONCAMPUS_ROLE_NAME, true).get(0);
-                // recreating role
-                oncampus.createCopy().queue();
-                oncampus.delete().queue();
-                Role newRole= Main.constants.jda.getRolesByName(Main.constants.ONCAMPUS_ROLE_NAME, true).get(0);
+
                 // re-ref role
                 TextChannel msgChannel= Main.constants.jda.getTextChannelsByName(Main.constants.ONCAMPUS_CHANNEL_NAME, true).get(0);
                 // recreating channel
-                msgChannel.createCopy().queue();
-
-
                 msgChannel.delete().queue();
-                // re-ref this as the channel it is pointing to no longer exists
-
-                TextChannel updatedMsgChannel=Main.constants.jda.getTextChannelsByName(Main.constants.ONCAMPUS_CHANNEL_NAME, true).get(0);
-                // generate msg
-                // consider adding date to this msg
-                System.out.println("new msgChannelID: "+updatedMsgChannel.getId());
-                updatedMsgChannel.sendMessage("React below to the following emoji listed if you are heading to campus today").queue(message -> {
-                    message.addReaction(checkUnicode);
-
-                    ListenerAdapter s = new ListenerAdapter() {
-                        @Override
-                        public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
-                            if (event.getMessageId().equals(message.getId()) && event.getReactionEmote().getName().equals("white_check_mark")) {
-                                event.getGuild().addRoleToMember(event.getMember(),newRole);
-                            }
-                            super.onMessageReactionAdd(event);
-                        }
-                    };
+                msgChannel.createCopy().queue(textChannel -> {
+                    // consider adding date to this msg
+                    System.out.println("new msgChannelID: "+textChannel.getId());
+                    textChannel.sendMessage("React below to the following emoji listed if you are heading to campus today").queue(message -> {
+                        message.addReaction(checkUnicode);
+                        // recreating role
+                        oncampus.delete().queue();
+                        oncampus.createCopy().queue(role -> {
+                            ListenerAdapter s = new ListenerAdapter() {
+                                @Override
+                                public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
+                                    if (event.getMessageId().equals(message.getId()) && event.getReactionEmote().getName().equals("white_check_mark")) {
+                                        event.getGuild().addRoleToMember(event.getMember(),role);
+                                    }
+                                    super.onMessageReactionAdd(event);
+                                }
+                            };
+                        });
+                        });
                 });
+
+                // generate msg
 
             }
         };
