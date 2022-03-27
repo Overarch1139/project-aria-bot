@@ -39,6 +39,8 @@ public class OnCampus {
                 // recreating channel
                 msgChannel.createCopy().queue();
                 msgChannel.delete().queue();
+                // re-ref this as the channel it is pointing to no longer exists
+                msgChannel=Main.constants.jda.getTextChannelsByName(Main.constants.ONCAMPUS_CHANNEL_NAME, true).get(0);
                 // generate msg
                 // consider adding date to this msg
                 msgChannel.sendMessage("React below to the following emoji listed if you are heading to campus today").queue(message -> {
