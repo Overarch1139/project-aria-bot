@@ -19,7 +19,7 @@ public class OnCampus extends ListenerAdapter {
 
     public void initScheduler() {
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Australia/Melbourne"));
-        ZonedDateTime nextRun = now.withHour(4).withMinute(10).withSecond(0);
+        ZonedDateTime nextRun = now.withHour(4).withMinute(13).withSecond(0);
         if(now.compareTo(nextRun) > 0)
             nextRun = nextRun.plusDays(1);
 
@@ -52,7 +52,7 @@ public class OnCampus extends ListenerAdapter {
                                 public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
                                     System.out.println("Listener triggered");
                                     System.out.println("Reaction name:"+event.getReactionEmote().getName());
-                                    if (event.getMessageId().equals(message.getId()) && event.getReactionEmote().getName().equals("white_check_mark")) {
+                                    if (event.getMessageId().equals(message.getId()) && event.getReactionEmote().getName().equals("✅")) {
                                         System.out.println("Added role to member");
                                         event.getGuild().addRoleToMember(event.getMember(),role).queue();
                                     }
