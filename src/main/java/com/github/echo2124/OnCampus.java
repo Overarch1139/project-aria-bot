@@ -19,7 +19,7 @@ public class OnCampus {
 
     public void initScheduler() {
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Australia/Melbourne"));
-        ZonedDateTime nextRun = now.withHour(3).withMinute(32).withSecond(0);
+        ZonedDateTime nextRun = now.withHour(3).withMinute(40).withSecond(0);
         if(now.compareTo(nextRun) > 0)
             nextRun = nextRun.plusDays(1);
 
@@ -41,15 +41,18 @@ public class OnCampus {
                     // consider adding date to this msg
                     System.out.println("new msgChannelID: "+textChannel.getId());
                     textChannel.sendMessage("React below to the following emoji listed if you are heading to campus today").queue(message -> {
-                        message.addReaction(checkUnicode);
+                        message.addReaction(checkUnicode).queue();
                         // recreating role
                         oncampus.delete().queue();
                         oncampus.createCopy().queue(role -> {
+                            System.out.println("Creating copy of role");
                             ListenerAdapter s = new ListenerAdapter() {
                                 @Override
                                 public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
+                                    System.out.println("Listener triggered");
                                     if (event.getMessageId().equals(message.getId()) && event.getReactionEmote().getName().equals("white_check_mark")) {
-                                        event.getGuild().addRoleToMember(event.getMember(),role);
+                                        System.out.println("Added role to member");
+                                        event.getGuild().addRoleToMember(event.getMember(),role).queue();
                                     }
                                     super.onMessageReactionAdd(event);
                                 }
