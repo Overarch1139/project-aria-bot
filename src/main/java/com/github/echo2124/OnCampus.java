@@ -35,28 +35,30 @@ public class OnCampus {
                 // recreating role
                 oncampus.createCopy().queue();
                 oncampus.delete().queue();
+                Role newRole= Main.constants.jda.getRolesByName(Main.constants.ONCAMPUS_ROLE_NAME, true).get(0);
                 // re-ref role
                 TextChannel msgChannel= Main.constants.jda.getTextChannelsByName(Main.constants.ONCAMPUS_CHANNEL_NAME, true).get(0);
                 // recreating channel
                 msgChannel.createCopy().queue();
                 msgChannel.delete().queue();
                 // re-ref this as the channel it is pointing to no longer exists
-                msgChannel=Main.constants.jda.getTextChannelsByName(Main.constants.ONCAMPUS_CHANNEL_NAME, true).get(0);
+
+                TextChannel updatedMsgChannel=Main.constants.jda.getTextChannelsByName(Main.constants.ONCAMPUS_CHANNEL_NAME, true).get(0);
                 // generate msg
                 // consider adding date to this msg
-                System.out.println("new msgChannelID: "+msgChannel.getId());
-                msgChannel.sendMessage("React below to the following emoji listed if you are heading to campus today").queue(message -> {
+                System.out.println("new msgChannelID: "+updatedMsgChannel.getId());
+                updatedMsgChannel.sendMessage("React below to the following emoji listed if you are heading to campus today").queue(message -> {
                     message.addReaction(checkUnicode);
-                    /*
+
                     ListenerAdapter s = new ListenerAdapter() {
                         @Override
                         public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
                             if (event.getMessageId().equals(message.getId()) && event.getReactionEmote().getName().equals("white_check_mark")) {
-                                event.getGuild().addRoleToMember(event.getMember(),oncampus);
+                                event.getGuild().addRoleToMember(event.getMember(),newRole);
                             }
                             super.onMessageReactionAdd(event);
                         }
-                    };*/
+                    };
                 });
 
             }
