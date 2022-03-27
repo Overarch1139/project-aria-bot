@@ -19,7 +19,7 @@ public class OnCampus {
 
     public void initScheduler() {
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Australia/Melbourne"));
-        ZonedDateTime nextRun = now.withHour(1).withMinute(25).withSecond(0);
+        ZonedDateTime nextRun = now.withHour(1).withMinute(49).withSecond(0);
         if(now.compareTo(nextRun) > 0)
             nextRun = nextRun.plusDays(1);
 
@@ -31,11 +31,11 @@ public class OnCampus {
                 String checkUnicode="U+2705";
                 System.out.println("Running task");
                // remove previous msgs & remove role from everyone
-                Role oncampus=Main.constants.jda.getRoleById(Main.constants.ONCAMPUS_ROLE_ID);
+                Role oncampus=Main.constants.jda.getRolesByName(Main.constants.ONCAMPUS_ROLE_NAME, true).get(0);
                 // recreating role
                 oncampus.createCopy().queue();
                 oncampus.delete().queue();
-                TextChannel msgChannel= Main.constants.jda.getTextChannelById(Main.constants.ONCAMPUS_CHANNEL);
+                TextChannel msgChannel= Main.constants.jda.getTextChannelsByName(Main.constants.ONCAMPUS_CHANNEL_NAME, true).get(0);
                 // recreating channel
                 msgChannel.createCopy().queue();
                 msgChannel.delete().queue();
