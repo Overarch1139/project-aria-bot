@@ -79,6 +79,7 @@ public class Main extends ListenerAdapter {
         JDA jda = JDABuilder.createLight(BOT_TOKEN, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES)
                 .addEventListeners(new Main())
                 .setActivity(Activity.playing(activity))
+                .enableIntents(GatewayIntent.GUILD_MESSAGE_REACTIONS)
                 .build();
         constants.jda = jda;
         db = new Database();
@@ -99,6 +100,7 @@ public class Main extends ListenerAdapter {
                 if (msgContents.equals(">verify")) {
                    SSOVerify newVerify= new SSOVerify(user, event.getGuild(), channel, db);
                    newVerify.start();
+                    // add timeout here. After 5 mins check if user is verified if not then return failure msg (timeout)
                     // add timeout here. After 5 mins check if user is verified if not then return failure msg (timeout)
                 } else if (msgContents.equals(">about")) {
                         EmbedBuilder embed = new EmbedBuilder();

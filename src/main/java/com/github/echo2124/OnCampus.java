@@ -12,14 +12,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class OnCampus {
+public class OnCampus extends ListenerAdapter {
     public OnCampus() {
         initScheduler();
     }
 
     public void initScheduler() {
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Australia/Melbourne"));
-        ZonedDateTime nextRun = now.withHour(3).withMinute(50).withSecond(0);
+        ZonedDateTime nextRun = now.withHour(4).withMinute(03).withSecond(0);
         if(now.compareTo(nextRun) > 0)
             nextRun = nextRun.plusDays(1);
 
@@ -56,6 +56,7 @@ public class OnCampus {
                                         event.getGuild().addRoleToMember(event.getMember(),role).queue();
                                     }
                                     super.onMessageReactionAdd(event);
+                                    System.out.println("After listener add");
                                 }
                             };
                             Main.constants.jda.addEventListener(reactionListener);
