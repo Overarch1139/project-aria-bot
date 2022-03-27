@@ -19,7 +19,7 @@ public class OnCampus {
 
     public void initScheduler() {
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Australia/Melbourne"));
-        ZonedDateTime nextRun = now.withHour(3).withMinute(40).withSecond(0);
+        ZonedDateTime nextRun = now.withHour(3).withMinute(50).withSecond(0);
         if(now.compareTo(nextRun) > 0)
             nextRun = nextRun.plusDays(1);
 
@@ -46,7 +46,8 @@ public class OnCampus {
                         oncampus.delete().queue();
                         oncampus.createCopy().queue(role -> {
                             System.out.println("Creating copy of role");
-                            ListenerAdapter s = new ListenerAdapter() {
+
+                            ListenerAdapter reactionListener = new ListenerAdapter() {
                                 @Override
                                 public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
                                     System.out.println("Listener triggered");
@@ -57,6 +58,7 @@ public class OnCampus {
                                     super.onMessageReactionAdd(event);
                                 }
                             };
+                            Main.constants.jda.addEventListener(reactionListener);
                         });
                         });
                 });
