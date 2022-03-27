@@ -35,6 +35,7 @@ public class OnCampus {
                 // recreating role
                 oncampus.createCopy().queue();
                 oncampus.delete().queue();
+                // re-ref role
                 TextChannel msgChannel= Main.constants.jda.getTextChannelsByName(Main.constants.ONCAMPUS_CHANNEL_NAME, true).get(0);
                 // recreating channel
                 msgChannel.createCopy().queue();
@@ -43,8 +44,10 @@ public class OnCampus {
                 msgChannel=Main.constants.jda.getTextChannelsByName(Main.constants.ONCAMPUS_CHANNEL_NAME, true).get(0);
                 // generate msg
                 // consider adding date to this msg
+                System.out.println("new msgChannelID: "+msgChannel.getId());
                 msgChannel.sendMessage("React below to the following emoji listed if you are heading to campus today").queue(message -> {
                     message.addReaction(checkUnicode);
+                    /*
                     ListenerAdapter s = new ListenerAdapter() {
                         @Override
                         public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
@@ -53,7 +56,7 @@ public class OnCampus {
                             }
                             super.onMessageReactionAdd(event);
                         }
-                    };
+                    };*/
                 });
 
             }
