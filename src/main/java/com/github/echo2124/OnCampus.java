@@ -19,7 +19,7 @@ public class OnCampus {
 
     public void initScheduler() {
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Australia/Melbourne"));
-        ZonedDateTime nextRun = now.withHour(3).withMinute(25).withSecond(0);
+        ZonedDateTime nextRun = now.withHour(3).withMinute(32).withSecond(0);
         if(now.compareTo(nextRun) > 0)
             nextRun = nextRun.plusDays(1);
 
