@@ -101,7 +101,6 @@ public class Main extends ListenerAdapter {
                    SSOVerify newVerify= new SSOVerify(user, event.getGuild(), channel, db);
                    newVerify.start();
                     // add timeout here. After 5 mins check if user is verified if not then return failure msg (timeout)
-                    // add timeout here. After 5 mins check if user is verified if not then return failure msg (timeout)
                 } else if (msgContents.equals(">about")) {
                         EmbedBuilder embed = new EmbedBuilder();
                         embed.setColor(Color.CYAN);
