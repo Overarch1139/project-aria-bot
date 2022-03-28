@@ -21,7 +21,7 @@ public class OnCampus extends ListenerAdapter {
 
     public void initScheduler() {
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Australia/Melbourne"));
-        ZonedDateTime nextRun = now.withHour(6).withMinute(0).withSecond(0);
+        ZonedDateTime nextRun = now.withHour(8).withMinute(15).withSecond(0);
         if(now.compareTo(nextRun) > 0)
             nextRun = nextRun.plusDays(1);
 
@@ -40,9 +40,8 @@ public class OnCampus extends ListenerAdapter {
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.setTitle("Who Is On Campus today?");
                     embed.setDescription("React to the existing reaction below to assign yourself to the OnCampus role");
-                    embed.setAuthor("Aria");
+                    embed.setAuthor("IT @ Monash");
                     embed.setColor(Color.CYAN);
-                    embed.setTimestamp(now);
                     embed.setFooter("NOTE: This post will be recreated everyday & role will be removed from everyone");
                     textChannel.sendMessage(embed.build()).queue(message -> {
                         message.addReaction(checkUnicode).queue();
