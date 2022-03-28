@@ -49,8 +49,8 @@ public class Main extends ListenerAdapter {
         public static String COVID_UPDATE_CHANNEL="913081128188014592";
         public static Database db=null;
         public static boolean serviceMode=false;
-        public static String ONCAMPUS_ROLE_NAME="944923033729126420";
-        public static String ONCAMPUS_CHANNEL_NAME="956594020774215739";
+        public static String ONCAMPUS_ROLE_NAME="On Campus";
+        public static String ONCAMPUS_CHANNEL_NAME="oncampus";
         public static String EXPOSURE_SITE_CHANNEL="951902910759977001";
 
     }
