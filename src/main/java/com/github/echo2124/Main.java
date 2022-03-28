@@ -49,6 +49,9 @@ public class Main extends ListenerAdapter {
         public static String COVID_UPDATE_CHANNEL="913081128188014592";
         public static Database db=null;
         public static boolean serviceMode=false;
+        public static String ONCAMPUS_ROLE_NAME="On Campus";
+        public static String ONCAMPUS_CHANNEL_NAME="oncampus";
+        public static String EXPOSURE_SITE_CHANNEL="951902910759977001";
 
     }
     // actual bot ODc4OTQyNzk2MjYwNzI0NzY2.YSIhRA.ybuEYxDoa8VjfJQa0rC81W-ay4o
@@ -67,17 +70,22 @@ public class Main extends ListenerAdapter {
             constants.permittedChannels[0]="912353229285765172";
             constants.permittedChannels[1]="912353440749985852";
             constants.NEWS_CHANNEL="927941422512996353";
+            constants.EXPOSURE_SITE_CHANNEL="927941422512996353";
+            constants.ONCAMPUS_CHANNEL_NAME="oncampus";
+            constants.ONCAMPUS_ROLE_NAME="oncampus";
         }
         Close close = new Close();
         Runtime.getRuntime().addShutdownHook(close);
         JDA jda = JDABuilder.createLight(BOT_TOKEN, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES)
                 .addEventListeners(new Main())
                 .setActivity(Activity.playing(activity))
+                .enableIntents(GatewayIntent.GUILD_MESSAGE_REACTIONS)
                 .build();
         constants.jda = jda;
         db = new Database();
          new News("Covid", db);
         new News("Monash", db);
+        OnCampus x =new OnCampus();
     }
 
     public void onMessageReceived(MessageReceivedEvent event) {
@@ -136,6 +144,13 @@ public class Main extends ListenerAdapter {
                     msg.getAuthor().openPrivateChannel().flatMap(verifyinfoch -> verifyinfoch.sendMessage(embed.build())).queue();
                     channel.sendMessage(user.getAsMention() + " , Please check your DMs, you should receive your verification data there.").queue();
                     }
+                /*
+                **** TEMPORARILY DISABLE THIS FEATURE UNTIL TESTING COMPLETION
+                else if (msgContents.equals(">exposureBuilding")) {
+                    new News("ExposureBuilding",db);
+                } else if (msgContents.equals(">exposureClass")) {
+                    new News("ExposureClass",db);
+                }*/
                 }
             }
 

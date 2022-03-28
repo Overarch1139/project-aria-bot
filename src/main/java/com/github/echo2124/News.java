@@ -7,6 +7,10 @@ import com.rometools.rome.io.XmlReader;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 import twitter4j.json.DataObjectFactory;
@@ -33,6 +37,7 @@ public class News {
     private String[] monashCategories={"Technology Related News", "COVID-19 Related News", "General University News"};
     private SyndFeed feed;
     private final int feedIndex =0;
+    private final String targetedExposureBuildingUrl="https://www.monash.edu/news/coronavirus-updates/exposure-sites";
     private Database db;
     // if category not exist, push regardless, if category check for title. Match against feed title trying to be pushed
     public News(String newsType, Database db) {
@@ -43,27 +48,35 @@ public class News {
                 getLatestTweet();
             }
         } else if (newsType.equals("Monash")) {
-            feedOrg="Monash";
-                if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", "technology"))) {
-                    System.out.println("[News] Technology Category Found!");
-                    initRSS("https://www.monash.edu/_webservices/news/rss?category=engineering+%26+technology","technology", true);
-                } else {
-                    initRSS("https://www.monash.edu/_webservices/news/rss?category=engineering+%26+technology","technology", false);
-                }
-                if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", "covid"))) {
-                    System.out.println("[News] COVID Category Found!");
-                    initRSS("https://www.monash.edu/_webservices/news/rss?query=covid", "covid", true);
-                } else {
-                    initRSS("https://www.monash.edu/_webservices/news/rss?query=covid", "covid", false);
-                }
-                if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", "news"))) {
-                    System.out.println("[News] News Category Found!");
-                    initRSS("https://www.monash.edu/_webservices/news/rss?category=university+%26+news", "news", true);
-                } else {
-                    initRSS("https://www.monash.edu/_webservices/news/rss?category=university+%26+news", "news", false);
-                }
-               setInterval();
-
+            feedOrg = "Monash";
+            if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", "technology"))) {
+                System.out.println("[News] Technology Category Found!");
+                initRSS("https://www.monash.edu/_webservices/news/rss?category=engineering+%26+technology", "technology", true);
+            } else {
+                initRSS("https://www.monash.edu/_webservices/news/rss?category=engineering+%26+technology", "technology", false);
+            }
+            if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", "covid"))) {
+                System.out.println("[News] COVID Category Found!");
+                initRSS("https://www.monash.edu/_webservices/news/rss?query=covid", "covid", true);
+            } else {
+                initRSS("https://www.monash.edu/_webservices/news/rss?query=covid", "covid", false);
+            }
+            if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", "news"))) {
+                System.out.println("[News] News Category Found!");
+                initRSS("https://www.monash.edu/_webservices/news/rss?category=university+%26+news", "news", true);
+            } else {
+                initRSS("https://www.monash.edu/_webservices/news/rss?category=university+%26+news", "news", false);
+            }
+            setInterval();
+        } else if (newsType.equals("ExposureBuilding")) {
+            try {
+                System.out.println("[NEWS] Getting Exposure Building info");
+                Document doc = Jsoup.connect(targetedExposureBuildingUrl).get();
+                System.out.println(doc.title());
+                fetchCovidExposureInfo(doc);
+            } catch (Exception e) {
+                System.out.println("[Exposure Site] ERROR: "+e.getMessage());
+            }
         }
     }
 
@@ -248,4 +261,61 @@ public class News {
         newEmbed.setFooter(status.getUser().getDescription());
         channel.sendMessage(newEmbed.build()).queue();
     }
+
+    public void fetchCovidExposureInfo(Document doc) {
+        JSONObject jsonParentObject = new JSONObject();
+        int numExposures = 0;
+        //JSONArray list = new JSONArray();
+       Element table = doc.select("#covid-19_exposure_site__table").get(0);
+        System.out.println("[NEWS] Parsing exposure site data");
+            for (Element row : table.select("tr")) {
+                JSONObject jsonObject = new JSONObject();
+                Elements tds = row.select("td");
+                if (!tds.isEmpty()) {
+                    String campus = tds.get(0).text();
+                    String building = tds.get(1).text();
+                    String exposurePeriod = tds.get(2).text();
+                    String cleaningStatus = tds.get(3).text();
+                    String healthAdvice = tds.get(4).text();
+                    jsonObject.put("Campus", campus);
+                    jsonObject.put("Building", building);
+                    jsonObject.put("ExposurePeriod", exposurePeriod);
+                    jsonObject.put("CleaningStatus", cleaningStatus);
+                    jsonObject.put("HealthAdvice", healthAdvice);
+                    jsonParentObject.put(String.valueOf(numExposures), jsonObject);
+                    numExposures++;
+                }
+        }
+        System.out.println("JSON:");
+        System.out.println(jsonParentObject.toString());
+        int retrivedIndex=Integer.parseInt(db.getDBEntry("CHECK_EXPOSURE_INDEX", "EXPOSURE_SITE"));
+        if (numExposures>retrivedIndex) {
+            // do quick math here, find difference and reverse json object possibly
+            HashMap<String, String> data = new HashMap<String, String>();
+            data.put("col_name", "exposure_sites");
+            data.put("size", String.valueOf(numExposures));
+            db.modifyDB("EXPOSURE_SITE","", data);
+            for (int i=0; i<(numExposures-retrivedIndex)-1;i++) {
+                buildMsgFromWebScrape(jsonParentObject.getJSONObject(String.valueOf(i)));
+            }
+
+        }
+        // check if there are new exposure sites. Use index, e.g. if there is 25 stored in db, and update happens and there is 27, then generate messages for the last two.
     }
+
+    public void buildMsgFromWebScrape(JSONObject data) {
+        MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.EXPOSURE_SITE_CHANNEL);
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setTitle("Exposure Sites Update!");
+        // will be the contents of above method **if** there is an update
+        embed.setDescription(
+                "Campus: "+data.getString("Campus")+
+                        "\nBuilding: "+data.getString("Building")+
+                        "\nExposure Period: "+ data.getString("ExposurePeriod")+
+                        "\nCleaning Status: "+ data.getString("CleaningStatus")+
+                        "\nHealth Advice: "+data.getString("HealthAdvice")
+        );
+        embed.setAuthor("Monash University");
+
+    }
+}
