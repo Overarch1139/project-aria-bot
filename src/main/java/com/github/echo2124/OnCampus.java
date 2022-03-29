@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.restaction.GuildAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -53,7 +54,7 @@ public class OnCampus extends ListenerAdapter {
                         oncampus.delete().queue();
                         oncampus.createCopy().queue(role -> {
                             System.out.println("[OnCampus] Creating copy of role");
-
+                            role.getGuild().modifyRolePositions().selectPosition(role.getPosition()).moveTo(114).queue();
                             ListenerAdapter reactionListener = new ListenerAdapter() {
                                 @Override
                                 public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
