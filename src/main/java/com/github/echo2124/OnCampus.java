@@ -14,8 +14,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static com.github.echo2124.Main.constants.ONCAMPUS_ROLE_NAME;
+
 public class OnCampus extends ListenerAdapter {
     public OnCampus() {
+        System.out.println("***OnCampus current POS: " +Main.constants.jda.getRolesByName(ONCAMPUS_ROLE_NAME,true).get(0).getPosition());
+        System.out.println("***OnCampus current POS RAW: " +Main.constants.jda.getRolesByName(ONCAMPUS_ROLE_NAME,true).get(0).getPositionRaw());
         initScheduler();
     }
 
