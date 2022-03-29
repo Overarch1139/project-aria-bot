@@ -19,9 +19,6 @@ import static com.github.echo2124.Main.constants.ONCAMPUS_ROLE_NAME;
 
 public class OnCampus extends ListenerAdapter {
     public OnCampus() {
-        System.out.println("***OnCampus current POS: " +Main.constants.jda.getRolesByName(ONCAMPUS_ROLE_NAME,true).get(0).getPosition());
-        System.out.println("***OnCampus current POS RAW: " +Main.constants.jda.getRolesByName(ONCAMPUS_ROLE_NAME,true).get(0).getPositionRaw());
-        Main.constants.jda.getRoleById("958111997692608612").getGuild().modifyRolePositions().selectPosition(Main.constants.jda.getRoleById("958111997692608612").getPosition()).moveTo(114).queue();
         initScheduler();
     }
 
