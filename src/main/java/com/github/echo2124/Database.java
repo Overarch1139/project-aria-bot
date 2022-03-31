@@ -273,6 +273,7 @@ public class Database {
                         System.out.println("[Database] exposure table doesn't exist. creating...");
                         // ADD TABLE TO DB (EXPOSURE)
                         connection.prepareStatement("CREATE TABLE EXPOSURE (origin VARCHAR(50), len NUMERIC(15));").executeQuery();
+                        ret="0";
                     } else {
                         System.out.println("[Database] checking db for exposure info");
                         sqlQuery = connection.prepareStatement("SELECT * FROM EXPOSURE WHERE origin=?");
@@ -281,6 +282,9 @@ public class Database {
                             ResultSet res = sqlQuery.executeQuery();
                             while (res.next()) {
                                 ret = String.valueOf(res.getInt(2));
+                            }
+                            if (ret==null || ret=="") {
+                                ret="0";
                             }
                         }
                         break;
