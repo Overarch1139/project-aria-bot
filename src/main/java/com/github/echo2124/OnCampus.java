@@ -24,7 +24,7 @@ public class OnCampus extends ListenerAdapter {
 
     public void initScheduler() {
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Australia/Melbourne"));
-        ZonedDateTime nextRun = now.withHour(8).withMinute(15).withSecond(0);
+        ZonedDateTime nextRun = now.withHour(5).withMinute(0).withSecond(0);
         if(now.compareTo(nextRun) > 0)
             nextRun = nextRun.plusDays(1);
 
