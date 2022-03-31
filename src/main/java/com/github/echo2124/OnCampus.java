@@ -18,11 +18,12 @@ import java.util.concurrent.TimeUnit;
 import static com.github.echo2124.Main.constants.ONCAMPUS_ROLE_NAME;
 
 public class OnCampus extends ListenerAdapter {
-    public OnCampus() {
-        initScheduler();
+    public OnCampus(Boolean state) {
+        initScheduler(state);
     }
 
-    public void initScheduler() {
+    public void initScheduler(Boolean state) {
+
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Australia/Melbourne"));
         ZonedDateTime nextRun = now.withHour(5).withMinute(0).withSecond(0);
         if(now.compareTo(nextRun) > 0)
@@ -75,6 +76,9 @@ public class OnCampus extends ListenerAdapter {
                 initialDelay,
                 TimeUnit.DAYS.toSeconds(1),
                 TimeUnit.SECONDS);
+        if (state) {
+            task.run();
+        }
     }
 
 

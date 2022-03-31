@@ -85,7 +85,7 @@ public class Main extends ListenerAdapter {
         db = new Database();
          new News("Covid", db);
         new News("Monash", db);
-        OnCampus x =new OnCampus();
+        OnCampus x =new OnCampus(false);
     }
 
     public void onMessageReceived(MessageReceivedEvent event) {
@@ -179,8 +179,9 @@ public class Main extends ListenerAdapter {
                         }
                     channel.sendMessage(embed.build()).queue();
 
-                } else if (msgContents.contains(">manualUpdate")) {
-                    // this might be a pain, will need a delimiter or set many params for fields
+                } else if (msgContents.contains(">resetOnCampus")) {
+                    OnCampus x =new OnCampus(true);
+                    channel.sendMessage("On Campus feature has been successfully reset!");
                 } else if (msgContents.contains(">serviceMode")) {
                     String[] parsedContents = msgContents.split(" ");
                     serviceMode=true;
