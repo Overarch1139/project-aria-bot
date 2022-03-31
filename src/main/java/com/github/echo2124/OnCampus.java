@@ -40,7 +40,8 @@ public class OnCampus extends ListenerAdapter {
                 TextChannel msgChannel= Main.constants.jda.getTextChannelsByName(Main.constants.ONCAMPUS_CHANNEL_NAME, true).get(0);
                 // recreating channel
                 msgChannel.delete().queue();
-                msgChannel.createCopy().queue(textChannel -> {
+                msgChannel.createCopy().setPosition(msgChannel.getPosition()).queue(textChannel -> {
+
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.setTitle("Who Is On Campus today?");
                     embed.setDescription("React to the existing reaction below to assign yourself to the OnCampus role");
