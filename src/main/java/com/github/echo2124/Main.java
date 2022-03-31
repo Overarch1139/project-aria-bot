@@ -192,6 +192,15 @@ public class Main extends ListenerAdapter {
                     Misc misc = new Misc();
                     MessageChannel verify= Main.constants.jda.getTextChannelById(Main.constants.permittedChannels[0]);
                     misc.sendServiceModeMsg(verify,"Aria has reactivated the ability to verify and has exited maintenance mode.");
+                } else if (msgContents.contains(">help")) {
+                    EmbedBuilder embed = new EmbedBuilder();
+                    embed.setColor(Color.MAGENTA);
+                    embed.setTitle("ADMIN Commands");
+                    embed.setDescription("Here are the following commands that you are able to use:");
+                    embed.addField(">userLookup <discordID>", "This command will lookup a user's verification status and other recorded details.", false);
+                    embed.addField(">reactivate", "Will re-enable the ability to verify and other parts of the bot that have been deactivated", false);
+                    embed.addField(">serviceMode <Time> E.g. 10mins","Can be used to deactivate interruption sensitive parts of the bot, e.g. verify module", false);
+                    channel.sendMessage(embed.build()).queue();
                 }
             }
         }
