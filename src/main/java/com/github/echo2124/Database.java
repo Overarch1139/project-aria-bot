@@ -181,12 +181,7 @@ public class Database {
                 break;
             case "EXPOSURE_SITE":
                 try {
-                    DatabaseMetaData md = connection.getMetaData();
-                    ResultSet rs = md.getTables(null, null, "EXPOSURE", null);
-                    if (!rs.next()) {
-                        // ADD TABLE TO DB (EXPOSURE)
-                        connection.prepareStatement("CREATE TABLE EXPOSURE (origin VARCHAR(50), len NUMERIC(15));").executeQuery();
-                    }
+
                     sqlQuery = connection.prepareStatement("INSERT INTO EXPOSURE VALUES (?,?)");
                     sqlQuery.setString(1,data.get("col_name").toString());
                     sqlQuery.setInt(2,(int)data.get("size"));
@@ -271,16 +266,25 @@ public class Database {
                     }
                     break;
                 case "CHECK_EXPOSURE_INDEX":
-                    System.out.println("[Database] checking db for exposure info");
-                    sqlQuery=connection.prepareStatement("SELECT * FROM EXPOSURE WHERE origin=?");
-                    sqlQuery.setString(1,req);
-                    if (sqlQuery!=null) {
-                        ResultSet rs = sqlQuery.executeQuery();
-                        while (rs.next()) {
-                            ret=String.valueOf(rs.getInt(2));
+
+                    DatabaseMetaData md = connection.getMetaData();
+                    ResultSet rs = md.getTables(null, null, "EXPOSURE", null);
+                    if (!rs.next()) {
+                        System.out.println("[Database] exposure table doesn't exist. creating...");
+                        // ADD TABLE TO DB (EXPOSURE)
+                        connection.prepareStatement("CREATE TABLE EXPOSURE (origin VARCHAR(50), len NUMERIC(15));").executeQuery();
+                    } else {
+                        System.out.println("[Database] checking db for exposure info");
+                        sqlQuery = connection.prepareStatement("SELECT * FROM EXPOSURE WHERE origin=?");
+                        sqlQuery.setString(1, req);
+                        if (sqlQuery != null) {
+                            ResultSet res = sqlQuery.executeQuery();
+                            while (res.next()) {
+                                ret = String.valueOf(res.getInt(2));
+                            }
                         }
+                        break;
                     }
-                    break;
             }
 
         } catch (SQLException e) {

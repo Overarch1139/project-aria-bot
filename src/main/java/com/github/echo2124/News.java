@@ -316,6 +316,6 @@ public class News {
                         "\nHealth Advice: "+data.getString("HealthAdvice")
         );
         embed.setAuthor("Monash University");
-
+        channel.sendMessage(embed.build()).queue();
     }
 }
