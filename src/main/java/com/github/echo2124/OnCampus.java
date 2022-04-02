@@ -51,7 +51,9 @@ public class OnCampus extends ListenerAdapter {
                     textChannel.sendMessage(embed.build()).queue(message -> {
                         message.addReaction(checkUnicode).queue();
                         // recreating role
-                        oncampus.delete().queue();
+                        for (Role role: Main.constants.jda.getRolesByName(Main.constants.ONCAMPUS_ROLE_NAME, true)) {
+                            role.delete().queue();
+                        }
                         oncampus.createCopy().queue(role -> {
                             System.out.println("[OnCampus] Creating copy of role");
                             role.getGuild().modifyRolePositions().selectPosition(role.getPosition()).moveTo(114).queue();
