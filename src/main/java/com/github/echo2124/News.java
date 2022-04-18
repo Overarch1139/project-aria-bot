@@ -103,10 +103,11 @@ public class News {
     public void getLatestTweet() {
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
-                .setOAuthConsumerKey("tu7AA1josocRsfFp2sgLriVGA")
-                .setOAuthConsumerSecret("qYKut6rMwPleyhjHF03NJU4YdUQe8vInmDFa3cCOJUXW055ru8")
-                .setOAuthAccessToken("786025827280392192-OuNhuZIPYb5N4yS667I72HXZMyGSmNH")
-                .setOAuthAccessTokenSecret("ujI55HDOu1ZLlKDdiO2TzhSEwZgsaGLsfb0ztAqSt2EFW");
+                .setOAuthConsumerKey(System.getenv("TWITTER_CONSUMER_KEY"))
+                .setOAuthConsumerSecret(System.getenv("TWITTER_CONSUMER_SECRET"))
+                .setOAuthAccessToken(System.getenv("TWITTER_ACCESS_TOKEN"))
+                .setOAuthAccessTokenSecret(System.getenv("TWITTER_ACCESS_SECRET"));
+
         TwitterStream ts = new TwitterStreamFactory(cb.build()).getInstance();
         StatusListener listener = new StatusListener() {
             @Override

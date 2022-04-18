@@ -61,9 +61,8 @@ public class Main extends ListenerAdapter {
     public static void main(String[] arguments) throws Exception {
         String activity ="Open Beta Active!";
         // setters for various props
-        String BOT_TOKEN = "ODc4OTQyNzk2MjYwNzI0NzY2.YSIhRA.ybuEYxDoa8VjfJQa0rC81W-ay4o";
+        String BOT_TOKEN = System.getenv("DISCORD_CLIENT_SECRET");
         if (Boolean.parseBoolean(System.getenv("IS_DEV"))) {
-            BOT_TOKEN = "OTEzNDUxMTY2MzcxODQwMDIw.YZ-rsQ.jO6C-N-7dRKJPjMXkfrWTrEFd4I";
             activity="Dev Build Active";
             constants.VERIFIED_ROLE_ID="909827233194070039";
             constants.COVID_UPDATE_CHANNEL="912726004886294569";
