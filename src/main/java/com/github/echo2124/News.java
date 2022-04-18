@@ -231,7 +231,7 @@ public class News {
                     newEmbed.setFooter(feed.getDescription());
                     break;
             }
-            channel.sendMessage(newEmbed.build()).queue();
+            channel.sendMessageEmbeds(newEmbed.build()).queue();
             HashMap<String, String> data = new HashMap<String, String>();
             data.put("title", feed.getEntries().get(feedIndex).getTitle());
             db.modifyDB("NEWS", category,data);
@@ -260,7 +260,7 @@ public class News {
             }
         }
         newEmbed.setFooter(status.getUser().getDescription());
-        channel.sendMessage(newEmbed.build()).queue();
+        channel.sendMessageEmbeds(newEmbed.build()).queue();
     }
 
     public void fetchCovidExposureInfo(Document doc) {
@@ -317,6 +317,6 @@ public class News {
                         "\nHealth Advice: "+data.getString("HealthAdvice")
         );
         embed.setAuthor("Monash University");
-        channel.sendMessage(embed.build()).queue();
+        channel.sendMessageEmbeds(embed.build()).queue();
     }
 }

@@ -5,10 +5,6 @@ plugins {
 group 'org.echo2124'
 version '1.0-SNAPSHOT'
 def mainClassName = 'com.github.echo2124.Main'
-def jdaVersion = '4.3.0_277'
-
-
-
 repositories {
     mavenCentral()
     maven { // on kotlin dsl use `maven("https://m2.dv8tion.net/releases")` instead
@@ -20,9 +16,11 @@ repositories {
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
-    implementation("net.dv8tion:JDA:$jdaVersion")
+// https://mvnrepository.com/artifact/net.dv8tion/JDA
+    implementation 'net.dv8tion:JDA:5.0.0-alpha.9'
     implementation 'javax.servlet:javax.servlet-api:4.0.1'
-    implementation 'com.rometools:rome:1.16.0'
+// https://mvnrepository.com/artifact/com.rometools/rome
+    implementation 'com.rometools:rome:1.18.0'
     implementation 'org.twitter4j:twitter4j-core:4.0.7'
     implementation 'org.twitter4j:twitter4j-stream:4.0.7'
     // https://mvnrepository.com/artifact/com.github.scribejava/scribejava-apis
@@ -32,7 +30,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.json/json
     implementation 'org.json:json:20210307'
 // https://mvnrepository.com/artifact/org.postgresql/postgresql
-    implementation 'org.postgresql:postgresql:42.3.1'
+    implementation 'org.postgresql:postgresql:42.3.4'
     // jsoup HTML parser library @ https://jsoup.org/
     implementation 'org.jsoup:jsoup:1.14.3'
 

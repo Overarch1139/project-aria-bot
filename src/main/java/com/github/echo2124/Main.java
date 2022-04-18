@@ -107,7 +107,7 @@ public class Main extends ListenerAdapter {
                         embed.setDescription("I am Aria, I help out the staff on the server with various administrative tasks and other stuff.");
                         embed.addField("Why am I called Aria?", "My name is actually an acronym: **A**dministrate, **R**elay, **I**dentify, **A**ttest. I was built to cater to this functionality.", false);
                         embed.addField("Who built me?", "I was built entirely by Echo2124 (Joshua) as a side project that aims to automate many different tasks, such as verifying users, automatically relaying local COVID information & announcements from Monash Uni.", false);
-                        channel.sendMessage(embed.build()).queue();
+                        channel.sendMessageEmbeds(embed.build()).queue();
                     } else if (msgContents.equals(">help")) {
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.setColor(Color.MAGENTA);
@@ -119,7 +119,7 @@ public class Main extends ListenerAdapter {
                     embed.addField("[ADMIN ONLY] >userLookup <discordID>", "This command will lookup a user's verification status and other recorded details.", false);
                     embed.addField("[WIP - ADMIN ONLY] >userUpdate <discordID>", "Will be used by staff to update information or manually verify a user", false);
                     embed.addField("[WIP - ADMIN ONLY] >scheduleMsg <Message> <Timestamp>","Can be used to schedule an announcement for a particular time.", false);
-                    channel.sendMessage(embed.build()).queue();
+                    channel.sendMessageEmbeds(embed.build()).queue();
 
                     } else if (msgContents.equals(">verifyinfo")) {
                     EmbedBuilder embed = new EmbedBuilder();
@@ -140,7 +140,7 @@ public class Main extends ListenerAdapter {
                         embed.setDescription("**Lookup failed, please try again later");
                         embed.setFooter("data sourced from internal database");
                     }
-                    msg.getAuthor().openPrivateChannel().flatMap(verifyinfoch -> verifyinfoch.sendMessage(embed.build())).queue();
+                    msg.getAuthor().openPrivateChannel().flatMap(verifyinfoch -> verifyinfoch.sendMessageEmbeds(embed.build())).queue();
                     channel.sendMessage(user.getAsMention() + " , Please check your DMs, you should receive your verification data there.").queue();
                     }
                 /*
@@ -175,7 +175,7 @@ public class Main extends ListenerAdapter {
                             embed.setDescription("**Lookup failed, please ensure you've correctly copied the discord ID**");
                             embed.setFooter("data sourced from internal database");
                         }
-                    channel.sendMessage(embed.build()).queue();
+                    channel.sendMessageEmbeds(embed.build()).queue();
 
                 } else if (msgContents.contains(">resetOnCampus")) {
                     OnCampus x =new OnCampus(true);
@@ -198,7 +198,7 @@ public class Main extends ListenerAdapter {
                     embed.addField(">userLookup <discordID>", "This command will lookup a user's verification status and other recorded details.", false);
                     embed.addField(">reactivate", "Will re-enable the ability to verify and other parts of the bot that have been deactivated", false);
                     embed.addField(">serviceMode <Time> E.g. 10mins","Can be used to deactivate interruption sensitive parts of the bot, e.g. verify module", false);
-                    channel.sendMessage(embed.build()).queue();
+                    channel.sendMessageEmbeds(embed.build()).queue();
                 }
             }
         }

@@ -106,7 +106,7 @@ public class SSOVerify extends Thread {
         embed.setColor(Color.green);
         embed.setDescription("Hi " + name + ",\n you have been successfully verified, you can now access channels that are exclusive for verified Monash University students only. \n Thanks for verifying, Aria");
         embed.setFooter("If you have any problems please contact Echo2124#3778 (creator of Aria)");
-        this.user.openPrivateChannel().flatMap(channel -> channel.sendMessage(embed.build())).queue();
+        this.user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(embed.build())).queue();
     }
 
     public void sendFailureNotification(String type) {
@@ -126,7 +126,7 @@ public class SSOVerify extends Thread {
                 embed.setDescription("Aria has noticed that the provided token was not used within the allocated timeframe. This is likely because you might of not followed the aforementioned steps. Please try to generate a new token by typing >verify at the specified verification channel on the IT @ Monash server.");
                 break;
         }
-        this.user.openPrivateChannel().flatMap(channel -> channel.sendMessage(embed.build())).queue();
+        this.user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(embed.build())).queue();
     }
 
     public void sendAuthRequest(String link, String code) {
@@ -143,8 +143,8 @@ public class SSOVerify extends Thread {
         authEmbed.addField("Link: ", link, false);
         authEmbed.addField("Code: ", code, false);
         authEmbed.setFooter("This access token will expire in **5 Mins!**");
-        this.user.openPrivateChannel().flatMap(channel -> channel.sendMessage(faqEmbed.build())).queue();
-        this.user.openPrivateChannel().flatMap(channel -> channel.sendMessage(authEmbed.build())).queue();
+        this.user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(faqEmbed.build())).queue();
+        this.user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(authEmbed.build())).queue();
     }
 
     public void verify() throws IOException, InterruptedException, ExecutionException {

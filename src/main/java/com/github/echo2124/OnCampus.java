@@ -48,7 +48,7 @@ public class OnCampus extends ListenerAdapter {
                     embed.setAuthor("IT @ Monash");
                     embed.setColor(Color.CYAN);
                     embed.setFooter("NOTE: This post will be recreated everyday & role will be removed from everyone");
-                    textChannel.sendMessage(embed.build()).queue(message -> {
+                    textChannel.sendMessageEmbeds(embed.build()).queue(message -> {
                         message.addReaction(checkUnicode).queue();
                         // recreating role
                         for (Role role: Main.constants.jda.getRolesByName(Main.constants.ONCAMPUS_ROLE_NAME, true)) {
