@@ -52,6 +52,7 @@ public class Main extends ListenerAdapter {
         public static String ONCAMPUS_ROLE_NAME="On Campus";
         public static String ONCAMPUS_CHANNEL_NAME="oncampus";
         public static String EXPOSURE_SITE_CHANNEL="951902910759977001";
+        public static String ARIA_CHANNEL_CATEGORY_ID="913080878094241892";
 
     }
     // actual bot ODc4OTQyNzk2MjYwNzI0NzY2.YSIhRA.ybuEYxDoa8VjfJQa0rC81W-ay4o
