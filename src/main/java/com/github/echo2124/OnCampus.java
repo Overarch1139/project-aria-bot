@@ -54,6 +54,7 @@ public class OnCampus extends ListenerAdapter {
                     role.setName(ONCAMPUS_ROLE_NAME);
                     role.setColor(Color.cyan);
                     role.setHoisted(true);
+                    role.setIcon("");
                     role.queue();
                     oncampus=Main.constants.jda.getRolesByName(Main.constants.ONCAMPUS_ROLE_NAME, true).get(0);
                 }
@@ -86,6 +87,7 @@ public class OnCampus extends ListenerAdapter {
                         finalOnCampus.createCopy().queue(role -> {
                             System.out.println("[OnCampus] Creating copy of role");
                             role.getGuild().modifyRolePositions().selectPosition(role.getPosition()).moveTo(114).queue();
+                            role.getIcon();
                             ListenerAdapter reactionListener = new ListenerAdapter() {
                                 @Override
                                 public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
