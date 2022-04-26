@@ -87,7 +87,6 @@ public class OnCampus extends ListenerAdapter {
                         finalOnCampus.createCopy().queue(role -> {
                             System.out.println("[OnCampus] Creating copy of role");
                             role.getGuild().modifyRolePositions().selectPosition(role.getPosition()).moveTo(114).queue();
-                            role.getIcon();
                             ListenerAdapter reactionListener = new ListenerAdapter() {
                                 @Override
                                 public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
