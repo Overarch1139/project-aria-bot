@@ -17,7 +17,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
 // https://mvnrepository.com/artifact/net.dv8tion/JDA
-    implementation 'net.dv8tion:JDA:5.0.0-alpha.9'
+    implementation 'net.dv8tion:JDA:5.0.0-alpha.10'
     implementation 'javax.servlet:javax.servlet-api:4.0.1'
 // https://mvnrepository.com/artifact/com.rometools/rome
     implementation 'com.rometools:rome:1.18.0'

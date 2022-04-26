@@ -13,7 +13,7 @@ public class Misc {
         Guild guild =  Main.constants.jda.getGuildById(Main.constants.IT_SERVER);
         List<Member> members = guild.findMembers(member -> {
             if (member.getRoles().contains(guild.getRoleById(Main.constants.VERIFY_TIMEOUT_ROLE_ID))){
-                guild.removeRoleFromMember(member.getIdLong(), guild.getRoleById(Main.constants.VERIFY_TIMEOUT_ROLE_ID)).queue();
+             //   guild.removeRoleFromMember(member.getIdLong(), guild.getRoleById(Main.constants.VERIFY_TIMEOUT_ROLE_ID)).queue();
             }
             return true;
         }).get();

@@ -206,7 +206,7 @@ public class SSOVerify extends Thread {
 
     public void addVerifiedRole() {
         try {
-            guild.addRoleToMember(user.getIdLong(), guild.getRoleById(Main.constants.VERIFIED_ROLE_ID)).queue();
+            guild.addRoleToMember(UserSnowflake.fromId(user.getIdLong()), guild.getRoleById(Main.constants.VERIFIED_ROLE_ID)).queue();
             System.out.println("[VERBOSE] Added role");
         } catch (Exception e) {
             System.out.println(e.getMessage());

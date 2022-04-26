@@ -34,10 +34,10 @@
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.12.3/7275513412694a1aafd08c0287f48469fa0e6e17/jackson-annotations-2.12.3.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.squareup.okhttp3/okhttp/3.13.0/f53f6362226e4546c3987b8693f3d6976df8c797/okhttp-3.13.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jsoup/jsoup/1.14.3/c43a81e18e6d0eb71951aa031d55d5c293c531a6/jsoup-1.14.3.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.dv8tion/JDA/5.0.0-alpha.9/c9b1f1adb6efd0a32dc6d96e40a4f173cdf3406a/JDA-5.0.0-alpha.9.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.postgresql/postgresql/42.3.4/4fc2f1f47f685cf06ba684564ec6be8ed18791a7/postgresql-42.3.4.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.rometools/rome-utils/1.18.0/3dc676ae59ab0be7ccd2bd6d2214779b97eec7db/rome-utils-1.18.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.rometools/rome/1.18.0/bdc2933175bb9d92b41e4ace771f645f524d75d3/rome-1.18.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.dv8tion/JDA/5.0.0-alpha.10/3a96ab66fd76c3deccbb3fdc2c812c587285088/JDA-5.0.0-alpha.10.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
