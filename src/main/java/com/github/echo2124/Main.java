@@ -87,7 +87,6 @@ public class Main extends ListenerAdapter {
          if (!Boolean.parseBoolean(System.getenv("IS_DEV"))) {
              new News("Monash", db);
          }
-         new News("ExposureBuilding",db);
         OnCampus x =new OnCampus(false);
     }
 
@@ -147,16 +146,15 @@ public class Main extends ListenerAdapter {
                     msg.getAuthor().openPrivateChannel().flatMap(verifyinfoch -> verifyinfoch.sendMessageEmbeds(embed.build())).queue();
                     channel.sendMessage(user.getAsMention() + " , Please check your DMs, you should receive your verification data there.").queue();
                     }
-                /*
+
                 else if (msgContents.equals(">exposureBuilding")) {
                     new News("ExposureBuilding",db);
                 } else if (msgContents.equals(">exposureClass")) {
                     new News("ExposureClass",db);
-                }*/
+                }
                 }
             }
 
-        // TODO: Move this to database class
             // for commands with params
             if (channel.getId().equals(constants.permittedChannels[1])) {
                 if (msgContents.contains(">userLookup")) {

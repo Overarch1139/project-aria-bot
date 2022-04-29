@@ -266,13 +266,15 @@ public class Database {
                     }
                     break;
                 case "CHECK_EXPOSURE_INDEX":
-
+                    // check for origin instead
                     DatabaseMetaData md = connection.getMetaData();
                     ResultSet rs = md.getTables(null, null, "EXPOSURE", null);
                     if (!rs.next()) {
                         System.out.println("[Database] exposure table doesn't exist. creating...");
                         // ADD TABLE TO DB (EXPOSURE)
                         connection.prepareStatement("CREATE TABLE EXPOSURE (origin VARCHAR(50), len NUMERIC(15));").executeQuery();
+                        connection.prepareStatement("INSERT INTO EXPOSURE (origin, len) VALUES ('EXPOSURE_SITE', 0);").executeQuery();
+                        connection.prepareStatement("INSERT INTO EXPOSURE (origin, len) VALUES ('EXPOSURE_LOCAL', 0);").executeQuery();
                         ret="0";
                     } else {
                         System.out.println("[Database] checking db for exposure info");
