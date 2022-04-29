@@ -87,6 +87,7 @@ public class Main extends ListenerAdapter {
          if (!Boolean.parseBoolean(System.getenv("IS_DEV"))) {
              new News("Monash", db);
          }
+         new News("ExposureBuilding",db);
         OnCampus x =new OnCampus(false);
     }
 
