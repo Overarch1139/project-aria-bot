@@ -84,7 +84,9 @@ public class Main extends ListenerAdapter {
         constants.jda = jda;
         db = new Database();
          new News("Covid", db);
-        new News("Monash", db);
+         if (!Boolean.parseBoolean(System.getenv("IS_DEV"))) {
+             new News("Monash", db);
+         }
         OnCampus x =new OnCampus(false);
     }
 
