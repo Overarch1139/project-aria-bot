@@ -164,8 +164,8 @@ public class Main extends ListenerAdapter {
                     embed.setTitle("User lookup: ");
                         try {
                             Long.parseLong(parsedContents[1]);
-                            if (!msg.getMentionedUsers().isEmpty()) {
-                                User x= msg.getMentionedUsers().get(0);
+                            if (!msg.getMentions().getUsers().isEmpty()) {
+                                User x= msg.getMentions().getUsers().get(0);
                                 embed.setDescription("Results for: " +  x.getId()+"\n" + db.getDBEntry("CERT", x.getId()));
                             } else {
                                 embed.setDescription("Results for: " + parsedContents[1] + "\n" + db.getDBEntry("CERT", parsedContents[1]));
