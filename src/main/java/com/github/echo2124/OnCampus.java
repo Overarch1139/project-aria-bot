@@ -82,7 +82,10 @@ public class OnCampus extends ListenerAdapter {
                         message.addReaction(checkUnicode).queue();
                         // recreating role
                         for (Role role: Main.constants.jda.getRolesByName(Main.constants.ONCAMPUS_ROLE_NAME, true)) {
-                            role.delete().queue();
+                            try {
+                                role.delete().queue();
+                            } catch (Exception e) {
+                            }
                         }
                         finalOnCampus.createCopy().queue(role -> {
                             System.out.println("[OnCampus] Creating copy of role");
