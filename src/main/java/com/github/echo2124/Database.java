@@ -266,7 +266,7 @@ public class Database {
                     }
                     break;
                 case "CHECK_EXPOSURE_INDEX":
-                    // check for origin instead
+                    //TODO check for origin instead (there is probably an issue with the current method of checking for a table which is causing these sorts of problems that exist currently)
                     DatabaseMetaData md = connection.getMetaData();
                     ResultSet rs = md.getTables(null, null, "EXPOSURE", null);
                     if (!rs.next()) {
@@ -278,7 +278,7 @@ public class Database {
                         ret="0";
                     } else {
                         System.out.println("[Database] checking db for exposure info");
-                        sqlQuery = connection.prepareStatement("SELECT * FROM EXPOSURE WHERE origin=?");
+                        sqlQuery = connection.prepareStatement("SELECT len FROM EXPOSURE WHERE origin=?");
                         sqlQuery.setString(1, req);
                         if (sqlQuery != null) {
                             ResultSet res = sqlQuery.executeQuery();
