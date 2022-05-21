@@ -69,7 +69,13 @@ public class OnCampus extends ListenerAdapter {
 
                 }
                 // recreating channel
-                msgChannel.delete().queue();
+                for (TextChannel msgCh: Main.constants.jda.getTextChannelsByName(Main.constants.ONCAMPUS_CHANNEL_NAME, true)) {
+                    try {
+                        msgCh.delete().queue();
+                    } catch (Exception e) {
+                    }
+                }
+
                 msgChannel.createCopy().setPosition(msgChannel.getPosition()).queue(textChannel -> {
 
                     EmbedBuilder embed = new EmbedBuilder();
