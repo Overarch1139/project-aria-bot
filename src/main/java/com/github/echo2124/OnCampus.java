@@ -4,8 +4,10 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.GuildAction;
@@ -62,9 +64,9 @@ public class OnCampus extends ListenerAdapter {
                 TextChannel msgChannel;
                 try {
                      msgChannel = Main.constants.jda.getTextChannelsByName(Main.constants.ONCAMPUS_CHANNEL_NAME, true).get(0);
-                } catch (Exception e) {
+                } catch (ErrorResponseException e) {
                     // might need to explicitly state perms here, I guess we will find out
-                    ChannelAction newOnCampusChannel=Main.constants.jda.getGuilds().get(0).createTextChannel(Main.constants.ONCAMPUS_CHANNEL_NAME, Main.constants.jda.getGuilds().get(0).getCategoryById(ARIA_CHANNEL_CATEGORY_ID));
+                    //  ChannelAction newOnCampusChannel=Main.constants.jda.getGuilds().get(0).createTextChannel(Main.constants.ONCAMPUS_CHANNEL_NAME, Main.constants.jda.getGuilds().get(0).getCategoryById(ARIA_CHANNEL_CATEGORY_ID));
                     msgChannel=Main.constants.jda.getTextChannelsByName(Main.constants.ONCAMPUS_CHANNEL_NAME, true).get(0);
 
                 }
@@ -72,7 +74,8 @@ public class OnCampus extends ListenerAdapter {
                 for (TextChannel msgCh: Main.constants.jda.getTextChannelsByName(Main.constants.ONCAMPUS_CHANNEL_NAME, true)) {
                     try {
                         msgCh.delete().queue();
-                    } catch (Exception e) {
+                    } catch (ErrorResponseException e) {
+
                     }
                 }
 
@@ -90,7 +93,7 @@ public class OnCampus extends ListenerAdapter {
                         for (Role role: Main.constants.jda.getRolesByName(Main.constants.ONCAMPUS_ROLE_NAME, true)) {
                             try {
                                 role.delete().queue();
-                            } catch (Exception e) {
+                            } catch (ErrorResponseException e) {
                             }
                         }
                         finalOnCampus.createCopy().queue(role -> {
