@@ -179,8 +179,8 @@ public class Main extends ListenerAdapter {
                     channel.sendMessageEmbeds(embed.build()).queue();
 
                 } else if (msgContents.contains(">resetOnCampus")) {
-                    OnCampus x =new OnCampus(true);
-                    channel.sendMessage("On Campus feature has been successfully reset!");
+                    //OnCampus x =new OnCampus(true);
+                   // channel.sendMessage("On Campus feature has been successfully reset!");
                 } else if (msgContents.contains(">serviceMode")) {
                     String[] parsedContents = msgContents.split(" ");
                     serviceMode=true;
