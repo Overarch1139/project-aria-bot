@@ -29,9 +29,10 @@ import java.util.function.Consumer;
 import static com.github.echo2124.Main.constants.ARIA_CHANNEL_CATEGORY_ID;
 import static com.github.echo2124.Main.constants.ONCAMPUS_ROLE_NAME;
 
+/*
 public class OnCampus extends ListenerAdapter {
     public OnCampus(Boolean state) {
-        initScheduler(state);
+           initScheduler(state);
     }
 
     public void initScheduler(Boolean state) {
@@ -129,3 +130,4 @@ public class OnCampus extends ListenerAdapter {
 
 
 }
+*/
