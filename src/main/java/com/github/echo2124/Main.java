@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 import java.awt.*;
 
@@ -49,8 +50,8 @@ public class Main extends ListenerAdapter {
         public static String COVID_UPDATE_CHANNEL="913081128188014592";
         public static Database db=null;
         public static boolean serviceMode=false;
-        public static String ONCAMPUS_ROLE_NAME="On Campus";
-        public static String ONCAMPUS_CHANNEL_NAME="oncampus";
+        public static String ONCAMPUS_ROLE_ID ="980368698017718272";
+        public static String ONCAMPUS_CHANNEL_ID ="978762060655632424";
         public static String EXPOSURE_SITE_CHANNEL="951902910759977001";
         public static String ARIA_CHANNEL_CATEGORY_ID="913080878094241892";
 
@@ -71,15 +72,16 @@ public class Main extends ListenerAdapter {
             constants.permittedChannels[1]="912353440749985852";
             constants.NEWS_CHANNEL="927941422512996353";
             constants.EXPOSURE_SITE_CHANNEL="927941422512996353";
-            constants.ONCAMPUS_CHANNEL_NAME="oncampus";
-            constants.ONCAMPUS_ROLE_NAME="oncampus";
+            constants.ONCAMPUS_CHANNEL_ID ="960693585508982824";
+            constants.ONCAMPUS_ROLE_ID ="oncampus";
         }
         Close close = new Close();
         Runtime.getRuntime().addShutdownHook(close);
         JDA jda = JDABuilder.createLight(BOT_TOKEN, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES)
                 .addEventListeners(new Main())
                 .setActivity(Activity.playing(activity))
-                .enableIntents(GatewayIntent.GUILD_MESSAGE_REACTIONS)
+                .enableIntents(GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MEMBERS)
+                .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .build();
         constants.jda = jda;
         db = new Database();
@@ -179,8 +181,8 @@ public class Main extends ListenerAdapter {
                     channel.sendMessageEmbeds(embed.build()).queue();
 
                 } else if (msgContents.contains(">resetOnCampus")) {
-                    //OnCampus x =new OnCampus(true);
-                   // channel.sendMessage("On Campus feature has been successfully reset!");
+                    OnCampus x =new OnCampus(true);
+                   channel.sendMessage("On Campus feature has been successfully reset!");
                 } else if (msgContents.contains(">serviceMode")) {
                     String[] parsedContents = msgContents.split(" ");
                     serviceMode=true;

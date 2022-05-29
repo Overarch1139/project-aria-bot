@@ -1,40 +1,36 @@
 package com.github.echo2124;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
-import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.requests.ErrorResponse;
-import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.requests.restaction.ChannelAction;
-import net.dv8tion.jda.api.requests.restaction.GuildAction;
 import net.dv8tion.jda.api.requests.restaction.RoleAction;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.concurrent.CompletableFuture;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
 
-import static com.github.echo2124.Main.constants.ARIA_CHANNEL_CATEGORY_ID;
-import static com.github.echo2124.Main.constants.ONCAMPUS_ROLE_NAME;
+import static com.github.echo2124.Main.constants.ONCAMPUS_CHANNEL_ID;
+import static com.github.echo2124.Main.constants.ONCAMPUS_ROLE_ID;
 
-/*
+
 public class OnCampus extends ListenerAdapter {
     public OnCampus(Boolean state) {
            initScheduler(state);
     }
 
+
+    /* TODO LIST
+
+     */
     public void initScheduler(Boolean state) {
 
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Australia/Melbourne"));
@@ -47,74 +43,41 @@ public class OnCampus extends ListenerAdapter {
         Runnable task = new Runnable() {
             @Override
             public void run() {
+                Guild guild = Main.constants.jda.getGuilds().get(0);
                 String checkUnicode="U+2705";
                 System.out.println("[OnCampus] Running task");
-                Role oncampus;
-                try {
-                     oncampus=Main.constants.jda.getRolesByName(Main.constants.ONCAMPUS_ROLE_NAME, true).get(0);
-                } catch (Exception e) {
-                    RoleAction role =Main.constants.jda.getGuilds().get(0).createRole();
-                    role.setName(ONCAMPUS_ROLE_NAME);
-                    role.setColor(Color.cyan);
-                    role.setHoisted(true);
-                    role.setIcon("");
-                    role.queue();
-                    oncampus=Main.constants.jda.getRolesByName(Main.constants.ONCAMPUS_ROLE_NAME, true).get(0);
+                Role oncampus=Main.constants.jda.getRoleById(ONCAMPUS_ROLE_ID);
+                TextChannel msgChannel=Main.constants.jda.getTextChannelById(ONCAMPUS_CHANNEL_ID);
+                // TODO: remove *all* messages from channel & remove *all* users from role before creating msg
+                MessageHistory msgHistory= msgChannel.getHistory();
+                msgHistory.retrievePast(1).queue(messages -> {
+                    messages.get(0).delete().queue();
+                });
+                Collection<Member> members = guild.getMembersWithRoles(oncampus);
+                for (Member member: members) {
+                    guild.removeRoleFromMember(member, oncampus).queue();
                 }
-                Role finalOnCampus=oncampus;
-                TextChannel msgChannel;
-                try {
-                     msgChannel = Main.constants.jda.getTextChannelsByName(Main.constants.ONCAMPUS_CHANNEL_NAME, true).get(0);
-                } catch (ErrorResponseException e) {
-                    // might need to explicitly state perms here, I guess we will find out
-                    //  ChannelAction newOnCampusChannel=Main.constants.jda.getGuilds().get(0).createTextChannel(Main.constants.ONCAMPUS_CHANNEL_NAME, Main.constants.jda.getGuilds().get(0).getCategoryById(ARIA_CHANNEL_CATEGORY_ID));
-                    msgChannel=Main.constants.jda.getTextChannelsByName(Main.constants.ONCAMPUS_CHANNEL_NAME, true).get(0);
-
-                }
-                // recreating channel
-                for (TextChannel msgCh: Main.constants.jda.getTextChannelsByName(Main.constants.ONCAMPUS_CHANNEL_NAME, true)) {
-                    try {
-                        msgCh.delete().queue();
-                    } catch (ErrorResponseException e) {
-
-                    }
-                }
-
-                msgChannel.createCopy().setPosition(msgChannel.getPosition()).queue(textChannel -> {
-
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.setTitle("Who Is On Campus today?");
                     embed.setDescription("React to the existing reaction below to assign yourself to the OnCampus role");
                     embed.setAuthor("IT @ Monash");
                     embed.setColor(Color.CYAN);
                     embed.setFooter("NOTE: This post will be recreated everyday & role will be removed from everyone");
-                    textChannel.sendMessageEmbeds(embed.build()).queue(message -> {
+                    msgChannel.sendMessageEmbeds(embed.build()).queue(message -> {
                         message.addReaction(checkUnicode).queue();
-                        // recreating role
-                        for (Role role: Main.constants.jda.getRolesByName(Main.constants.ONCAMPUS_ROLE_NAME, true)) {
-                            try {
-                                role.delete().queue();
-                            } catch (ErrorResponseException e) {
-                            }
-                        }
-                        finalOnCampus.createCopy().queue(role -> {
-                            System.out.println("[OnCampus] Creating copy of role");
-                            role.getGuild().modifyRolePositions().selectPosition(role.getPosition()).moveTo(114).queue();
                             ListenerAdapter reactionListener = new ListenerAdapter() {
                                 @Override
                                 public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
                                     System.out.println("[OnCampus] React Listener triggered");
                                     if (event.getMessageId().equals(message.getId()) && event.getReactionEmote().getName().equals("✅") && !event.getMember().getUser().isBot()) {
                                         System.out.println("[OnCampus] Added role to member");
-                                        event.getGuild().addRoleToMember(event.getMember(),role).queue();
+                                        event.getGuild().addRoleToMember(event.getMember(),oncampus).queue();
                                     }
                                     super.onMessageReactionAdd(event);
                                 }
                             };
                             Main.constants.jda.addEventListener(reactionListener);
                         });
-                        });
-                });
             }
         };
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -130,4 +93,3 @@ public class OnCampus extends ListenerAdapter {
 
 
 }
-*/
