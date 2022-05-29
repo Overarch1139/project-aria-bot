@@ -9,11 +9,13 @@ import net.dv8tion.jda.api.requests.restaction.RoleAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Collection;
-import java.util.Iterator;
+import java.time.temporal.TemporalAdjuster;
+import java.time.temporal.TemporalAdjusters;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -27,10 +29,6 @@ public class OnCampus extends ListenerAdapter {
            initScheduler(state);
     }
 
-
-    /* TODO LIST
-
-     */
     public void initScheduler(Boolean state) {
 
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Australia/Melbourne"));
@@ -43,13 +41,15 @@ public class OnCampus extends ListenerAdapter {
         Runnable task = new Runnable() {
             @Override
             public void run() {
+                Calendar calendar = Calendar.getInstance();
+                int day = calendar.get(Calendar.DAY_OF_WEEK);
                 Guild guild = Main.constants.jda.getGuilds().get(0);
-                String checkUnicode="U+2705";
+                String checkUnicode = "U+2705";
                 System.out.println("[OnCampus] Running task");
-                Role oncampus=Main.constants.jda.getRoleById(ONCAMPUS_ROLE_ID);
-                TextChannel msgChannel=Main.constants.jda.getTextChannelById(ONCAMPUS_CHANNEL_ID);
+                Role oncampus = Main.constants.jda.getRoleById(ONCAMPUS_ROLE_ID);
+                TextChannel msgChannel = Main.constants.jda.getTextChannelById(ONCAMPUS_CHANNEL_ID);
                 // TODO: remove *all* messages from channel & remove *all* users from role before creating msg
-                MessageHistory msgHistory= msgChannel.getHistory();
+                MessageHistory msgHistory = msgChannel.getHistory();
                 try {
                     msgHistory.retrievePast(1).queue(messages -> {
                         messages.get(0).delete().queue();
@@ -58,9 +58,11 @@ public class OnCampus extends ListenerAdapter {
                     System.out.println("[OnCampus] Unable to grab last message");
                 }
                 Collection<Member> members = guild.getMembersWithRoles(oncampus);
-                for (Member member: members) {
+                for (Member member : members) {
                     guild.removeRoleFromMember(member, oncampus).queue();
                 }
+
+                if (day!=Calendar.SUNDAY && day!=Calendar.SATURDAY || state) {
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.setTitle("Who Is On Campus today?");
                     embed.setDescription("React to the existing reaction below to assign yourself to the OnCampus role");
@@ -69,19 +71,22 @@ public class OnCampus extends ListenerAdapter {
                     embed.setFooter("NOTE: This post will be recreated everyday & role will be removed from everyone");
                     msgChannel.sendMessageEmbeds(embed.build()).queue(message -> {
                         message.addReaction(checkUnicode).queue();
-                            ListenerAdapter reactionListener = new ListenerAdapter() {
-                                @Override
-                                public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
-                                    System.out.println("[OnCampus] React Listener triggered");
-                                    if (event.getMessageId().equals(message.getId()) && event.getReactionEmote().getName().equals("✅") && !event.getMember().getUser().isBot()) {
-                                        System.out.println("[OnCampus] Added role to member");
-                                        event.getGuild().addRoleToMember(event.getMember(),oncampus).queue();
-                                    }
-                                    super.onMessageReactionAdd(event);
+                        ListenerAdapter reactionListener = new ListenerAdapter() {
+                            @Override
+                            public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
+                                System.out.println("[OnCampus] React Listener triggered");
+                                if (event.getMessageId().equals(message.getId()) && event.getReactionEmote().getName().equals("✅") && !event.getMember().getUser().isBot()) {
+                                    System.out.println("[OnCampus] Added role to member");
+                                    event.getGuild().addRoleToMember(event.getMember(), oncampus).queue();
                                 }
-                            };
-                            Main.constants.jda.addEventListener(reactionListener);
-                        });
+                                super.onMessageReactionAdd(event);
+                            }
+                        };
+                        Main.constants.jda.addEventListener(reactionListener);
+                    });
+                } else {
+
+                }
             }
         };
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -93,7 +98,6 @@ public class OnCampus extends ListenerAdapter {
             task.run();
         }
     }
-
 
 
 }
