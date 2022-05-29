@@ -50,9 +50,13 @@ public class OnCampus extends ListenerAdapter {
                 TextChannel msgChannel=Main.constants.jda.getTextChannelById(ONCAMPUS_CHANNEL_ID);
                 // TODO: remove *all* messages from channel & remove *all* users from role before creating msg
                 MessageHistory msgHistory= msgChannel.getHistory();
-                msgHistory.retrievePast(1).queue(messages -> {
-                    messages.get(0).delete().queue();
-                });
+                try {
+                    msgHistory.retrievePast(1).queue(messages -> {
+                        messages.get(0).delete().queue();
+                    });
+                } catch (Exception e) {
+                    System.out.println("[OnCampus] Unable to grab last message");
+                }
                 Collection<Member> members = guild.getMembersWithRoles(oncampus);
                 for (Member member: members) {
                     guild.removeRoleFromMember(member, oncampus).queue();
