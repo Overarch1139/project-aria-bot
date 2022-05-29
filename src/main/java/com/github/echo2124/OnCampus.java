@@ -4,8 +4,10 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.GuildAction;
@@ -27,9 +29,10 @@ import java.util.function.Consumer;
 import static com.github.echo2124.Main.constants.ARIA_CHANNEL_CATEGORY_ID;
 import static com.github.echo2124.Main.constants.ONCAMPUS_ROLE_NAME;
 
+/*
 public class OnCampus extends ListenerAdapter {
     public OnCampus(Boolean state) {
-        initScheduler(state);
+           initScheduler(state);
     }
 
     public void initScheduler(Boolean state) {
@@ -62,14 +65,21 @@ public class OnCampus extends ListenerAdapter {
                 TextChannel msgChannel;
                 try {
                      msgChannel = Main.constants.jda.getTextChannelsByName(Main.constants.ONCAMPUS_CHANNEL_NAME, true).get(0);
-                } catch (Exception e) {
+                } catch (ErrorResponseException e) {
                     // might need to explicitly state perms here, I guess we will find out
-                    ChannelAction newOnCampusChannel=Main.constants.jda.getGuilds().get(0).createTextChannel(Main.constants.ONCAMPUS_CHANNEL_NAME, Main.constants.jda.getGuilds().get(0).getCategoryById(ARIA_CHANNEL_CATEGORY_ID));
+                    //  ChannelAction newOnCampusChannel=Main.constants.jda.getGuilds().get(0).createTextChannel(Main.constants.ONCAMPUS_CHANNEL_NAME, Main.constants.jda.getGuilds().get(0).getCategoryById(ARIA_CHANNEL_CATEGORY_ID));
                     msgChannel=Main.constants.jda.getTextChannelsByName(Main.constants.ONCAMPUS_CHANNEL_NAME, true).get(0);
 
                 }
                 // recreating channel
-                msgChannel.delete().queue();
+                for (TextChannel msgCh: Main.constants.jda.getTextChannelsByName(Main.constants.ONCAMPUS_CHANNEL_NAME, true)) {
+                    try {
+                        msgCh.delete().queue();
+                    } catch (ErrorResponseException e) {
+
+                    }
+                }
+
                 msgChannel.createCopy().setPosition(msgChannel.getPosition()).queue(textChannel -> {
 
                     EmbedBuilder embed = new EmbedBuilder();
@@ -82,7 +92,10 @@ public class OnCampus extends ListenerAdapter {
                         message.addReaction(checkUnicode).queue();
                         // recreating role
                         for (Role role: Main.constants.jda.getRolesByName(Main.constants.ONCAMPUS_ROLE_NAME, true)) {
-                            role.delete().queue();
+                            try {
+                                role.delete().queue();
+                            } catch (ErrorResponseException e) {
+                            }
                         }
                         finalOnCampus.createCopy().queue(role -> {
                             System.out.println("[OnCampus] Creating copy of role");
@@ -117,3 +130,4 @@ public class OnCampus extends ListenerAdapter {
 
 
 }
+*/

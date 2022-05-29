@@ -84,10 +84,8 @@ public class Main extends ListenerAdapter {
         constants.jda = jda;
         db = new Database();
          new News("Covid", db);
-         if (!Boolean.parseBoolean(System.getenv("IS_DEV"))) {
-             new News("Monash", db);
-         }
-        OnCampus x =new OnCampus(false);
+        new News("Monash", db);
+       // OnCampus x =new OnCampus(false);
     }
 
     public void onMessageReceived(MessageReceivedEvent event) {
@@ -146,15 +144,16 @@ public class Main extends ListenerAdapter {
                     msg.getAuthor().openPrivateChannel().flatMap(verifyinfoch -> verifyinfoch.sendMessageEmbeds(embed.build())).queue();
                     channel.sendMessage(user.getAsMention() + " , Please check your DMs, you should receive your verification data there.").queue();
                     }
-
+                /*
                 else if (msgContents.equals(">exposureBuilding")) {
                     new News("ExposureBuilding",db);
                 } else if (msgContents.equals(">exposureClass")) {
                     new News("ExposureClass",db);
-                }
+                }*/
                 }
             }
 
+        // TODO: Move this to database class
             // for commands with params
             if (channel.getId().equals(constants.permittedChannels[1])) {
                 if (msgContents.contains(">userLookup")) {
@@ -165,8 +164,8 @@ public class Main extends ListenerAdapter {
                     embed.setTitle("User lookup: ");
                         try {
                             Long.parseLong(parsedContents[1]);
-                            if (!msg.getMentionedUsers().isEmpty()) {
-                                User x= msg.getMentionedUsers().get(0);
+                            if (!msg.getMentions().getUsers().isEmpty()) {
+                                User x= msg.getMentions().getUsers().get(0);
                                 embed.setDescription("Results for: " +  x.getId()+"\n" + db.getDBEntry("CERT", x.getId()));
                             } else {
                                 embed.setDescription("Results for: " + parsedContents[1] + "\n" + db.getDBEntry("CERT", parsedContents[1]));
@@ -180,8 +179,8 @@ public class Main extends ListenerAdapter {
                     channel.sendMessageEmbeds(embed.build()).queue();
 
                 } else if (msgContents.contains(">resetOnCampus")) {
-                    OnCampus x =new OnCampus(true);
-                    channel.sendMessage("On Campus feature has been successfully reset!");
+                    //OnCampus x =new OnCampus(true);
+                   // channel.sendMessage("On Campus feature has been successfully reset!");
                 } else if (msgContents.contains(">serviceMode")) {
                     String[] parsedContents = msgContents.split(" ");
                     serviceMode=true;
