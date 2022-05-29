@@ -62,7 +62,7 @@ public class OnCampus extends ListenerAdapter {
                     guild.removeRoleFromMember(member, oncampus).queue();
                 }
 
-                if (day!=Calendar.SUNDAY && day!=Calendar.SATURDAY) {
+                if (day!=Calendar.SUNDAY && day!=Calendar.SATURDAY || state) {
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.setTitle("Who Is On Campus today?");
                     embed.setDescription("React to the existing reaction below to assign yourself to the OnCampus role");
