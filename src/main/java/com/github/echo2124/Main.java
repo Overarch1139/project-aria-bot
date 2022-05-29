@@ -73,7 +73,7 @@ public class Main extends ListenerAdapter {
             constants.NEWS_CHANNEL="927941422512996353";
             constants.EXPOSURE_SITE_CHANNEL="927941422512996353";
             constants.ONCAMPUS_CHANNEL_ID ="960693585508982824";
-            constants.ONCAMPUS_ROLE_ID ="oncampus";
+            constants.ONCAMPUS_ROLE_ID ="960693586163269683";
         }
         Close close = new Close();
         Runtime.getRuntime().addShutdownHook(close);
