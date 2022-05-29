@@ -70,7 +70,7 @@ public class Main extends ListenerAdapter {
             constants.COVID_UPDATE_CHANNEL="912726004886294569";
             constants.permittedChannels[0]="912353229285765172";
             constants.permittedChannels[1]="912353440749985852";
-            constants.NEWS_CHANNEL="927941422512996353";
+            constants.NEWS_CHANNEL="957640138597490688";
             constants.EXPOSURE_SITE_CHANNEL="927941422512996353";
             constants.ONCAMPUS_CHANNEL_ID ="960693585508982824";
             constants.ONCAMPUS_ROLE_ID ="960693586163269683";
