@@ -8,9 +8,7 @@ import java.time.ZonedDateTime;
 public class ActivityLog {
     TextChannel activityCh;
     public ActivityLog() {
-
         activityCh=Main.constants.jda.getTextChannelById(Main.constants.ACTIVITY_LOG_ID);
-
     }
 
 
@@ -40,7 +38,7 @@ public class ActivityLog {
         concat+=msg;
         concat+=endingSymbol;
         concat+="\n```";
-        activityCh.sendMessage("").queue();
+        activityCh.sendMessage(concat).queue();
     }
 
 
