@@ -53,7 +53,7 @@ public class OnCampus extends ListenerAdapter {
                 System.out.println("[OnCampus] Running task");
                 Role oncampus = Main.constants.jda.getRoleById(ONCAMPUS_ROLE_ID);
                 TextChannel msgChannel = Main.constants.jda.getTextChannelById(ONCAMPUS_CHANNEL_ID);
-
+                resetEntities(oncampus, msgChannel, guild);
                 if (day!=Calendar.SUNDAY && day!=Calendar.SATURDAY || state) {
                     generateMsg(oncampus,msgChannel);
                 }
@@ -95,11 +95,17 @@ public class OnCampus extends ListenerAdapter {
                 messages.get(0).delete().queue();
             });
         } catch (Exception e) {
+            activityLog.sendActivityMsg("[ONCAMPUS] Unable to fetch last message",2);
             System.out.println("[OnCampus] Unable to grab last message");
         }
-        Collection<Member> members = guild.getMembersWithRoles(oncampus);
-        for (Member member : members) {
-            guild.removeRoleFromMember(member, oncampus).queue();
+        try {
+            Collection<Member> members = guild.getMembersWithRoles(oncampus);
+            for (Member member : members) {
+                guild.removeRoleFromMember(member, oncampus).queue();
+            }
+        } catch (Exception e) {
+            System.out.println("[OnCampus] Unable to remove role from users");
+            activityLog.sendActivityMsg("[ONCAMPUS] No users to remove role from",2);
         }
         activityLog.sendActivityMsg("[ONCAMPUS] Removed old On Campus message & removed all users from role",1);
     }
