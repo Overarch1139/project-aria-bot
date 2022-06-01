@@ -78,8 +78,7 @@ public class Main extends ListenerAdapter {
             constants.ONCAMPUS_ROLE_ID ="960693586163269683";
             constants.ACTIVITY_LOG_ID="981456425530298429";
         }
-        Close close = new Close();
-        Runtime.getRuntime().addShutdownHook(close);
+
         JDA jda = JDABuilder.createLight(BOT_TOKEN, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES)
                 .addEventListeners(new Main())
                 .setActivity(Activity.playing(activity))
@@ -88,6 +87,8 @@ public class Main extends ListenerAdapter {
                 .build();
         activityLog=new ActivityLog();
         constants.jda = jda;
+        Close close = new Close();
+        Runtime.getRuntime().addShutdownHook(close);
         activityLog.sendActivityMsg("[MAIN] Aria Bot is starting up...",1);
         db = new Database();
          new News("Covid", db);
