@@ -54,6 +54,7 @@ public class Main extends ListenerAdapter {
         public static String ONCAMPUS_CHANNEL_ID ="978762060655632424";
         public static String EXPOSURE_SITE_CHANNEL="951902910759977001";
         public static String ARIA_CHANNEL_CATEGORY_ID="913080878094241892";
+        public static String ACTIVITY_LOG_ID="";
 
     }
     // actual bot ODc4OTQyNzk2MjYwNzI0NzY2.YSIhRA.ybuEYxDoa8VjfJQa0rC81W-ay4o
@@ -74,6 +75,7 @@ public class Main extends ListenerAdapter {
             constants.EXPOSURE_SITE_CHANNEL="927941422512996353";
             constants.ONCAMPUS_CHANNEL_ID ="960693585508982824";
             constants.ONCAMPUS_ROLE_ID ="960693586163269683";
+            constants.ACTIVITY_LOG_ID="981456425530298429";
         }
         Close close = new Close();
         Runtime.getRuntime().addShutdownHook(close);
