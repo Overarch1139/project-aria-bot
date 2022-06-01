@@ -1,19 +1,15 @@
 package com.github.echo2124;
 
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 public class ActivityLog {
-    TextChannel activityCh=null;
-    public ActivityLog(String activity_ch_id) {
-        activityCh=Main.constants.jda.getTextChannelById(activity_ch_id);
-    }
-
-
     // 1 = info; 2=warn; 3=error;
     public void sendActivityMsg(String msg, int type) {
+        MessageChannel activityCh=Main.constants.jda.getTextChannelById(Main.constants.ACTIVITY_LOG_ID);
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Australia/Melbourne"));
         String concat="```";
         String endingSymbol="";
@@ -40,6 +36,4 @@ public class ActivityLog {
         concat+="\n```";
         activityCh.sendMessage(concat).queue();
     }
-
-
 }

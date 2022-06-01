@@ -86,7 +86,7 @@ public class Main extends ListenerAdapter {
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .build();
         constants.jda = jda;
-        activityLog = new ActivityLog(ACTIVITY_LOG_ID);
+        activityLog = new ActivityLog();
         Runtime.getRuntime().addShutdownHook(new Close());
         activityLog.sendActivityMsg("[MAIN] Aria Bot is starting up...",1);
         db = new Database();
