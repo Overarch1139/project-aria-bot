@@ -13,6 +13,8 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
+import static com.github.echo2124.Main.constants.activityLog;
+
 public class Database {
     private String DB_URL;
     private String USERNAME;
@@ -122,6 +124,7 @@ public class Database {
             System.err.println(e.getClass().getName()+": "+e.getMessage());
             System.exit(0);
         }
+        activityLog.sendActivityMsg("[DATABASE] Connected Successfully",1);
         System.out.println("Opened database successfully");
     return connect;
     }
@@ -141,6 +144,7 @@ public class Database {
         } catch (Exception e) {
             if (!e.getMessage().contains("warn_module")) {
                 System.err.println("Unable to setup DB " + e.getMessage());
+                activityLog.sendActivityMsg("[DATABASE] Unable to setup DB",2);
             }
         }
     }
@@ -154,6 +158,7 @@ public class Database {
             case "CERT":
                     if (action.equals("add")) {
                         try {
+                            activityLog.sendActivityMsg("[DATABASE] Inserting verify data into verify table",1);
                              sqlQuery=connection.prepareStatement("INSERT INTO CERT_MODULE VALUES (?,?,?,?,?)");
                             sqlQuery.setLong(1, Long.parseLong(data.get("discordID").toString()));
                             sqlQuery.setString(2, data.get("name").toString());
@@ -172,6 +177,7 @@ public class Database {
                             sqlQuery.setString(1, action);
                             sqlQuery.execute();
                         }
+                        activityLog.sendActivityMsg("[DATABASE] Updating news data in news table",1);
                         sqlQuery = connection.prepareStatement("INSERT INTO NEWS VALUES (?,?)");
                         sqlQuery.setString(1, action);
                         sqlQuery.setString(2, data.get("title").toString());
@@ -181,7 +187,7 @@ public class Database {
                 break;
             case "EXPOSURE_SITE":
                 try {
-
+                    activityLog.sendActivityMsg("[DATABASE] Inserting exposure data into exposure table",1);
                     sqlQuery = connection.prepareStatement("INSERT INTO EXPOSURE VALUES (?,?)");
                     sqlQuery.setString(1,data.get("col_name").toString());
                     sqlQuery.setInt(2,(int)data.get("size"));
@@ -211,6 +217,7 @@ public class Database {
         try {
             switch (originModule) {
                 case "CERT":
+                    activityLog.sendActivityMsg("[DATABASE] Fetching verify data from verify table",1);
                 sqlQuery=connection.prepareStatement("SELECT * FROM CERT_MODULE WHERE discordID=?");
                 sqlQuery.setLong(1,Long.parseLong(req));
                 if (sqlQuery!=null) {
@@ -229,6 +236,7 @@ public class Database {
                 }
                 break;
                 case "NEWS_CHECK_CATEGORY":
+                    activityLog.sendActivityMsg("[DATABASE] Fetching news data from news table",1);
                     sqlQuery=connection.prepareStatement("SELECT * FROM NEWS WHERE origin=?");
                     sqlQuery.setString(1, req);
                     if (sqlQuery!=null) {
@@ -266,6 +274,7 @@ public class Database {
                     }
                     break;
                 case "CHECK_EXPOSURE_INDEX":
+                    activityLog.sendActivityMsg("[DATABASE] Fetching exposure data from exposure table",1);
                     //TODO check for origin instead (there is probably an issue with the current method of checking for a table which is causing these sorts of problems that exist currently)
                     DatabaseMetaData md = connection.getMetaData();
                     ResultSet rs = md.getTables(null, null, "EXPOSURE", null);

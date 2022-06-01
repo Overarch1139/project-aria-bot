@@ -28,6 +28,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static com.github.echo2124.Main.constants.activityLog;
+
 public class News {
 
     private String cachedTitle="";
@@ -76,6 +78,7 @@ public class News {
                 fetchCovidExposureInfo(doc);
             } catch (Exception e) {
                 System.out.println("[Exposure Site] ERROR: "+e.getMessage());
+                activityLog.sendActivityMsg("[NEWS] Unable to get exposure info: "+e.getMessage(),3);
             }
         }
     }
@@ -114,6 +117,7 @@ public class News {
             public void onStatus(Status status) {
                 if (status.getUser().getId()==43064490){
                    if (status.getText().contains("#COVID19VicData") || status.getText().contains("More data soon")) {
+                       activityLog.sendActivityMsg("[NEWS] Building covid update msg",1);
                        buildMsgFromTweet(status, "covid_update");
                    }
                 }
@@ -167,20 +171,24 @@ public class News {
 
     public void initRSS(String feedURL, String category, Boolean checkLatest) {
         try {
+            activityLog.sendActivityMsg("[NEWS] Initialising RSS Feed listener",1);
             parseRSS(feedURL);
            // buildMSG(this.feed);
             sendMsg(this.feed,category,checkLatest);
         } catch (Exception e) {
+            activityLog.sendActivityMsg("[NEWS] Unable to initialise RSS Feed listener: "+e.getMessage(),3);
             throw new Error(e);
         }
     }
 
     public void parseRSS(String feedURL) throws MalformedURLException {
+        activityLog.sendActivityMsg("[NEWS] Parsing received RSS Feed",1);
         URL newURL = new URL(feedURL);
         SyndFeed feed=null;
         try {
             feed = new SyndFeedInput().build(new XmlReader(newURL));
         } catch (Exception e) {
+            activityLog.sendActivityMsg("[NEWS] Unable to parse RSS Feed: "+e.getMessage(),3);
         }
         this.feed=feed;
     }
@@ -201,6 +209,7 @@ public class News {
     }
 
     public void sendMsg(SyndFeed feed, String category, Boolean checkState) {
+        activityLog.sendActivityMsg("[NEWS] Sending Monash News update",1);
         if (!checkState || !Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_LASTITLE",category+"##"+feed.getEntries().get(feedIndex).getTitle()))) {
             MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.NEWS_CHANNEL);
             EmbedBuilder newEmbed = new EmbedBuilder();
@@ -264,6 +273,7 @@ public class News {
     }
 
     public void fetchCovidExposureInfo(Document doc) {
+        activityLog.sendActivityMsg("[NEWS] Fetching exposure info from remote",1);
         JSONObject jsonParentObject = new JSONObject();
         int numExposures = 0;
         //JSONArray list = new JSONArray();
@@ -305,6 +315,7 @@ public class News {
     }
 
     public void buildMsgFromWebScrape(JSONObject data) {
+        activityLog.sendActivityMsg("[NEWS] Building exposure message",1);
         MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.EXPOSURE_SITE_CHANNEL);
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle("Exposure Sites Update!");

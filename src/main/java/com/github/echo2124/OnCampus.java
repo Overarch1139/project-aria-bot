@@ -20,8 +20,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static com.github.echo2124.Main.constants.ONCAMPUS_CHANNEL_ID;
-import static com.github.echo2124.Main.constants.ONCAMPUS_ROLE_ID;
+import static com.github.echo2124.Main.constants.*;
 
 
 public class OnCampus extends ListenerAdapter {
@@ -46,11 +45,11 @@ public class OnCampus extends ListenerAdapter {
         Runnable generateHandler = new Runnable() {
             @Override
             public void run() {
+                activityLog.sendActivityMsg("[ONCAMPUS] Running generate task",1);
                 Calendar calendar = Calendar.getInstance();
                 int day = calendar.get(Calendar.DAY_OF_WEEK);
                 Guild guild = Main.constants.jda.getGuilds().get(0);
                 // test
-
                 System.out.println("[OnCampus] Running task");
                 Role oncampus = Main.constants.jda.getRoleById(ONCAMPUS_ROLE_ID);
                 TextChannel msgChannel = Main.constants.jda.getTextChannelById(ONCAMPUS_CHANNEL_ID);
@@ -58,11 +57,13 @@ public class OnCampus extends ListenerAdapter {
                 if (day!=Calendar.SUNDAY && day!=Calendar.SATURDAY || state) {
                     generateMsg(oncampus,msgChannel);
                 }
+
             }
         };
         Runnable resetHandler = new Runnable() {
             @Override
             public void run() {
+                activityLog.sendActivityMsg("[ONCAMPUS] Running reset task",1);
                 Role oncampus = Main.constants.jda.getRoleById(ONCAMPUS_ROLE_ID);
                 TextChannel msgChannel = Main.constants.jda.getTextChannelById(ONCAMPUS_CHANNEL_ID);
                 Guild guild = Main.constants.jda.getGuilds().get(0);
@@ -100,6 +101,7 @@ public class OnCampus extends ListenerAdapter {
         for (Member member : members) {
             guild.removeRoleFromMember(member, oncampus).queue();
         }
+        activityLog.sendActivityMsg("[ONCAMPUS] Removed old On Campus message & removed all users from role",1);
     }
 
     public void generateMsg(Role oncampus, TextChannel msgChannel) {
@@ -115,8 +117,10 @@ public class OnCampus extends ListenerAdapter {
                 @Override
                 public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
                     System.out.println("[OnCampus] React Listener triggered");
+                    activityLog.sendActivityMsg("[ONCAMPUS] React Listener triggered",1);
                     if (event.getMessageId().equals(message.getId()) && event.getReactionEmote().getName().equals("✅") && !event.getMember().getUser().isBot()) {
                         System.out.println("[OnCampus] Added role to member");
+                        activityLog.sendActivityMsg("[ONCAMPUS] Giving On Campus role to user",1);
                         event.getGuild().addRoleToMember(event.getMember(), oncampus).queue();
                     }
                     super.onMessageReactionAdd(event);
@@ -124,5 +128,6 @@ public class OnCampus extends ListenerAdapter {
             };
             Main.constants.jda.addEventListener(reactionListener);
         });
+        activityLog.sendActivityMsg("[ONCAMPUS] Generated OnCampus Message",1);
     }
 }

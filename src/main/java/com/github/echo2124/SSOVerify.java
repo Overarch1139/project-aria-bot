@@ -19,6 +19,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
+import static com.github.echo2124.Main.constants.activityLog;
+
 public class SSOVerify extends Thread {
     private static final String NETWORK_NAME = "Google";
     private static final String PROTECTED_RESOURCE_URL = "https://www.googleapis.com/oauth2/v3/userinfo";
@@ -40,6 +42,8 @@ public class SSOVerify extends Thread {
 
     public void run() {
         System.out.println("[CERT MODULE] Thread #" + Thread.currentThread().getId() + " is active!");
+        activityLog.sendActivityMsg("[VERIFY] Thread #"+Thread.currentThread().getId() + " is active!",1);
+
         try {
             if (!Main.constants.serviceMode) {
                 if (!checkVerification()) {
@@ -63,15 +67,19 @@ public class SSOVerify extends Thread {
                 }
                 try {
                     System.out.println("Put polling thread #" + Thread.currentThread().getId()+" into inactive state");
+                    activityLog.sendActivityMsg("[VERIFY]" +"Put polling thread #" + Thread.currentThread().getId()+" into inactive state",1);
                     intervalMillis=1800*1000;
                     System.out.println("Attempt to close #" + Thread.currentThread().getId() + "'s oauth service");
                     service.close();
+                    activityLog.sendActivityMsg("[VERIFY]" +"Attempt to close #" + Thread.currentThread().getId() + "'s oauth service",1);
 
                 } catch (Exception e) {
                     System.out.println("Unable to close thread #" + Thread.currentThread().getId() + "'s oauth service");
+                    activityLog.sendActivityMsg("[VERIFY]"+"Unable to close thread #" + Thread.currentThread().getId() + "'s oauth service",3);
                 }
                 System.out.println("[CERT MODULE] Thread #" + Thread.currentThread().getId() + " has stopped!");
                 Thread.currentThread().interrupt();
+                activityLog.sendActivityMsg("[VERIFY]"+"[CERT MODULE] Thread #" + Thread.currentThread().getId() + " has stopped!",1);
             }
         };
         Timer timer = new Timer("Timer");
@@ -83,6 +91,7 @@ public class SSOVerify extends Thread {
     public boolean checkVerification() {
         boolean isVerified = false;
         if (db.getDBEntry("CERT", user.getId()).contains("true")) {
+            activityLog.sendActivityMsg("[VERIFY] User has already been verified!",1);
             isVerified = true;
         }
         return isVerified;
@@ -90,6 +99,7 @@ public class SSOVerify extends Thread {
 
 
     public void sendMsg(String msg) {
+        activityLog.sendActivityMsg("[VERIFY] Send private msg to user to indicate verification state",1);
         this.user.openPrivateChannel().flatMap(channel -> channel.sendMessage(
                 msg
         )).queue();
@@ -101,6 +111,7 @@ public class SSOVerify extends Thread {
 
     // TODO: Consider moving a lot of this text to a JSON object
     public void sendVerifiedNotification(String name) {
+        activityLog.sendActivityMsg("[VERIFY] Send verified notification via DMs",1);
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle("Verified!");
         embed.setColor(Color.green);
@@ -116,16 +127,20 @@ public class SSOVerify extends Thread {
             case "invalid_account":
                 embed.setTitle("Invalid Google Account");
                 embed.setDescription("Aria was unable to verify you. Please ensure that you are using a Monash Google Account, it should have an email that ends in @student.monash.edu.au . If the issues persist please contact Echo2124#3778 with a screenshot and description of the issue that you are experiencing. \n Best Regards, Aria. ");
+                activityLog.sendActivityMsg("[VERIFY] REASON: Unable to verify user due to invalid google account",1);
                 break;
             case "invalid_name":
                 embed.setTitle("Invalid First Name");
                 embed.setDescription("Your profile name too large, therefore verification has failed. You can change your first name in the Google Account settings. Please ensure that your account firstname is under 2048 characters.");
+                activityLog.sendActivityMsg("[VERIFY] REASON: Unable to verify user due to invalid profile name",1);
                 break;
             case "timeout":
                 embed.setTitle("Verification timeout");
                 embed.setDescription("Aria has noticed that the provided token was not used within the allocated timeframe. This is likely because you might of not followed the aforementioned steps. Please try to generate a new token by typing >verify at the specified verification channel on the IT @ Monash server.");
+                activityLog.sendActivityMsg("[VERIFY] REASON: User did not verify in time",1);
                 break;
         }
+        activityLog.sendActivityMsg("[VERIFY] Send failure notification via DMs",1);
         this.user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(embed.build())).queue();
     }
 
@@ -143,6 +158,7 @@ public class SSOVerify extends Thread {
         authEmbed.addField("Link: ", link, false);
         authEmbed.addField("Code: ", code, false);
         authEmbed.setFooter("This access token will expire in **5 Mins!**");
+        activityLog.sendActivityMsg("[VERIFY] Send FAQ & Auth request message via DMs",1);
         this.user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(faqEmbed.build())).queue();
         this.user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(authEmbed.build())).queue();
     }
@@ -199,6 +215,7 @@ public class SSOVerify extends Thread {
         if (obj.has("hd")) {
             if (obj.getString("hd").equals("student.monash.edu") || obj.getString("hd").equals("monash.edu")) {
                 isValid = true;
+                activityLog.sendActivityMsg("[VERIFY] Email matches a Monash University domain",1);
             }
         }
         return isValid;
@@ -207,6 +224,7 @@ public class SSOVerify extends Thread {
     public void addVerifiedRole() {
         try {
             guild.addRoleToMember(UserSnowflake.fromId(user.getIdLong()), guild.getRoleById(Main.constants.VERIFIED_ROLE_ID)).queue();
+            activityLog.sendActivityMsg("[VERIFY] Gave user ("+user.getAsTag()+") verified role",1);
             System.out.println("[VERBOSE] Added role");
         } catch (Exception e) {
             System.out.println(e.getMessage());

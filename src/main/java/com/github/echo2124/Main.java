@@ -55,6 +55,7 @@ public class Main extends ListenerAdapter {
         public static String EXPOSURE_SITE_CHANNEL="951902910759977001";
         public static String ARIA_CHANNEL_CATEGORY_ID="913080878094241892";
         public static String ACTIVITY_LOG_ID="";
+        public static ActivityLog activityLog;
 
     }
     // actual bot ODc4OTQyNzk2MjYwNzI0NzY2.YSIhRA.ybuEYxDoa8VjfJQa0rC81W-ay4o
@@ -85,11 +86,14 @@ public class Main extends ListenerAdapter {
                 .enableIntents(GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MEMBERS)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .build();
+        activityLog=new ActivityLog();
         constants.jda = jda;
+        activityLog.sendActivityMsg("[MAIN] Aria Bot is starting up...",1);
         db = new Database();
          new News("Covid", db);
         new News("Monash", db);
         OnCampus x =new OnCampus(false);
+        activityLog.sendActivityMsg("[MAIN] Aria Bot has initialised successfully!",1);
     }
 
     public void onMessageReceived(MessageReceivedEvent event) {
@@ -98,7 +102,6 @@ public class Main extends ListenerAdapter {
         MessageChannel channel = event.getChannel();
         News news;
         String msgContents = msg.getContentRaw();
-
         if (msgContents.contains(">")) {
             if (channel.getId().equals(constants.permittedChannels[0])) {
                 if (msgContents.equals(">verify")) {
@@ -113,7 +116,9 @@ public class Main extends ListenerAdapter {
                         embed.addField("Why am I called Aria?", "My name is actually an acronym: **A**dministrate, **R**elay, **I**dentify, **A**ttest. I was built to cater to this functionality.", false);
                         embed.addField("Who built me?", "I was built entirely by Echo2124 (Joshua) as a side project that aims to automate many different tasks, such as verifying users, automatically relaying local COVID information & announcements from Monash Uni.", false);
                         channel.sendMessageEmbeds(embed.build()).queue();
+                         activityLog.sendActivityMsg("[MAIN] about command triggered!",1);
                     } else if (msgContents.equals(">help")) {
+
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.setColor(Color.MAGENTA);
                     embed.setTitle("Commands");
@@ -125,11 +130,12 @@ public class Main extends ListenerAdapter {
                     embed.addField("[WIP - ADMIN ONLY] >userUpdate <discordID>", "Will be used by staff to update information or manually verify a user", false);
                     embed.addField("[WIP - ADMIN ONLY] >scheduleMsg <Message> <Timestamp>","Can be used to schedule an announcement for a particular time.", false);
                     channel.sendMessageEmbeds(embed.build()).queue();
-
+                    activityLog.sendActivityMsg("[MAIN] help command triggered!",1);
                     } else if (msgContents.equals(">verifyinfo")) {
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.setTitle("User lookup: ");
                     try {
+                        activityLog.sendActivityMsg("[MAIN] User lookup command triggered",1);
                         String id=msg.getAuthor().getId();
                         embed.setDescription("This command has returned **all** information associated with your account that was collected during the verification process.");
                         if (db.getDBEntry("CERT", id).equals("No results found")) {
@@ -177,6 +183,7 @@ public class Main extends ListenerAdapter {
                             embed.setFooter("data sourced from internal database");
                         } catch (Exception e) {
                             System.out.println("Long failed");
+                            activityLog.sendActivityMsg("[MAIN] "+e.getMessage(),3);
                             embed.setDescription("**Lookup failed, please ensure you've correctly copied the discord ID**");
                             embed.setFooter("data sourced from internal database");
                         }
@@ -184,6 +191,7 @@ public class Main extends ListenerAdapter {
 
                 } else if (msgContents.contains(">resetOnCampus")) {
                     OnCampus x =new OnCampus(true);
+                    activityLog.sendActivityMsg("[MAIN] resetOnCampus command has been activated!",2);
                    channel.sendMessage("On Campus feature has been successfully reset!");
                 } else if (msgContents.contains(">serviceMode")) {
                     String[] parsedContents = msgContents.split(" ");
@@ -191,10 +199,12 @@ public class Main extends ListenerAdapter {
                     Misc misc = new Misc();
                     MessageChannel verify= Main.constants.jda.getTextChannelById(Main.constants.permittedChannels[0]);
                     misc.sendServiceModeMsg(verify,"Aria is currently in maintenance mode. The ability to verify has now been temporarily disabled, the estimated downtime will be "+parsedContents[1]+". Sorry for any inconvenience.");
+                    activityLog.sendActivityMsg("[MAIN] Service mode is now active",2);
                 } else if (msgContents.contains(">reactivate")) {
                     Misc misc = new Misc();
                     MessageChannel verify= Main.constants.jda.getTextChannelById(Main.constants.permittedChannels[0]);
                     misc.sendServiceModeMsg(verify,"Aria has reactivated the ability to verify and has exited maintenance mode.");
+                    activityLog.sendActivityMsg("[MAIN] Aria bot has exited service mode",2);
                 } else if (msgContents.contains(">help")) {
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.setColor(Color.MAGENTA);
@@ -204,6 +214,7 @@ public class Main extends ListenerAdapter {
                     embed.addField(">reactivate", "Will re-enable the ability to verify and other parts of the bot that have been deactivated", false);
                     embed.addField(">serviceMode <Time> E.g. 10mins","Can be used to deactivate interruption sensitive parts of the bot, e.g. verify module", false);
                     channel.sendMessageEmbeds(embed.build()).queue();
+                    activityLog.sendActivityMsg("[MAIN] Help command has been activated",1);
                 }
             }
         }
