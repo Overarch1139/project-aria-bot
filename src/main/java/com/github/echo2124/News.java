@@ -209,7 +209,6 @@ public class News {
     }
 
     public void sendMsg(SyndFeed feed, String category, Boolean checkState) {
-        activityLog.sendActivityMsg("[NEWS] Sending Monash News update",1);
         if (!checkState || !Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_LASTITLE",category+"##"+feed.getEntries().get(feedIndex).getTitle()))) {
             MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.NEWS_CHANNEL);
             EmbedBuilder newEmbed = new EmbedBuilder();
@@ -241,6 +240,7 @@ public class News {
                     break;
             }
             channel.sendMessageEmbeds(newEmbed.build()).queue();
+            activityLog.sendActivityMsg("[NEWS] Sending Monash News update",1);
             HashMap<String, String> data = new HashMap<String, String>();
             data.put("title", feed.getEntries().get(feedIndex).getTitle());
             db.modifyDB("NEWS", category,data);

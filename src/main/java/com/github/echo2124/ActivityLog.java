@@ -15,25 +15,27 @@ public class ActivityLog {
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Australia/Melbourne"));
         String concat="```";
         String endingSymbol="";
+        String tag="";
         switch (type) {
             case 1:
                 concat+="yaml\n";
-                concat+="[INFO]";
+                tag="[INFO]";
                 break;
             case 2:
                 concat+="fix\n";
-                concat+="[WARN]";
+                tag="[WARN]";
                 break;
             case 3:
                 concat+="diff\n";
                 concat+="- ";
-                concat+="[ERROR]";
+                tag="[ERROR]";
                 endingSymbol=" - ";
                 break;
             default:
         }
         DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss Z");
         concat+="["+now.format(format)+"]";
+        concat+=tag;
         concat+=msg;
         concat+=endingSymbol;
         concat+="\n```";
