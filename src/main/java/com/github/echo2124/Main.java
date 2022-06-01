@@ -85,8 +85,8 @@ public class Main extends ListenerAdapter {
                 .enableIntents(GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MEMBERS)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .build();
-        activityLog=new ActivityLog();
         constants.jda = jda;
+        activityLog=new ActivityLog();
         Close close = new Close();
         Runtime.getRuntime().addShutdownHook(close);
         activityLog.sendActivityMsg("[MAIN] Aria Bot is starting up...",1);
