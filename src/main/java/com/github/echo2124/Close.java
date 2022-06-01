@@ -6,7 +6,7 @@ public class Close extends Thread {
 
     @Override
     public void run() {
-        System.out.println("Performing Shutdown Sequence");
         activityLog.sendActivityMsg("[MAIN] Aria bot is restarting...",1);
+        System.out.println("Performing Shutdown Sequence");
     }
 }

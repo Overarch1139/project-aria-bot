@@ -171,7 +171,7 @@ public class News {
 
     public void initRSS(String feedURL, String category, Boolean checkLatest) {
         try {
-            activityLog.sendActivityMsg("[NEWS] Initialising RSS Feed listener",1);
+            activityLog.sendActivityMsg("[NEWS] Initialising RSS Feed listener for category: "+category,1);
             parseRSS(feedURL);
            // buildMSG(this.feed);
             sendMsg(this.feed,category,checkLatest);
