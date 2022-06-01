@@ -54,8 +54,8 @@ public class Main extends ListenerAdapter {
         public static String ONCAMPUS_CHANNEL_ID ="978762060655632424";
         public static String EXPOSURE_SITE_CHANNEL="951902910759977001";
         public static String ARIA_CHANNEL_CATEGORY_ID="913080878094241892";
-        public static String ACTIVITY_LOG_ID="";
-        public static ActivityLog activityLog;
+        public static String ACTIVITY_LOG_ID="981605485138567228";
+        public static ActivityLog activityLog=null;
 
     }
     // actual bot ODc4OTQyNzk2MjYwNzI0NzY2.YSIhRA.ybuEYxDoa8VjfJQa0rC81W-ay4o
@@ -86,8 +86,7 @@ public class Main extends ListenerAdapter {
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .build();
         constants.jda = jda;
-        ActivityLog newActivityLog= new ActivityLog();
-        constants.activityLog=newActivityLog;
+        activityLog = new ActivityLog(ACTIVITY_LOG_ID);
         Runtime.getRuntime().addShutdownHook(new Close());
         activityLog.sendActivityMsg("[MAIN] Aria Bot is starting up...",1);
         db = new Database();

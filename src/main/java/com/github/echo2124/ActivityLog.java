@@ -6,9 +6,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 public class ActivityLog {
-    TextChannel activityCh;
-    public ActivityLog() {
-        activityCh=Main.constants.jda.getTextChannelById(Main.constants.ACTIVITY_LOG_ID);
+    TextChannel activityCh=null;
+    public ActivityLog(String activity_ch_id) {
+        activityCh=Main.constants.jda.getTextChannelById(activity_ch_id);
     }
 
 
