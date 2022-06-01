@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-
+import java.time.format.DateTimeFormatter;
 
 
 public class ActivityLog {
@@ -32,7 +32,8 @@ public class ActivityLog {
                 break;
             default:
         }
-        concat+="["+now.toLocalTime().toString()+"]";
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("DD/MM/yyyy - HH:mm:ss Z");
+        concat+="["+now.format(format)+"]";
         concat+=msg;
         concat+=endingSymbol;
         concat+="\n```";

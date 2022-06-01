@@ -202,7 +202,9 @@ public class Database {
                 sqlQuery.execute();
             }
             disconnect(connection);
+            activityLog.sendActivityMsg("[DATABASE] Connection closed",1);
         } catch (Exception e) {
+            activityLog.sendActivityMsg("[DATABASE] Failed to modify: "+e.getMessage(),3);
             System.err.println(this.getClass().getName()+"Modify DB failed"+e.getMessage());
         }
         // need to add execute statement
@@ -305,6 +307,7 @@ public class Database {
         } catch (SQLException e) {
             System.err.println(this.getClass().getName()+"Unable to get Entry"+e.getMessage());
         }
+        activityLog.sendActivityMsg("[DATABASE] Connection closed",1);
         disconnect(connection);
         return ret;
     }
