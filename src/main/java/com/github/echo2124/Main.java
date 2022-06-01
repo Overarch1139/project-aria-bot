@@ -85,15 +85,16 @@ public class Main extends ListenerAdapter {
                 .enableIntents(GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MEMBERS)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .build();
+        jda.awaitReady();
         constants.jda = jda;
         activityLog = new ActivityLog();
         Runtime.getRuntime().addShutdownHook(new Close());
-     //   activityLog.sendActivityMsg("[MAIN] Aria Bot is starting up...",1);
+        activityLog.sendActivityMsg("[MAIN] Aria Bot is starting up...",1);
         db = new Database();
          new News("Covid", db);
         new News("Monash", db);
         OnCampus x =new OnCampus(false);
-       // activityLog.sendActivityMsg("[MAIN] Aria Bot has initialised successfully!",1);
+       activityLog.sendActivityMsg("[MAIN] Aria Bot has initialised successfully!",1);
     }
 
     public void onMessageReceived(MessageReceivedEvent event) {
