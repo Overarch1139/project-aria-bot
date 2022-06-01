@@ -25,79 +25,104 @@ import static com.github.echo2124.Main.constants.ONCAMPUS_ROLE_ID;
 
 
 public class OnCampus extends ListenerAdapter {
+    public final String checkUnicode = "U+2705";
     public OnCampus(Boolean state) {
            initScheduler(state);
     }
 
     public void initScheduler(Boolean state) {
-
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Australia/Melbourne"));
-        ZonedDateTime nextRun = now.withHour(6).withMinute(3).withSecond(0);
-        if(now.compareTo(nextRun) > 0)
-            nextRun = nextRun.plusDays(1);
+        ZonedDateTime generateNextRun = now.withHour(6).withMinute(30).withSecond(0);
+        ZonedDateTime resetNextRun = now.withHour(0).withMinute(0).withSecond(0);
+        if(now.compareTo(generateNextRun) > 0)
+            generateNextRun = generateNextRun.plusDays(1);
+        Duration generateDuration = Duration.between(now, generateNextRun);
+        if(now.compareTo(resetNextRun) > 0)
+            resetNextRun = resetNextRun.plusDays(1);
+        Duration resetDuration = Duration.between(now, resetNextRun);
 
-        Duration duration = Duration.between(now, nextRun);
-        long initialDelay = duration.getSeconds();
-        Runnable task = new Runnable() {
+        long generateInitialDelay = generateDuration.getSeconds();
+        long resetInitialDelay = resetDuration.getSeconds();
+        Runnable generateHandler = new Runnable() {
             @Override
             public void run() {
                 Calendar calendar = Calendar.getInstance();
                 int day = calendar.get(Calendar.DAY_OF_WEEK);
                 Guild guild = Main.constants.jda.getGuilds().get(0);
-                String checkUnicode = "U+2705";
+                // test
+
                 System.out.println("[OnCampus] Running task");
                 Role oncampus = Main.constants.jda.getRoleById(ONCAMPUS_ROLE_ID);
                 TextChannel msgChannel = Main.constants.jda.getTextChannelById(ONCAMPUS_CHANNEL_ID);
-                // TODO: remove *all* messages from channel & remove *all* users from role before creating msg
-                MessageHistory msgHistory = msgChannel.getHistory();
-                try {
-                    msgHistory.retrievePast(1).queue(messages -> {
-                        messages.get(0).delete().queue();
-                    });
-                } catch (Exception e) {
-                    System.out.println("[OnCampus] Unable to grab last message");
-                }
-                Collection<Member> members = guild.getMembersWithRoles(oncampus);
-                for (Member member : members) {
-                    guild.removeRoleFromMember(member, oncampus).queue();
-                }
 
                 if (day!=Calendar.SUNDAY && day!=Calendar.SATURDAY || state) {
-                    EmbedBuilder embed = new EmbedBuilder();
-                    embed.setTitle("Who Is On Campus today?");
-                    embed.setDescription("React to the existing reaction below to assign yourself to the OnCampus role");
-                    embed.setAuthor("IT @ Monash");
-                    embed.setColor(Color.CYAN);
-                    embed.setFooter("NOTE: This post will be recreated everyday & role will be removed from everyone");
-                    msgChannel.sendMessageEmbeds(embed.build()).queue(message -> {
-                        message.addReaction(checkUnicode).queue();
-                        ListenerAdapter reactionListener = new ListenerAdapter() {
-                            @Override
-                            public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
-                                System.out.println("[OnCampus] React Listener triggered");
-                                if (event.getMessageId().equals(message.getId()) && event.getReactionEmote().getName().equals("✅") && !event.getMember().getUser().isBot()) {
-                                    System.out.println("[OnCampus] Added role to member");
-                                    event.getGuild().addRoleToMember(event.getMember(), oncampus).queue();
-                                }
-                                super.onMessageReactionAdd(event);
-                            }
-                        };
-                        Main.constants.jda.addEventListener(reactionListener);
-                    });
-                } else {
-
+                    generateMsg(oncampus,msgChannel);
                 }
             }
         };
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(task,
-                initialDelay,
+        Runnable resetHandler = new Runnable() {
+            @Override
+            public void run() {
+                Role oncampus = Main.constants.jda.getRoleById(ONCAMPUS_ROLE_ID);
+                TextChannel msgChannel = Main.constants.jda.getTextChannelById(ONCAMPUS_CHANNEL_ID);
+                Guild guild = Main.constants.jda.getGuilds().get(0);
+                resetEntities(oncampus,msgChannel,guild);
+            }
+        };
+        ScheduledExecutorService generateScheduler = Executors.newScheduledThreadPool(1);
+        generateScheduler.scheduleAtFixedRate(generateHandler,
+                generateInitialDelay,
                 TimeUnit.DAYS.toSeconds(1),
                 TimeUnit.SECONDS);
+
+        ScheduledExecutorService resetScheduler = Executors.newScheduledThreadPool(1);
+        resetScheduler.scheduleAtFixedRate(resetHandler,
+                resetInitialDelay,
+                TimeUnit.DAYS.toSeconds(1),
+                TimeUnit.SECONDS);
+
         if (state) {
-            task.run();
+            resetHandler.run();
+            generateHandler.run();
+        }
+    }
+    public void resetEntities(Role oncampus, TextChannel msgChannel, Guild guild) {
+        guild.loadMembers();
+        MessageHistory msgHistory = msgChannel.getHistory();
+        try {
+            msgHistory.retrievePast(1).queue(messages -> {
+                messages.get(0).delete().queue();
+            });
+        } catch (Exception e) {
+            System.out.println("[OnCampus] Unable to grab last message");
+        }
+        Collection<Member> members = guild.getMembersWithRoles(oncampus);
+        for (Member member : members) {
+            guild.removeRoleFromMember(member, oncampus).queue();
         }
     }
 
-
+    public void generateMsg(Role oncampus, TextChannel msgChannel) {
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setTitle("Who Is On Campus today?");
+        embed.setDescription("React to the existing reaction below to assign yourself to the OnCampus role");
+        embed.setAuthor("IT @ Monash");
+        embed.setColor(Color.CYAN);
+        embed.setFooter("NOTE: This post will be recreated everyday & role will be removed from everyone");
+        msgChannel.sendMessageEmbeds(embed.build()).queue(message -> {
+            message.addReaction(checkUnicode).queue();
+            ListenerAdapter reactionListener = new ListenerAdapter() {
+                @Override
+                public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
+                    System.out.println("[OnCampus] React Listener triggered");
+                    if (event.getMessageId().equals(message.getId()) && event.getReactionEmote().getName().equals("✅") && !event.getMember().getUser().isBot()) {
+                        System.out.println("[OnCampus] Added role to member");
+                        event.getGuild().addRoleToMember(event.getMember(), oncampus).queue();
+                    }
+                    super.onMessageReactionAdd(event);
+                }
+            };
+            Main.constants.jda.addEventListener(reactionListener);
+        });
+    }
 }
