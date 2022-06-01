@@ -32,7 +32,7 @@ public class ActivityLog {
                 break;
             default:
         }
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("DD/MM/yyyy - HH:mm:ss Z");
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss Z");
         concat+="["+now.format(format)+"]";
         concat+=msg;
         concat+=endingSymbol;
