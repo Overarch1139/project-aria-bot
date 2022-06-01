@@ -62,7 +62,7 @@ public class Main extends ListenerAdapter {
 
 
     public static void main(String[] arguments) throws Exception {
-        String activity ="Open Beta Active!";
+        String activity ="commands!";
         // setters for various props
         String BOT_TOKEN = System.getenv("DISCORD_CLIENT_SECRET");
         if (Boolean.parseBoolean(System.getenv("IS_DEV"))) {
@@ -81,7 +81,7 @@ public class Main extends ListenerAdapter {
         Runtime.getRuntime().addShutdownHook(close);
         JDA jda = JDABuilder.createLight(BOT_TOKEN, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES)
                 .addEventListeners(new Main())
-                .setActivity(Activity.playing(activity))
+                .setActivity(Activity.listening(activity))
                 .enableIntents(GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MEMBERS)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .build();
