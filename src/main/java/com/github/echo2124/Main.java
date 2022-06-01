@@ -55,6 +55,7 @@ public class Main extends ListenerAdapter {
         public static String EXPOSURE_SITE_CHANNEL="951902910759977001";
         public static String ARIA_CHANNEL_CATEGORY_ID="913080878094241892";
         public static String ACTIVITY_LOG_ID="981605485138567228";
+        public static String DEVELOPER_ID="538660576704856075";
         public static ActivityLog activityLog=null;
 
     }
@@ -88,7 +89,8 @@ public class Main extends ListenerAdapter {
         jda.awaitReady();
         constants.jda = jda;
         activityLog = new ActivityLog();
-        Runtime.getRuntime().addShutdownHook(new Close());
+        Close close = new Close();
+        Runtime.getRuntime().addShutdownHook(close);
         activityLog.sendActivityMsg("[MAIN] Aria Bot is starting up...",1);
         db = new Database();
          new News("Covid", db);

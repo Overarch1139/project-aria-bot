@@ -2,6 +2,7 @@ package com.github.echo2124;
 
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -16,6 +17,7 @@ public class ActivityLog {
         String concat="```";
         String endingSymbol="";
         String tag="";
+        User user=null;
         switch (type) {
             case 1:
                 concat+="yaml\n";
@@ -30,6 +32,7 @@ public class ActivityLog {
                 concat+="- ";
                 tag="[ERROR]";
                 endingSymbol=" - ";
+                user=Main.constants.jda.getUserById(Main.constants.DEVELOPER_ID);
                 break;
             default:
         }
@@ -39,6 +42,10 @@ public class ActivityLog {
         concat+=msg;
         concat+=endingSymbol;
         concat+="\n```";
-        msgChannel.sendMessage(concat).queue();
+        if (user!=null) {
+            msgChannel.sendMessage(concat+user.getAsMention()).queue();
+        } else {
+            msgChannel.sendMessage(concat).queue();
+        }
     }
 }
