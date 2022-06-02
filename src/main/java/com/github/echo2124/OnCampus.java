@@ -122,9 +122,8 @@ public class OnCampus extends ListenerAdapter {
             ListenerAdapter reactionListener = new ListenerAdapter() {
                 @Override
                 public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
-                    System.out.println("[OnCampus] React Listener triggered");
-                    activityLog.sendActivityMsg("[ONCAMPUS] React Listener triggered",1);
                     if (event.getMessageId().equals(message.getId()) && event.getReactionEmote().getName().equals("✅") && !event.getMember().getUser().isBot()) {
+                        activityLog.sendActivityMsg("[ONCAMPUS] React Listener triggered",1);
                         System.out.println("[OnCampus] Added role to member");
                         activityLog.sendActivityMsg("[ONCAMPUS] Giving On Campus role to user",1);
                         event.getGuild().addRoleToMember(event.getMember(), oncampus).queue();
