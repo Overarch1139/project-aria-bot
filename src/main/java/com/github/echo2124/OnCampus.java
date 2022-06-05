@@ -83,7 +83,6 @@ public class OnCampus extends ListenerAdapter {
                 TimeUnit.SECONDS);
 
         if (state) {
-            resetHandler.run();
             generateHandler.run();
         }
     }
