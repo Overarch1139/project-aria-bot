@@ -146,7 +146,8 @@ public class OnCampus extends ListenerAdapter {
         try {
             msgHistory.retrievePast(1).queue(messages -> {
                 // checks if last oncampus message was made same day if so then try to reattach the listener
-                if (messages.get(0).getTimeCreated().getDayOfWeek()==now.getDayOfWeek()) {
+
+                if (messages.get(0).getTimeCreated().atZoneSimilarLocal(ZoneId.of("Australia/Melbourne")).getDayOfWeek()==now.getDayOfWeek()) {
                     try {
                         ListenerAdapter reactionListener = new ListenerAdapter() {
                             @Override
