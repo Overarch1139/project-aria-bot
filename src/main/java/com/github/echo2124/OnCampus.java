@@ -142,7 +142,7 @@ public class OnCampus extends ListenerAdapter {
         TextChannel msgChannel = Main.constants.jda.getTextChannelById(ONCAMPUS_CHANNEL_ID);
         MessageHistory msgHistory = msgChannel.getHistory();
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Australia/Melbourne"));
-
+        activityLog.sendActivityMsg("[ONCAMPUS] Attempting to restore listener...",1);
         try {
             msgHistory.retrievePast(1).queue(messages -> {
                 // checks if last oncampus message was made same day if so then try to reattach the listener
