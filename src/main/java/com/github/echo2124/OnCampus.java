@@ -27,6 +27,7 @@ public class OnCampus extends ListenerAdapter {
     public final String checkUnicode = "U+2705";
     public OnCampus(Boolean state) {
            initScheduler(state);
+           restoreListener();
     }
 
     public void initScheduler(Boolean state) {
@@ -133,5 +134,41 @@ public class OnCampus extends ListenerAdapter {
             Main.constants.jda.addEventListener(reactionListener);
         });
         activityLog.sendActivityMsg("[ONCAMPUS] Generated OnCampus Message",1);
+    }
+
+
+    public void restoreListener() {
+        Role oncampus = Main.constants.jda.getRoleById(ONCAMPUS_ROLE_ID);
+        TextChannel msgChannel = Main.constants.jda.getTextChannelById(ONCAMPUS_CHANNEL_ID);
+        MessageHistory msgHistory = msgChannel.getHistory();
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Australia/Melbourne"));
+
+        try {
+            msgHistory.retrievePast(1).queue(messages -> {
+                // checks if last oncampus message was made same day if so then try to reattach the listener
+                if (messages.get(0).getTimeCreated().getDayOfWeek()==now.getDayOfWeek()) {
+                    try {
+                        ListenerAdapter reactionListener = new ListenerAdapter() {
+                            @Override
+                            public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
+                                if (event.getMessageId().equals(messages.get(0).getId()) && event.getReactionEmote().getName().equals("✅") && !event.getMember().getUser().isBot()) {
+                                    activityLog.sendActivityMsg("[ONCAMPUS] React Listener triggered", 1);
+                                    System.out.println("[OnCampus] Added role to member");
+                                    activityLog.sendActivityMsg("[ONCAMPUS] Giving On Campus role to user", 1);
+                                    event.getGuild().addRoleToMember(event.getMember(), oncampus).queue();
+                                }
+                            }
+                        };
+                        Main.constants.jda.addEventListener(reactionListener);
+                        activityLog.sendActivityMsg("[ONCAMPUS] Restore successful, attached listener!",2);
+                    } catch (Exception e) {
+                        activityLog.sendActivityMsg("[ONCAMPUS] Unable to restore: cannot attach listener",2);
+                    }
+                }
+            });
+        } catch (Exception e) {
+            activityLog.sendActivityMsg("[ONCAMPUS] Unable to restore: cannot fetch last message",1);
+            System.out.println("[OnCampus] Unable to grab last message");
+        }
     }
 }

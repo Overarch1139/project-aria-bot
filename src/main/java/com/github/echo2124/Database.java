@@ -137,7 +137,8 @@ public class Database {
             String sqlQuery = "CREATE TABLE WARN_MODULE (discordID bigint, issuerID bigint, warnDesc text, issueTime TIMESTAMP);"+
                             "CREATE TABLE CERT_MODULE (discordID bigint, name VARCHAR(2048), emailAddr VARCHAR(100), isVerified bool, verifiedTime TIMESTAMP);"+
                             "CREATE TABLE NEWS (origin VARCHAR(50), lastTitle text);"+
-                            "CREATE TABLE EXPOSURE (origin VARCHAR(50), len NUMERIC(15));";
+                            "CREATE TABLE EXPOSURE (origin VARCHAR(50), len NUMERIC(15));"+
+                            "CREATE TABLE ONCAMPUS (discordID bigint, )";
             stmt.executeUpdate(sqlQuery);
             stmt.close();
 
