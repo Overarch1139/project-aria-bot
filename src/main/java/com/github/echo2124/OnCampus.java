@@ -145,10 +145,7 @@ public class OnCampus extends ListenerAdapter {
         activityLog.sendActivityMsg("[ONCAMPUS] Attempting to restore listener...",1);
         try {
             msgHistory.retrievePast(1).queue(messages -> {
-                // checks if last oncampus message was made same day if so then try to reattach the listener\
-                int x = messages.get(0).getTimeCreated().atZoneSameInstant(ZoneId.of("Australia/Melbourne")).getDayOfWeek().getValue();
-                int a = now.getDayOfWeek().getValue();
-                activityLog.sendActivityMsg("[ONCAMPUS] Message Time: "+x+"; Now: "+a,2);
+                // checks if last oncampus message was made same day if so then try to reattach the listener
                 if (messages.get(0).getTimeCreated().atZoneSameInstant(ZoneId.of("Australia/Melbourne")).getDayOfWeek().compareTo(now.getDayOfWeek())==0) {
                     try {
                         ListenerAdapter reactionListener = new ListenerAdapter() {
@@ -163,7 +160,7 @@ public class OnCampus extends ListenerAdapter {
                             }
                         };
                         Main.constants.jda.addEventListener(reactionListener);
-                        activityLog.sendActivityMsg("[ONCAMPUS] Restore successful, attached listener!",2);
+                        activityLog.sendActivityMsg("[ONCAMPUS] Restore successful, attached listener!",1);
                     } catch (Exception e) {
                         activityLog.sendActivityMsg("[ONCAMPUS] Unable to restore: cannot attach listener",2);
                     }
