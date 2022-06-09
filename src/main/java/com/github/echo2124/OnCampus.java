@@ -145,9 +145,11 @@ public class OnCampus extends ListenerAdapter {
         activityLog.sendActivityMsg("[ONCAMPUS] Attempting to restore listener...",1);
         try {
             msgHistory.retrievePast(1).queue(messages -> {
-                // checks if last oncampus message was made same day if so then try to reattach the listener
-
-                if (messages.get(0).getTimeCreated().atZoneSimilarLocal(ZoneId.of("Australia/Melbourne")).getDayOfWeek()==now.getDayOfWeek()) {
+                // checks if last oncampus message was made same day if so then try to reattach the listener\
+                int x = messages.get(0).getTimeCreated().atZoneSameInstant(ZoneId.of("Australia/Melbourne")).getDayOfWeek().getValue();
+                int a = now.getDayOfWeek().getValue();
+                activityLog.sendActivityMsg("[ONCAMPUS] Message Time: "+x+"; Now: "+a,2);
+                if (messages.get(0).getTimeCreated().atZoneSameInstant(ZoneId.of("Australia/Melbourne")).getDayOfWeek().compareTo(now.getDayOfWeek())==0) {
                     try {
                         ListenerAdapter reactionListener = new ListenerAdapter() {
                             @Override
