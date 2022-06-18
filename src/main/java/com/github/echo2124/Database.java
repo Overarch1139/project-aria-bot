@@ -294,7 +294,6 @@ public class Database {
                                 if (ret == null || ret == "") {
                                     ret = "0";
                                 }
-
                             }
                         } else {
                             System.out.println("[Database] exposure table doesn't exist. creating...");

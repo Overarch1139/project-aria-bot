@@ -124,7 +124,6 @@ public class News {
                    }
                 }
             }
-
             @Override
             public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
 
@@ -152,24 +151,10 @@ public class News {
         };
         ts.addListener(listener);
         ts.sample();
-      /*  Twitter twitter = new TwitterFactory(cb.build()).getInstance();
-        List<Status> statuses;
-        try {
-            statuses = twitter.getUserTimeline(43064490);
-            Status newStatus = statuses.get(1);
-            buildMsgFromTweet(newStatus);
-        } catch (Exception e) {
-        }*/
-
-
-
         FilterQuery filter = new FilterQuery();
         filter.follow(new long[] {43064490});
         ts.filter(filter);
-
     }
-
-
 
     public void initRSS(String feedURL, String category, Boolean checkLatest) {
         try {
@@ -249,7 +234,6 @@ public class News {
         }
     }
 
-
     public void buildMsgFromTweet(Status status, String type) {
         System.out.println("Building MSG From tweet");
         MessageChannel channel =null;
@@ -305,18 +289,16 @@ public class News {
         if (retrivedIndex==0) {
             retrivedIndex=numExposures-4;
         }
-        //  if (numExposures>retrivedIndex) {
+          if (numExposures>retrivedIndex) {
             // do quick math here, find difference and reverse json object possibly
             HashMap<String, String> data = new HashMap<String, String>();
             data.put("col_name", "exposure_sites");
             data.put("size", String.valueOf(numExposures));
             db.modifyDB("EXPOSURE_SITE","", data);
-            for (int i=0; i<(numExposures-96);i++) {
+            for (int i=0; i<(numExposures-retrivedIndex);i++) {
                 buildMsgFromWebScrape(jsonParentObject.getJSONObject(String.valueOf(i)));
             }
-
-   //  }
-        // check if there are new exposure sites. Use index, e.g. if there is 25 stored in db, and update happens and there is 27, then generate messages for the last two.
+          }
     }
 
     public void buildMsgFromWebScrape(JSONObject data) {
