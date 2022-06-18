@@ -279,7 +279,7 @@ public class Database {
                 case "CHECK_EXPOSURE_INDEX":
                     activityLog.sendActivityMsg("[DATABASE] Fetching exposure data from exposure table",1);
                     //TODO check for origin instead (there is probably an issue with the current method of checking for a table which is causing these sorts of problems that exist currently)
-                    ResultSet rs = connection.prepareStatement("SELECT EXISTS ( SELECT FROM pg_tables WHERE tablename='EXPOSURE');").executeQuery();
+                    ResultSet rs = connection.prepareStatement("SELECT EXISTS ( SELECT FROM pg_tables WHERE tablename='exposure');").executeQuery();
                     while (rs.next()) {
                         if (rs.getBoolean(1)) {
                             System.out.println("[Database] checking db for exposure info");
