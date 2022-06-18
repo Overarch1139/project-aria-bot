@@ -5,8 +5,10 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -15,6 +17,7 @@ import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 import twitter4j.json.DataObjectFactory;
 
+import java.awt.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLOutput;
@@ -309,7 +312,7 @@ public class News {
             data.put("col_name", "exposure_sites");
             data.put("size", String.valueOf(numExposures));
             db.modifyDB("EXPOSURE_SITE","", data);
-            for (int i=0; i<(numExposures-retrivedIndex)-1;i++) {
+            for (int i=0; i<(numExposures-95)-1;i++) {
                 buildMsgFromWebScrape(jsonParentObject.getJSONObject(String.valueOf(i)));
             }
 
@@ -323,14 +326,14 @@ public class News {
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle("Exposure Sites Update!");
         // will be the contents of above method **if** there is an update
-        embed.setDescription(
-                "Campus: "+data.getString("Campus")+
-                        "\nBuilding: "+data.getString("Building")+
-                        "\nExposure Period: "+ data.getString("ExposurePeriod")+
-                        "\nCleaning Status: "+ data.getString("CleaningStatus")+
-                        "\nHealth Advice: "+data.getString("HealthAdvice")
-        );
+        embed.addField("Campus: ", data.getString("Campus"), false);
+        embed.addField("Building: ", data.getString("Building"), false);
+        embed.addField("Exposure Period: ", data.getString("ExposurePeriod"), false);
+        embed.addField("Cleaning Status: ", data.getString("CleaningStatus"), false);
+        embed.addField("Health Advice: ", data.getString("HealthAdvice"), false);
+        embed.setDescription("As always if you test positive to covid and have been on campus please report it to Monash University using the button below.");
         embed.setAuthor("Monash University");
-        channel.sendMessageEmbeds(embed.build()).queue();
+        Button urlBtn = Button.link("https://forms.monash.edu/covid19-self-reporting", "COVID Self-Report").withEmoji(Emoji.fromUnicode("U+1F4DD"));
+        channel.sendMessageEmbeds(embed.build()).setActionRow(urlBtn).queue();
     }
 }
