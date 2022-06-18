@@ -189,9 +189,8 @@ public class Database {
             case "EXPOSURE_SITE":
                 try {
                     activityLog.sendActivityMsg("[DATABASE] Inserting exposure data into exposure table",1);
-                    sqlQuery = connection.prepareStatement("INSERT INTO EXPOSURE VALUES (?,?)");
-                    sqlQuery.setString(1,data.get("col_name").toString());
-                    sqlQuery.setInt(2,(int)data.get("size"));
+                    sqlQuery = connection.prepareStatement("UPDATE exposure SET len=? WHERE origin='EXPOSURE_SITE'");
+                    sqlQuery.setInt(1,(int)data.get("size"));
                 } catch (Exception e) {
                     System.out.println("UNABLE TO MODIFY EXPOSURE_SITE MSG:"+e.getMessage());
                 }
@@ -299,7 +298,6 @@ public class Database {
                             // ADD TABLE TO DB (EXPOSURE)
                             connection.prepareStatement("CREATE TABLE EXPOSURE (origin VARCHAR(50), len NUMERIC(15));").executeQuery();
                             connection.prepareStatement("INSERT INTO EXPOSURE (origin, len) VALUES ('EXPOSURE_SITE', 0);").executeQuery();
-                            connection.prepareStatement("INSERT INTO EXPOSURE (origin, len) VALUES ('EXPOSURE_LOCAL', 0);").executeQuery();
                             ret="0";
                         }
                     break;

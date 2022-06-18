@@ -303,17 +303,17 @@ public class News {
         if (retrivedIndex==0) {
             retrivedIndex=numExposures-5;
         }
-        //   if (numExposures>retrivedIndex) {
+          if (numExposures>retrivedIndex) {
             // do quick math here, find difference and reverse json object possibly
             HashMap<String, String> data = new HashMap<String, String>();
             data.put("col_name", "exposure_sites");
             data.put("size", String.valueOf(numExposures));
-         //   db.modifyDB("EXPOSURE_SITE","", data);
-            for (int i=0; i<(numExposures-95)-1;i++) {
+            db.modifyDB("EXPOSURE_SITE","", data);
+            for (int i=0; i<(numExposures-retrivedIndex)-1;i++) {
                 buildMsgFromWebScrape(jsonParentObject.getJSONObject(String.valueOf(i)));
             }
 
-    //    }
+      }
         // check if there are new exposure sites. Use index, e.g. if there is 25 stored in db, and update happens and there is 27, then generate messages for the last two.
     }
 
