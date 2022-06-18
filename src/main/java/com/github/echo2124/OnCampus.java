@@ -27,7 +27,7 @@ public class OnCampus extends ListenerAdapter {
     public final String checkUnicode = "U+2705";
     public OnCampus(Boolean state) {
            initScheduler(state);
-           restoreListener();
+         //  restoreListener();
     }
 
     public void initScheduler(Boolean state) {
