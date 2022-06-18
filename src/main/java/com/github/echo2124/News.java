@@ -306,7 +306,7 @@ public class News {
         if (retrivedIndex==0) {
             retrivedIndex=numExposures-5;
         }
-          if (numExposures>retrivedIndex) {
+          //if (numExposures>retrivedIndex) {
             // do quick math here, find difference and reverse json object possibly
             HashMap<String, String> data = new HashMap<String, String>();
             data.put("col_name", "exposure_sites");
@@ -316,7 +316,7 @@ public class News {
                 buildMsgFromWebScrape(jsonParentObject.getJSONObject(String.valueOf(i)));
             }
 
-      }
+      //}
         // check if there are new exposure sites. Use index, e.g. if there is 25 stored in db, and update happens and there is 27, then generate messages for the last two.
     }
 
