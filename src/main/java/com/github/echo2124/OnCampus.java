@@ -27,7 +27,7 @@ public class OnCampus extends ListenerAdapter {
     public final String checkUnicode = "U+2705";
     public OnCampus(Boolean state) {
            initScheduler(state);
-         //  restoreListener();
+           restoreListener();
     }
 
     public void initScheduler(Boolean state) {
@@ -147,24 +147,28 @@ public class OnCampus extends ListenerAdapter {
         try {
             msgHistory.retrievePast(1).queue(messages -> {
                 // checks if last oncampus message was made same day if so then try to reattach the listener
-                if (messages.get(0).getTimeCreated().atZoneSameInstant(ZoneId.of("Australia/Melbourne")).getDayOfWeek().compareTo(now.getDayOfWeek())==0) {
-                    try {
-                        ListenerAdapter reactionListener = new ListenerAdapter() {
-                            @Override
-                            public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
-                                if (event.getMessageId().equals(messages.get(0).getId()) && event.getReactionEmote().getName().equals("✅") && !event.getMember().getUser().isBot()) {
-                                    activityLog.sendActivityMsg("[ONCAMPUS] React Listener triggered", 1);
-                                    System.out.println("[OnCampus] Added role to member");
-                                    activityLog.sendActivityMsg("[ONCAMPUS] Giving On Campus role to user", 1);
-                                    event.getGuild().addRoleToMember(event.getMember(), oncampus).queue();
+                try {
+                    if (messages.get(0).getTimeCreated().atZoneSameInstant(ZoneId.of("Australia/Melbourne")).getDayOfWeek().compareTo(now.getDayOfWeek()) == 0) {
+                        try {
+                            ListenerAdapter reactionListener = new ListenerAdapter() {
+                                @Override
+                                public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
+                                    if (event.getMessageId().equals(messages.get(0).getId()) && event.getReactionEmote().getName().equals("✅") && !event.getMember().getUser().isBot()) {
+                                        activityLog.sendActivityMsg("[ONCAMPUS] React Listener triggered", 1);
+                                        System.out.println("[OnCampus] Added role to member");
+                                        activityLog.sendActivityMsg("[ONCAMPUS] Giving On Campus role to user", 1);
+                                        event.getGuild().addRoleToMember(event.getMember(), oncampus).queue();
+                                    }
                                 }
-                            }
-                        };
-                        Main.constants.jda.addEventListener(reactionListener);
-                        activityLog.sendActivityMsg("[ONCAMPUS] Restore successful, attached listener!",1);
-                    } catch (Exception e) {
-                        activityLog.sendActivityMsg("[ONCAMPUS] Unable to restore: cannot attach listener",2);
+                            };
+                            Main.constants.jda.addEventListener(reactionListener);
+                            activityLog.sendActivityMsg("[ONCAMPUS] Restore successful, attached listener!", 1);
+                        } catch (Exception e) {
+                            activityLog.sendActivityMsg("[ONCAMPUS] Unable to restore: cannot attach listener", 2);
+                        }
                     }
+                } catch (Exception e) {
+                    activityLog.sendActivityMsg("[ONCAMPUS] Unable to restore: cannot fetch last message",1);
                 }
             });
         } catch (Exception e) {
