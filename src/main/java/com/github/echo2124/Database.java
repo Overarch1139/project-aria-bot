@@ -289,7 +289,7 @@ public class Database {
                             if (sqlQuery != null) {
                                 ResultSet res = sqlQuery.executeQuery();
                                 while (res.next()) {
-                                    ret = String.valueOf(res.getInt(2));
+                                    ret = String.valueOf(res.getInt(1));
                                 }
                                 if (ret == null || ret == "") {
                                     ret = "0";
