@@ -285,8 +285,6 @@ public class Database {
                             System.out.println("[Database] checking db for exposure info");
                             sqlQuery = connection.prepareStatement("SELECT len FROM EXPOSURE WHERE origin=?");
                             sqlQuery.setString(1, req);
-                            connection.prepareStatement("INSERT INTO EXPOSURE (origin, len) VALUES ('EXPOSURE_SITE', 0);").executeQuery();
-
                             if (sqlQuery != null) {
                                 ResultSet res = sqlQuery.executeQuery();
                                 while (res.next()) {
@@ -300,7 +298,6 @@ public class Database {
                             System.out.println("[Database] exposure table doesn't exist. creating...");
                             // ADD TABLE TO DB (EXPOSURE)
                             connection.prepareStatement("CREATE TABLE EXPOSURE (origin VARCHAR(50), len NUMERIC(15));").executeQuery();
-                            connection.prepareStatement("INSERT INTO EXPOSURE (origin, len) VALUES ('EXPOSURE_SITE', 0);").executeQuery();
                             ret="0";
                         }
                     break;
