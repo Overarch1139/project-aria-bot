@@ -304,17 +304,17 @@ public class News {
         if (retrivedIndex==0) {
             retrivedIndex=numExposures-5;
         }
-          //if (numExposures>retrivedIndex) {
+         // if (numExposures>retrivedIndex) {
             // do quick math here, find difference and reverse json object possibly
             HashMap<String, String> data = new HashMap<String, String>();
             data.put("col_name", "exposure_sites");
             data.put("size", String.valueOf(numExposures));
             db.modifyDB("EXPOSURE_SITE","", data);
-            for (int i=0; i<(numExposures-95)-1;i++) {
+            for (int i=0; i<(numExposures-95);i++) {
                 buildMsgFromWebScrape(jsonParentObject.getJSONObject(String.valueOf(i)));
             }
 
-      //}
+     // }
         // check if there are new exposure sites. Use index, e.g. if there is 25 stored in db, and update happens and there is 27, then generate messages for the last two.
     }
 
@@ -322,7 +322,7 @@ public class News {
         activityLog.sendActivityMsg("[NEWS] Building exposure message",1);
         MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.EXPOSURE_SITE_CHANNEL);
         EmbedBuilder embed = new EmbedBuilder();
-        embed.setTitle("Exposure Sites Update!");
+        embed.setTitle("Exposure Sites Update");
         // will be the contents of above method **if** there is an update
         embed.addField("Campus: ", data.getString("Campus"), false);
         embed.addField("Building: ", data.getString("Building"), false);
@@ -332,8 +332,8 @@ public class News {
         embed.setDescription("As always if you test positive to covid and have been on campus please report it to Monash University using the button below.");
         embed.setAuthor("Monash University");
         ArrayList<Button> btns = new ArrayList<Button>();
-        btns.add(Button.link("https://forms.monash.edu/covid19-self-reporting", "Monash COVID Self-Report").withEmoji(Emoji.fromUnicode("U+1F4DD")));
         btns.add(Button.link("https://www.monash.edu/news/coronavirus-updates", "Monash COVID Bulletin").withEmoji(Emoji.fromUnicode("U+2139")));
+        btns.add(Button.link("https://forms.monash.edu/covid19-self-reporting", "Monash COVID Self-Report").withEmoji(Emoji.fromUnicode("U+1F4DD")));
         channel.sendMessageEmbeds(embed.build()).setActionRow(btns).queue();
     }
 }
