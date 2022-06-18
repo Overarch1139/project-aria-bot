@@ -23,10 +23,8 @@ import java.net.URL;
 import java.sql.SQLOutput;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -333,7 +331,9 @@ public class News {
         embed.addField("Health Advice: ", data.getString("HealthAdvice"), false);
         embed.setDescription("As always if you test positive to covid and have been on campus please report it to Monash University using the button below.");
         embed.setAuthor("Monash University");
-        Button urlBtn = Button.link("https://forms.monash.edu/covid19-self-reporting", "COVID Self-Report").withEmoji(Emoji.fromUnicode("U+1F4DD"));
-        channel.sendMessageEmbeds(embed.build()).setActionRow(urlBtn).queue();
+        ArrayList<Button> btns = new ArrayList<Button>();
+        btns.add(Button.link("https://forms.monash.edu/covid19-self-reporting", "Monash COVID Self-Report").withEmoji(Emoji.fromUnicode("U+1F4DD")));
+        btns.add(Button.link("https://www.monash.edu/news/coronavirus-updates", "Monash COVID Bulletin").withEmoji(Emoji.fromUnicode("U+2139")));
+        channel.sendMessageEmbeds(embed.build()).setActionRow(btns).queue();
     }
 }
