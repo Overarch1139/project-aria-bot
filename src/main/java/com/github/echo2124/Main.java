@@ -74,7 +74,7 @@ public class Main extends ListenerAdapter {
             constants.permittedChannels[0]="912353229285765172";
             constants.permittedChannels[1]="912353440749985852";
             constants.NEWS_CHANNEL="957640138597490688";
-            constants.EXPOSURE_SITE_CHANNEL="927941422512996353";
+            constants.EXPOSURE_SITE_CHANNEL="912353229285765172";
             constants.ONCAMPUS_CHANNEL_ID ="960693585508982824";
             constants.ONCAMPUS_ROLE_ID ="960693586163269683";
             constants.ACTIVITY_LOG_ID="981456425530298429";

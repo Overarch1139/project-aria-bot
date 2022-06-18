@@ -305,7 +305,7 @@ public class News {
             HashMap<String, String> data = new HashMap<String, String>();
             data.put("col_name", "exposure_sites");
             data.put("size", String.valueOf(numExposures));
-            db.modifyDB("EXPOSURE_SITE","", data);
+         //   db.modifyDB("EXPOSURE_SITE","", data);
             for (int i=0; i<(numExposures-95)-1;i++) {
                 buildMsgFromWebScrape(jsonParentObject.getJSONObject(String.valueOf(i)));
             }
