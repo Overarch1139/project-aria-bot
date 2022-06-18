@@ -89,6 +89,7 @@ public class OnCampus extends ListenerAdapter {
     }
     public void resetEntities(Role oncampus, TextChannel msgChannel, Guild guild) {
         guild.loadMembers();
+
         MessageHistory msgHistory = msgChannel.getHistory();
         try {
             msgHistory.retrievePast(1).queue(messages -> {
