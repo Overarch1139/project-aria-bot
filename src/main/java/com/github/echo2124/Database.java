@@ -190,10 +190,11 @@ public class Database {
                 try {
                     activityLog.sendActivityMsg("[DATABASE] Inserting exposure data into exposure table",1);
                     sqlQuery = connection.prepareStatement("UPDATE exposure SET len=? WHERE origin='EXPOSURE_SITE'");
-                    sqlQuery.setInt(1,(int)data.get("size"));
+                    sqlQuery.setInt(1,Integer.parseInt(data.get("size").toString()));
                 } catch (Exception e) {
                     System.out.println("UNABLE TO MODIFY EXPOSURE_SITE MSG:"+e.getMessage());
                 }
+                break;
             default:
                 System.out.println("[DB] Invalid Origin Module");
         }
