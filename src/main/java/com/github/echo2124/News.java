@@ -30,6 +30,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import static com.github.echo2124.Main.constants.activityLog;
+import static com.github.echo2124.Main.constants.db;
 
 public class News {
 
@@ -90,13 +91,13 @@ public class News {
         TimerTask updateMonashNews = new TimerTask() {
             public void run() {
                 new News("Monash", Main.constants.db);
+                new News("ExposureBuilding",Main.constants.db);
             //    sendTestingMsg();
             }
         };
         Timer timer = new Timer("Timer");
         long delay=(int) 2.16e7;
         timer.schedule(updateMonashNews, delay);
-
     }
 
     public void sendTestingMsg() {
@@ -302,19 +303,19 @@ public class News {
         System.out.println(jsonParentObject.toString());
         int retrivedIndex=Integer.parseInt(db.getDBEntry("CHECK_EXPOSURE_INDEX", "EXPOSURE_SITE"));
         if (retrivedIndex==0) {
-            retrivedIndex=numExposures-5;
+            retrivedIndex=numExposures-4;
         }
-         // if (numExposures>retrivedIndex) {
+        //  if (numExposures>retrivedIndex) {
             // do quick math here, find difference and reverse json object possibly
             HashMap<String, String> data = new HashMap<String, String>();
             data.put("col_name", "exposure_sites");
             data.put("size", String.valueOf(numExposures));
             db.modifyDB("EXPOSURE_SITE","", data);
-            for (int i=0; i<(numExposures-95);i++) {
+            for (int i=0; i<(numExposures-96);i++) {
                 buildMsgFromWebScrape(jsonParentObject.getJSONObject(String.valueOf(i)));
             }
 
-     // }
+   //  }
         // check if there are new exposure sites. Use index, e.g. if there is 25 stored in db, and update happens and there is 27, then generate messages for the last two.
     }
 
@@ -331,6 +332,7 @@ public class News {
         embed.addField("Health Advice: ", data.getString("HealthAdvice"), false);
         embed.setDescription("As always if you test positive to covid and have been on campus please report it to Monash University using the button below.");
         embed.setAuthor("Monash University");
+        embed.setThumbnail("http://www.monash.edu/__data/assets/image/0008/492389/monash-logo.png");
         ArrayList<Button> btns = new ArrayList<Button>();
         btns.add(Button.link("https://www.monash.edu/news/coronavirus-updates", "Monash COVID Bulletin").withEmoji(Emoji.fromUnicode("U+2139")));
         btns.add(Button.link("https://forms.monash.edu/covid19-self-reporting", "Monash COVID Self-Report").withEmoji(Emoji.fromUnicode("U+1F4DD")));
