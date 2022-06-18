@@ -299,8 +299,11 @@ public class News {
         }
         System.out.println("JSON:");
         System.out.println(jsonParentObject.toString());
-       // int retrivedIndex=Integer.parseInt(db.getDBEntry("CHECK_EXPOSURE_INDEX", "EXPOSURE_SITE"));
-     //   if (numExposures>retrivedIndex) {
+        int retrivedIndex=Integer.parseInt(db.getDBEntry("CHECK_EXPOSURE_INDEX", "EXPOSURE_SITE"));
+        if (retrivedIndex==0) {
+            retrivedIndex=numExposures-5;
+        }
+        //   if (numExposures>retrivedIndex) {
             // do quick math here, find difference and reverse json object possibly
             HashMap<String, String> data = new HashMap<String, String>();
             data.put("col_name", "exposure_sites");

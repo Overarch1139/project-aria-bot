@@ -279,29 +279,30 @@ public class Database {
                 case "CHECK_EXPOSURE_INDEX":
                     activityLog.sendActivityMsg("[DATABASE] Fetching exposure data from exposure table",1);
                     //TODO check for origin instead (there is probably an issue with the current method of checking for a table which is causing these sorts of problems that exist currently)
-                    DatabaseMetaData md = connection.getMetaData();
-                    ResultSet rs = md.getTables(null, null, "EXPOSURE", null);
+                    ResultSet rs = connection.prepareStatement("SELECT EXISTS ( SELECT FROM pg_tables WHERE tablename='EXPOSURE');").executeQuery();
                     if (!rs.next()) {
-                        System.out.println("[Database] exposure table doesn't exist. creating...");
-                        // ADD TABLE TO DB (EXPOSURE)
-                        connection.prepareStatement("CREATE TABLE EXPOSURE (origin VARCHAR(50), len NUMERIC(15));").executeQuery();
-                        connection.prepareStatement("INSERT INTO EXPOSURE (origin, len) VALUES ('EXPOSURE_SITE', 0);").executeQuery();
-                        connection.prepareStatement("INSERT INTO EXPOSURE (origin, len) VALUES ('EXPOSURE_LOCAL', 0);").executeQuery();
-                        ret="0";
-                    } else {
-                        System.out.println("[Database] checking db for exposure info");
-                        sqlQuery = connection.prepareStatement("SELECT len FROM EXPOSURE WHERE origin=?");
-                        sqlQuery.setString(1, req);
-                        if (sqlQuery != null) {
-                            ResultSet res = sqlQuery.executeQuery();
-                            while (res.next()) {
-                                ret = String.valueOf(res.getInt(2));
+                        if (rs.getBoolean(0)) {
+                            System.out.println("[Database] checking db for exposure info");
+                            sqlQuery = connection.prepareStatement("SELECT len FROM EXPOSURE WHERE origin=?");
+                            sqlQuery.setString(1, req);
+                            if (sqlQuery != null) {
+                                ResultSet res = sqlQuery.executeQuery();
+                                while (res.next()) {
+                                    ret = String.valueOf(res.getInt(2));
+                                }
+                                if (ret == null || ret == "") {
+                                    ret = "0";
+                                }
                             }
-                            if (ret==null || ret=="") {
-                                ret="0";
-                            }
+                        } else {
+                            System.out.println("[Database] exposure table doesn't exist. creating...");
+                            // ADD TABLE TO DB (EXPOSURE)
+                            connection.prepareStatement("CREATE TABLE EXPOSURE (origin VARCHAR(50), len NUMERIC(15));").executeQuery();
+                            connection.prepareStatement("INSERT INTO EXPOSURE (origin, len) VALUES ('EXPOSURE_SITE', 0);").executeQuery();
+                            connection.prepareStatement("INSERT INTO EXPOSURE (origin, len) VALUES ('EXPOSURE_LOCAL', 0);").executeQuery();
+                            ret="0";
                         }
-                        break;
+                    break;
                     }
             }
 
