@@ -205,8 +205,6 @@ public class SSOVerify extends Thread {
             } else {
                 sendFailureNotification("invalid_account");
             }
-            // for debug (sends response as priv message)
-            //sendMsg(response.getBody());
         }
     }
 

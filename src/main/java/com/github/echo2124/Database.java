@@ -29,8 +29,6 @@ public class Database {
             disconnect(tempConnection);
     }
 
-
-
     public void disconnect(Connection connection) {
         try {
             connection.close();
@@ -39,9 +37,7 @@ public class Database {
         }
     }
 
-    // still crash, check if its switching between the different creds for postgres based on whether its a server or not
     public void checkEnv() {
-        // this method checks whether running localhost or on server
         try {
             URI dbUri = new URI(System.getenv("DATABASE_URL"));
             if (dbUri!=null) {
@@ -75,44 +71,6 @@ public class Database {
 
         return found;
     }
-
-
- /*   public Boolean dbExists() {
-        Connection connection = null;
-        Statement statement = null;
-        boolean exists=false;
-        try {
-            connection = DriverManager.getConnection(DB_URL,
-                    USERNAME, PASSWORD);
-            statement = connection.createStatement();
-            String sql = "CREATE DATABASE BOT";
-            statement.executeUpdate(sql);
-            sql = "DROP DATABASE BOT";
-            statement.executeUpdate(sql);
-            System.out.println("Database created!");
-        } catch (SQLException sqlException) {
-            if (sqlException.getErrorCode() == 1007) {
-                // Database already exists error
-                exists=true;
-                System.out.println(sqlException.getMessage());
-                System.out.println("[DB Module] DB has been found");
-            } else {
-                // Some other problems, e.g. Server down, no permission, etc
-                sqlException.printStackTrace();
-            }
-            try {
-                connection.close();
-            } catch (Exception e) {
-                System.out.println("Unable to close connection");
-            }
-        }
-        try {
-            connection.close();
-        } catch (Exception x) {
-            System.out.println("Unable to close DB");
-        }
-        return exists;
-    }*/
 
     public Connection connect() {
         Connection connect = null;
@@ -208,10 +166,8 @@ public class Database {
             activityLog.sendActivityMsg("[DATABASE] Failed to modify: "+e.getMessage(),3);
             System.err.println(this.getClass().getName()+"Modify DB failed"+e.getMessage());
         }
-        // need to add execute statement
     }
 
-    // todo this will need to be refactored to work universally with other tables.
     public String getDBEntry(String originModule, String req) {
         System.out.println("Grabbing DB Entry");
         String ret="";
@@ -303,7 +259,6 @@ public class Database {
                     break;
                     }
             }
-
         } catch (SQLException e) {
             System.err.println(this.getClass().getName()+"Unable to get Entry"+e.getMessage());
         }

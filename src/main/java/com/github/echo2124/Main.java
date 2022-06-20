@@ -8,19 +8,10 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
-
 import java.awt.*;
-
 import static com.github.echo2124.Main.constants.*;
-import static java.lang.System.getenv;
-
-// config
 
 public class Main extends ListenerAdapter {
-
-
-
-
     //******************************
     //****CONFIG***
     //******************************
@@ -59,10 +50,6 @@ public class Main extends ListenerAdapter {
         public static ActivityLog activityLog=null;
 
     }
-    // actual bot ODc4OTQyNzk2MjYwNzI0NzY2.YSIhRA.ybuEYxDoa8VjfJQa0rC81W-ay4o
-    // test bot aOTEzNDUxMTY2MzcxODQwMDIw.YZ-rsQ.jO6C-N-7dRKJPjMXkfrWTrEFd4I
-
-
     public static void main(String[] arguments) throws Exception {
         String activity ="Routines!";
         // setters for various props

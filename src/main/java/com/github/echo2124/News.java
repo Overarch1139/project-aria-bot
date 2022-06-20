@@ -92,7 +92,6 @@ public class News {
             public void run() {
                 new News("Monash", Main.constants.db);
                 new News("ExposureBuilding",Main.constants.db);
-            //    sendTestingMsg();
             }
         };
         Timer timer = new Timer("Timer");
@@ -100,10 +99,6 @@ public class News {
         timer.schedule(updateMonashNews, delay);
     }
 
-    public void sendTestingMsg() {
-        MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.NEWS_CHANNEL);
-        channel.sendMessage("Polling successful, checked for rss feed article updates").queue();
-    }
 
     public void getLatestTweet() {
         ConfigurationBuilder cb = new ConfigurationBuilder();
@@ -160,7 +155,6 @@ public class News {
         try {
             activityLog.sendActivityMsg("[NEWS] Initialising RSS Feed listener for category: "+category,1);
             parseRSS(feedURL);
-           // buildMSG(this.feed);
             sendMsg(this.feed,category,checkLatest);
         } catch (Exception e) {
             activityLog.sendActivityMsg("[NEWS] Unable to initialise RSS Feed listener: "+e.getMessage(),3);
@@ -239,8 +233,6 @@ public class News {
         MessageChannel channel =null;
         if (type.equals("covid_update")) {
             channel = Main.constants.jda.getTextChannelById(Main.constants.COVID_UPDATE_CHANNEL);
-        } else {
-           // channel = Main.constants.jda.getTextChannelById(Main.constants.NEWS_CHANNEL);
         }
         EmbedBuilder newEmbed = new EmbedBuilder();
         newEmbed.setTitle("Victoria Covid Update");
@@ -262,9 +254,9 @@ public class News {
         activityLog.sendActivityMsg("[NEWS] Fetching exposure info from remote",1);
         JSONObject jsonParentObject = new JSONObject();
         int numExposures = 0;
-        //JSONArray list = new JSONArray();
-       Element table = doc.select("#covid-19_exposure_site__table").get(0);
-        System.out.println("[NEWS] Parsing exposure site data");
+        try {
+            Element table = doc.select("#covid-19_exposure_site__table").get(0);
+            System.out.println("[NEWS] Parsing exposure site data");
             for (Element row : table.select("tr")) {
                 JSONObject jsonObject = new JSONObject();
                 Elements tds = row.select("td");
@@ -282,6 +274,10 @@ public class News {
                     jsonParentObject.put(String.valueOf(numExposures), jsonObject);
                     numExposures++;
                 }
+            }
+        } catch (Exception e) {
+            System.out.println("[NEWS] ERROR: unable to parse exposure site table");
+            activityLog.sendActivityMsg("[NEWS] ERROR: unable to parse exposure site table",3);
         }
         System.out.println("JSON:");
         System.out.println(jsonParentObject.toString());
