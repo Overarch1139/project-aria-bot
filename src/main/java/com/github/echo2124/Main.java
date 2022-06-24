@@ -83,7 +83,7 @@ public class Main extends ListenerAdapter {
          new News("Covid", db);
         new News("Monash", db);
         new News("ExposureBuilding",db);
-        OnCampus x =new OnCampus(false);
+   //     OnCampus x =new OnCampus(false);
        activityLog.sendActivityMsg("[MAIN] Aria Bot has initialised successfully!",1);
     }
 
