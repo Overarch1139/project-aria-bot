@@ -82,4 +82,23 @@ public class Config {
     public String getChannelActivityLogId() {
         return channelActivityLogId;
     }
+
+    @Override
+    public String toString() {
+        return "Config{" +
+                "configName='" + configName + '\'' +
+                ", serverId='" + serverId + '\'' +
+                ", activityState='" + activityState + '\'' +
+                ", roleVerifiedId='" + roleVerifiedId + '\'' +
+                ", roleOnCampusId='" + roleOnCampusId + '\'' +
+                ", roleDevTeamId='" + roleDevTeamId + '\'' +
+                ", channelVerifyId='" + channelVerifyId + '\'' +
+                ", channelAdminId='" + channelAdminId + '\'' +
+                ", channelMonashNewsId='" + channelMonashNewsId + '\'' +
+                ", channelCovidUpdateId='" + channelCovidUpdateId + '\'' +
+                ", channelOnCampusId='" + channelOnCampusId + '\'' +
+                ", channelExposureSiteId='" + channelExposureSiteId + '\'' +
+                ", channelActivityLogId='" + channelActivityLogId + '\'' +
+                '}';
+    }
 }
