@@ -8,64 +8,28 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import org.json.JSONObject;
+
 import java.awt.*;
 import static com.github.echo2124.Main.constants.*;
 
 public class Main extends ListenerAdapter {
-    //******************************
-    //****CONFIG***
-    //******************************
     public static class constants {
         public static final String[] logPrefixes = {"Module", "ERROR"};
-        public static final boolean enableSocialForwarding = false;
-        public static final boolean enableSSOVerification = false;
-        public static final boolean enableTesting = true;
         public static JDA jda;
-        public static final String IT_SERVER="802526304745553930";
-        public final static String[] permittedChannelsTest = {
-                "912353229285765172",  // verify channel
-                "912353440749985852" // admin channel
-        };
-        // for actual location
-        public static String[] permittedChannels = {
-                "913081082298114058",  // verify channel
-                "913082023483174922" // admin channel
-        };
-        public static final String VERIFIED_ROLE_ID_TEST="909827233194070039";
-        public static String VERIFIED_ROLE_ID="912001525432320031";
-        public static String VERIFY_TIMEOUT_ROLE_ID="914896421965148160";
-        public static final String NEWS_CHANNEL_TEST="912355120723943424";
-        // for monash news
-        public static String NEWS_CHANNEL="913082864080392213";
-        public static final String COVID_UPDATE_CHANNEL_TEST="912726004886294569";
-        public static String COVID_UPDATE_CHANNEL="913081128188014592";
-        public static Database db=null;
-        public static boolean serviceMode=false;
-        public static String ONCAMPUS_ROLE_ID ="980368698017718272";
-        public static String ONCAMPUS_CHANNEL_ID ="978762060655632424";
-        public static String EXPOSURE_SITE_CHANNEL="951902910759977001";
-        public static String ARIA_CHANNEL_CATEGORY_ID="913080878094241892";
-        public static String ACTIVITY_LOG_ID="981605485138567228";
-        public static String DEVELOPER_ID="538660576704856075";
         public static ActivityLog activityLog=null;
-
+        public static boolean serviceMode=false;
+        public static Database db=null;
+        public static Config config;
     }
     public static void main(String[] arguments) throws Exception {
-        String activity ="Routines!";
+        // load config here before anything else
+        ConfigParser parser = new ConfigParser();
+        Config config =parser.parseDefaults();
+        Main.constants.config=config;
+        String activity=config.getActivityState();
         // setters for various props
         String BOT_TOKEN = System.getenv("DISCORD_CLIENT_SECRET");
-        if (Boolean.parseBoolean(System.getenv("IS_DEV"))) {
-            activity="Dev Build Active";
-            constants.VERIFIED_ROLE_ID="909827233194070039";
-            constants.COVID_UPDATE_CHANNEL="912726004886294569";
-            constants.permittedChannels[0]="912353229285765172";
-            constants.permittedChannels[1]="912353440749985852";
-            constants.NEWS_CHANNEL="957640138597490688";
-            constants.EXPOSURE_SITE_CHANNEL="912353229285765172";
-            constants.ONCAMPUS_CHANNEL_ID ="960693585508982824";
-            constants.ONCAMPUS_ROLE_ID ="960693586163269683";
-            constants.ACTIVITY_LOG_ID="981456425530298429";
-        }
 
         JDA jda = JDABuilder.createLight(BOT_TOKEN, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES)
                 .addEventListeners(new Main())
@@ -94,7 +58,7 @@ public class Main extends ListenerAdapter {
         News news;
         String msgContents = msg.getContentRaw();
         if (msgContents.contains(">")) {
-            if (channel.getId().equals(constants.permittedChannels[0])) {
+            if (channel.getId().equals(config.getChannelVerifyId())) {
                 if (msgContents.equals(">verify")) {
                    SSOVerify newVerify= new SSOVerify(user, event.getGuild(), channel, db);
                    newVerify.start();
@@ -150,7 +114,7 @@ public class Main extends ListenerAdapter {
 
         // TODO: Move this to database class
             // for commands with params
-            if (channel.getId().equals(constants.permittedChannels[1])) {
+            if (channel.getId().equals(config.getChannelAdminId())) {
                 if (msgContents.contains(">userLookup")) {
                     System.out.println("Running userLookup cmd");
                     // todo move this to a different class to prevent function envy
@@ -182,12 +146,12 @@ public class Main extends ListenerAdapter {
                     String[] parsedContents = msgContents.split(" ");
                     serviceMode=true;
                     Misc misc = new Misc();
-                    MessageChannel verify= Main.constants.jda.getTextChannelById(Main.constants.permittedChannels[0]);
+                    MessageChannel verify= Main.constants.jda.getTextChannelById(config.getChannelVerifyId());
                     misc.sendServiceModeMsg(verify,"Aria is currently in maintenance mode. The ability to verify has now been temporarily disabled, the estimated downtime will be "+parsedContents[1]+". Sorry for any inconvenience.");
                     activityLog.sendActivityMsg("[MAIN] Service mode is now active",2);
                 } else if (msgContents.contains(">reactivate")) {
                     Misc misc = new Misc();
-                    MessageChannel verify= Main.constants.jda.getTextChannelById(Main.constants.permittedChannels[0]);
+                    MessageChannel verify= Main.constants.jda.getTextChannelById(config.getChannelVerifyId());
                     misc.sendServiceModeMsg(verify,"Aria has reactivated the ability to verify and has exited maintenance mode.");
                     activityLog.sendActivityMsg("[MAIN] Aria bot has exited service mode",2);
                 } else if (msgContents.contains(">help")) {

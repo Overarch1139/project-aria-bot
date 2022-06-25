@@ -191,7 +191,7 @@ public class News {
 
     public void sendMsg(SyndFeed feed, String category, Boolean checkState) {
         if (!checkState || !Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_LASTITLE",category+"##"+feed.getEntries().get(feedIndex).getTitle()))) {
-            MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.NEWS_CHANNEL);
+            MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.config.getChannelMonashNewsId());
             EmbedBuilder newEmbed = new EmbedBuilder();
             if (feed.getEntries().get(feedIndex).getAuthor().equals("") || feed.getAuthor() == null) {
                 if (feedOrg.equals("Monash")) {
@@ -232,7 +232,7 @@ public class News {
         System.out.println("Building MSG From tweet");
         MessageChannel channel =null;
         if (type.equals("covid_update")) {
-            channel = Main.constants.jda.getTextChannelById(Main.constants.COVID_UPDATE_CHANNEL);
+            channel = Main.constants.jda.getTextChannelById(Main.constants.config.getChannelCovidUpdateId());
         }
         EmbedBuilder newEmbed = new EmbedBuilder();
         newEmbed.setTitle("Victoria Covid Update");
@@ -299,7 +299,7 @@ public class News {
 
     public void buildMsgFromWebScrape(JSONObject data) {
         activityLog.sendActivityMsg("[NEWS] Building exposure message",1);
-        MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.EXPOSURE_SITE_CHANNEL);
+        MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.config.getChannelExposureSiteId());
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle("Exposure Sites Update");
         // will be the contents of above method **if** there is an update

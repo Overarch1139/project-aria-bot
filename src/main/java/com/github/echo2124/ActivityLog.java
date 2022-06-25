@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 public class ActivityLog {
     // 1 = info; 2=warn; 3=error;
     public void sendActivityMsg(String msg, int type) {
-        TextChannel msgChannel = Main.constants.jda.getTextChannelById(Main.constants.ACTIVITY_LOG_ID);
+        TextChannel msgChannel = Main.constants.jda.getTextChannelById(Main.constants.config.getChannelActivityLogId());
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Australia/Melbourne"));
         String concat="```";
         String endingSymbol="";
@@ -32,7 +32,7 @@ public class ActivityLog {
                 concat+="- ";
                 tag="[ERROR]";
                 endingSymbol=" - ";
-                user=Main.constants.jda.getUserById(Main.constants.DEVELOPER_ID);
+                user=Main.constants.jda.getUserById(Main.constants.config.getRoleDevTeamId());
                 break;
             default:
         }

@@ -52,8 +52,8 @@ public class OnCampus extends ListenerAdapter {
                 Guild guild = Main.constants.jda.getGuilds().get(0);
                 // test
                 System.out.println("[OnCampus] Running task");
-                Role oncampus = Main.constants.jda.getRoleById(ONCAMPUS_ROLE_ID);
-                TextChannel msgChannel = Main.constants.jda.getTextChannelById(ONCAMPUS_CHANNEL_ID);
+                Role oncampus = Main.constants.jda.getRoleById(config.getRoleOnCampusId());
+                TextChannel msgChannel = Main.constants.jda.getTextChannelById(config.getChannelOnCampusId());
                 resetEntities(oncampus, msgChannel, guild);
                 if (day!=Calendar.SUNDAY && day!=Calendar.SATURDAY || state) {
                     generateMsg(oncampus,msgChannel);
@@ -65,8 +65,8 @@ public class OnCampus extends ListenerAdapter {
             @Override
             public void run() {
                 activityLog.sendActivityMsg("[ONCAMPUS] Running reset task",1);
-                Role oncampus = Main.constants.jda.getRoleById(ONCAMPUS_ROLE_ID);
-                TextChannel msgChannel = Main.constants.jda.getTextChannelById(ONCAMPUS_CHANNEL_ID);
+                Role oncampus = Main.constants.jda.getRoleById(config.getRoleOnCampusId());
+                TextChannel msgChannel = Main.constants.jda.getTextChannelById(config.getChannelOnCampusId());
                 Guild guild = Main.constants.jda.getGuilds().get(0);
                 resetEntities(oncampus,msgChannel,guild);
             }
@@ -139,8 +139,8 @@ public class OnCampus extends ListenerAdapter {
 
 
     public void restoreListener() {
-        Role oncampus = Main.constants.jda.getRoleById(ONCAMPUS_ROLE_ID);
-        TextChannel msgChannel = Main.constants.jda.getTextChannelById(ONCAMPUS_CHANNEL_ID);
+        Role oncampus = Main.constants.jda.getRoleById(config.getRoleOnCampusId());
+        TextChannel msgChannel = Main.constants.jda.getTextChannelById(config.getChannelOnCampusId());
         MessageHistory msgHistory = msgChannel.getHistory();
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Australia/Melbourne"));
         activityLog.sendActivityMsg("[ONCAMPUS] Attempting to restore listener...",1);

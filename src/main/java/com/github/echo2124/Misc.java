@@ -10,11 +10,8 @@ import java.util.List;
 public class Misc {
     // run this on start up to remove timeout regardless (in case bot crashes whilst trying to verify someone)
     public void resetTimeout() {
-        Guild guild =  Main.constants.jda.getGuildById(Main.constants.IT_SERVER);
+        Guild guild =  Main.constants.jda.getGuildById(Main.constants.config.getServerId());
         List<Member> members = guild.findMembers(member -> {
-            if (member.getRoles().contains(guild.getRoleById(Main.constants.VERIFY_TIMEOUT_ROLE_ID))){
-             //   guild.removeRoleFromMember(member.getIdLong(), guild.getRoleById(Main.constants.VERIFY_TIMEOUT_ROLE_ID)).queue();
-            }
             return true;
         }).get();
         System.out.println("[MISC MODULE] Reset Timeout");
