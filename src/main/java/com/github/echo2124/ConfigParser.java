@@ -15,7 +15,7 @@ public class ConfigParser {
         Config config=null;
         try {
             Gson parser = new Gson();
-            config =parser.fromJson(new BufferedReader(new FileReader(System.getenv("CONFIG_FILE"))),Config.class);
+            config =parser.fromJson(new BufferedReader(new FileReader("/"+this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath()+System.getenv("CONFIG_FILE"))),Config.class);
             System.out.println(config);
 
         } catch (FileNotFoundException e ) {
