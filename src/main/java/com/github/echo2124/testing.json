@@ -1,0 +1,30 @@
+{
+  "config_name":"Aria Test Server",
+  "server_id":"878943527608938508",
+  "activity_state":"Dev Test Mode!",
+  "ids": [
+    {
+      "roles": [
+        {
+          "verified":"909827233194070039",
+          "oncampus": "960693586163269683",
+          "dev_team": "990322123161628712"
+
+        }
+      ]
+    },
+    {
+      "channels": [
+        {
+          "verify":"912353229285765172",
+          "admin":"912353440749985852",
+          "monash_news": "957640138597490688",
+          "covid_update":"912726004886294569",
+          "oncampus": "960693585508982824",
+          "exposure_site":"912726004886294569",
+          "activity_log": "981456425530298429"
+        }
+      ]
+    }
+  ]
+}
