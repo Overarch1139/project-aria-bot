@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 
 import static com.github.echo2124.Main.constants.*;
 
-
 public class OnCampus extends ListenerAdapter {
     public final String checkUnicode = "U+2705";
     public OnCampus(Boolean state) {
@@ -58,7 +57,6 @@ public class OnCampus extends ListenerAdapter {
                 if (day!=Calendar.SUNDAY && day!=Calendar.SATURDAY || state) {
                     generateMsg(oncampus,msgChannel);
                 }
-
             }
         };
         Runnable resetHandler = new Runnable() {
@@ -82,7 +80,6 @@ public class OnCampus extends ListenerAdapter {
                 resetInitialDelay,
                 TimeUnit.DAYS.toSeconds(1),
                 TimeUnit.SECONDS);
-
         if (state) {
             generateHandler.run();
         }

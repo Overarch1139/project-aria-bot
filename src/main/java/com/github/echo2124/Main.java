@@ -30,7 +30,6 @@ public class Main extends ListenerAdapter {
         String activity=config.getActivityState();
         // setters for various props
         String BOT_TOKEN = System.getenv("DISCORD_CLIENT_SECRET");
-
         JDA jda = JDABuilder.createLight(BOT_TOKEN, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES)
                 .addEventListeners(new Main())
                 .setActivity(Activity.playing(activity))
@@ -113,8 +112,6 @@ public class Main extends ListenerAdapter {
                 }
             }
 
-        // TODO: Move this to database class
-            // for commands with params
             if (channel.getId().equals(config.getChannelAdminId())) {
                 if (msgContents.contains(">userLookup")) {
                     System.out.println("Running userLookup cmd");
