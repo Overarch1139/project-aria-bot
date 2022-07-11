@@ -172,6 +172,10 @@ public class Database {
         Connection connection=connect();
         try {
             connection.prepareStatement("ALTER TABLE exposure DROP COLUMN origin, DROP COLUMN len;").executeQuery();
+        } catch (SQLException e) {
+            System.out.println("Unable to modify schema: "+e.getMessage());
+        }
+        try {
             // UID (auto-gen, int), Campus string, Building String, ExposurePeriod String, CleaningStatus String, HealthAdvice String, retrieved DATETIME
             connection.prepareStatement("ALTER TABLE exposure ADD COLUMN UID SERIAL PRIMARY KEY, ADD COLUMN Building TEXT, ADD COLUMN ExposurePeriod TEXT, ADD COLUMN CleaningStatus TEXT, ADD COLUMN HealthAdvice TEXT, ADD COLUMN RetrievedTime TIMESTAMP;").executeQuery();
         } catch (SQLException e) {
