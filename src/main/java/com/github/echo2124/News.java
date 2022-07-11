@@ -282,13 +282,12 @@ public class News {
             System.out.println("[NEWS] ERROR: unable to parse exposure site table");
             activityLog.sendActivityMsg("[NEWS] ERROR: unable to parse exposure site table",3);
         }
-        System.out.println("JSON:");
-        System.out.println(jsonParentObject.toString());
         // stick json object into db
-        int retrivedIndex=Integer.parseInt(db.getDBEntry("CHECK_EXPOSURE_INDEX", "EXPOSURE_SITE"));
             Date date = new Date();
             Timestamp ts=new Timestamp(date.getTime());
+        System.out.println("Dumping exposure entries into db...");
             for (int i=0; i<numExposures;i++) {
+
                 HashMap<String, String> parsedData = new HashMap<String, String>();
                 JSONObject data = jsonParentObject.getJSONObject(String.valueOf(i));
                 parsedData.put("timestamp", ts.toString());
@@ -301,6 +300,7 @@ public class News {
             // will need to refactor msg builder and *only* push new/changed exposure notifications
                 //    buildMsgFromWebScrape(jsonParentObject.getJSONObject(String.valueOf(i)));
             }
+        System.out.println("Dumping exposure entries complete!");
     }
 
     public void buildMsgFromWebScrape(JSONObject data) {
