@@ -171,7 +171,7 @@ public class Database {
     public void modifyDbSchemaForExposure() {
         Connection connection=connect();
         try {
-            connection.prepareStatement("ALTER TABLE exposure DROP COLUMN origin, len;").executeQuery();
+            connection.prepareStatement("ALTER TABLE exposure DROP COLUMN origin, DROP COLUMN len;").executeQuery();
             // UID (auto-gen, int), Campus string, Building String, ExposurePeriod String, CleaningStatus String, HealthAdvice String, retrieved DATETIME
             connection.prepareStatement("ALTER TABLE exposure ADD (UID SERIAL PRIMARY KEY, Building TEXT, ExposurePeriod TEXT, CleaningStatus TEXT, HealthAdvice TEXT, RetrievedTime TIMESTAMP);").executeQuery();
         } catch (SQLException e) {
