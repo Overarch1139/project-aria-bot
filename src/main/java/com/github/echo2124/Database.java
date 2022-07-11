@@ -93,8 +93,7 @@ public class Database {
             String sqlQuery = "CREATE TABLE WARN_MODULE (discordID bigint, issuerID bigint, warnDesc text, issueTime TIMESTAMP);"+
                             "CREATE TABLE CERT_MODULE (discordID bigint, name VARCHAR(2048), emailAddr VARCHAR(100), isVerified bool, verifiedTime TIMESTAMP);"+
                             "CREATE TABLE NEWS (origin VARCHAR(50), lastTitle text);"+
-                            "CREATE TABLE EXPOSURE (origin VARCHAR(50), len NUMERIC(15));"+
-                            "CREATE TABLE ONCAMPUS (discordID bigint, )";
+                            "CREATE TABLE EXPOSURE (Campus VARCHAR(75),Building TEXT,ExposurePeriod TEXT,CleaningStatus TEXT,HealthAdvice TEXT,RetrievedTime TIMESTAMP)";
             stmt.executeUpdate(sqlQuery);
             stmt.close();
 
@@ -186,12 +185,6 @@ public class Database {
         try {
             // UID (auto-gen, int), Campus string, Building String, ExposurePeriod String, CleaningStatus String, HealthAdvice String, retrieved DATETIME
             connection.prepareStatement("ALTER TABLE exposure ADD COLUMN UID SERIAL PRIMARY KEY, ADD COLUMN Campus VARCHAR(75), ADD COLUMN Building TEXT, ADD COLUMN ExposurePeriod TEXT, ADD COLUMN CleaningStatus TEXT, ADD COLUMN HealthAdvice TEXT, ADD COLUMN RetrievedTime TIMESTAMP;").executeQuery();
-        } catch (SQLException e) {
-            System.out.println("Unable to modify schema: "+e.getMessage());
-        }
-        try {
-            // UID (auto-gen, int), Campus string, Building String, ExposurePeriod String, CleaningStatus String, HealthAdvice String, retrieved DATETIME
-            connection.prepareStatement("ALTER TABLE exposure ADD COLUMN Campus VARCHAR(75);").executeQuery();
         } catch (SQLException e) {
             System.out.println("Unable to modify schema: "+e.getMessage());
         }
