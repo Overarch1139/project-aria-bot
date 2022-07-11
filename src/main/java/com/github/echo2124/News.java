@@ -250,6 +250,8 @@ public class News {
         channel.sendMessageEmbeds(newEmbed.build()).queue();
     }
 
+
+
     public void fetchCovidExposureInfo(Document doc) {
         activityLog.sendActivityMsg("[NEWS] Fetching exposure info from remote",1);
         JSONObject jsonParentObject = new JSONObject();
@@ -281,6 +283,7 @@ public class News {
         }
         System.out.println("JSON:");
         System.out.println(jsonParentObject.toString());
+        // stick json object into db
         int retrivedIndex=Integer.parseInt(db.getDBEntry("CHECK_EXPOSURE_INDEX", "EXPOSURE_SITE"));
         if (retrivedIndex==0) {
             retrivedIndex=numExposures-4;

@@ -48,9 +48,7 @@ public class Database {
                 throw new Exception();
             }
         } catch (Exception e) {
-            DB_URL="localhost:5432/postgres";
-            USERNAME="postgres";
-            PASSWORD="2008";
+            System.out.println("Unable to check env: "+e.getMessage());
         }
         }
 
@@ -167,6 +165,20 @@ public class Database {
             System.err.println(this.getClass().getName()+"Modify DB failed"+e.getMessage());
         }
     }
+
+    // Doing this because heroku db is readonly via the web app query tool and using postgres remotely via their app is aids.
+    // Run once on existing table to update structure, if initial run don't bother
+    public void modifyDbSchemaForExposure() {
+        Connection connection=connect();
+        try {
+            connection.prepareStatement("ALTER TABLE exposure DROP COLUMN origin, len;").executeQuery();
+            // UID (auto-gen, int), Campus string, Building String, ExposurePeriod String, CleaningStatus String, HealthAdvice String, retrieved DATETIME
+            connection.prepareStatement("ALTER TABLE exposure ADD (UID SERIAL PRIMARY KEY, Building TEXT, ExposurePeriod TEXT, CleaningStatus TEXT, HealthAdvice TEXT, RetrievedTime TIMESTAMP);").executeQuery();
+        } catch (SQLException e) {
+            System.out.println("Unable to modify schema: "+e.getMessage());
+        }
+    }
+
 
     public String getDBEntry(String originModule, String req) {
         System.out.println("Grabbing DB Entry");
