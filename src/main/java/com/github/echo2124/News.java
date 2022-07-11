@@ -21,6 +21,7 @@ import java.awt.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLOutput;
+import java.sql.Timestamp;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -285,19 +286,21 @@ public class News {
         System.out.println(jsonParentObject.toString());
         // stick json object into db
         int retrivedIndex=Integer.parseInt(db.getDBEntry("CHECK_EXPOSURE_INDEX", "EXPOSURE_SITE"));
-        if (retrivedIndex==0) {
-            retrivedIndex=numExposures-4;
-        }
-          if (numExposures>retrivedIndex) {
-            // do quick math here, find difference and reverse json object possibly
-            HashMap<String, String> data = new HashMap<String, String>();
-            data.put("col_name", "exposure_sites");
-            data.put("size", String.valueOf(numExposures));
-            db.modifyDB("EXPOSURE_SITE","", data);
-            for (int i=0; i<(numExposures-retrivedIndex);i++) {
-                buildMsgFromWebScrape(jsonParentObject.getJSONObject(String.valueOf(i)));
+            Date date = new Date();
+            Timestamp ts=new Timestamp(date.getTime());
+            for (int i=0; i<numExposures;i++) {
+                HashMap<String, String> parsedData = new HashMap<String, String>();
+                JSONObject data = jsonParentObject.getJSONObject(String.valueOf(i));
+                parsedData.put("timestamp", ts.toString());
+                parsedData.put("campus",data.getString("Campus"));
+                parsedData.put("building",data.getString("Building"));
+                parsedData.put("exposure_site",data.getString("ExposurePeriod"));
+                parsedData.put("cleaning_status",data.getString("CleaningStatus"));
+                parsedData.put("health_advice", data.getString("HealthAdvice"));
+                db.modifyDB("EXPOSURE_SITE", null, parsedData);
+            // will need to refactor msg builder and *only* push new/changed exposure notifications
+                //    buildMsgFromWebScrape(jsonParentObject.getJSONObject(String.valueOf(i)));
             }
-          }
     }
 
     public void buildMsgFromWebScrape(JSONObject data) {

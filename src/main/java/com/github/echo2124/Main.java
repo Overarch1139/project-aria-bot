@@ -45,7 +45,7 @@ public class Main extends ListenerAdapter {
         db = new Database();
          new News("Covid", db);
         new News("Monash", db);
-        new News("ExposureBuilding",db);
+       // new News("ExposureBuilding",db);
    //   OnCampus x =new OnCampus(false);
         activityLog.sendActivityMsg("Config File For "+config.getConfigName()+" has loaded successfully!", 1);
         activityLog.sendActivityMsg("[MAIN] Aria Bot has initialised successfully!",1);

@@ -145,8 +145,15 @@ public class Database {
             case "EXPOSURE_SITE":
                 try {
                     activityLog.sendActivityMsg("[DATABASE] Inserting exposure data into exposure table",1);
-                    sqlQuery = connection.prepareStatement("UPDATE exposure SET len=? WHERE origin='EXPOSURE_SITE'");
-                    sqlQuery.setInt(1,Integer.parseInt(data.get("size").toString()));
+                    sqlQuery = connection.prepareStatement("INSERT INTO exposure(Campus,Building,ExposurePeriod,CleaningStatus,HealthAdvice,RetrievedTime) VALUES (?,?,?,?,?,?);");
+                    sqlQuery.setString(1, data.get("campus").toString());
+                    sqlQuery.setString(2,data.get("building").toString());
+                    sqlQuery.setString(3, data.get("exposure_site").toString());
+                    sqlQuery.setString(4, data.get("cleaning_status").toString());
+                    sqlQuery.setString(5, data.get("health_advice").toString());
+                    // not using in built (ts) as we need a universal time among different entries that are being added at the same time of fetch.
+                    Timestamp fetchTimestamp = Timestamp.valueOf(data.get("timestamp").toString());
+                    sqlQuery.setTimestamp(6, fetchTimestamp);
                 } catch (Exception e) {
                     System.out.println("UNABLE TO MODIFY EXPOSURE_SITE MSG:"+e.getMessage());
                 }
@@ -177,7 +184,7 @@ public class Database {
         }
         try {
             // UID (auto-gen, int), Campus string, Building String, ExposurePeriod String, CleaningStatus String, HealthAdvice String, retrieved DATETIME
-            connection.prepareStatement("ALTER TABLE exposure ADD COLUMN UID SERIAL PRIMARY KEY, ADD COLUMN Building TEXT, ADD COLUMN ExposurePeriod TEXT, ADD COLUMN CleaningStatus TEXT, ADD COLUMN HealthAdvice TEXT, ADD COLUMN RetrievedTime TIMESTAMP;").executeQuery();
+            connection.prepareStatement("ALTER TABLE exposure ADD COLUMN UID SERIAL PRIMARY KEY, ADD COLUMN Campus VARCHAR(75), ADD COLUMN Building TEXT, ADD COLUMN ExposurePeriod TEXT, ADD COLUMN CleaningStatus TEXT, ADD COLUMN HealthAdvice TEXT, ADD COLUMN RetrievedTime TIMESTAMP;").executeQuery();
         } catch (SQLException e) {
             System.out.println("Unable to modify schema: "+e.getMessage());
         }
