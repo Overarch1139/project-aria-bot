@@ -175,6 +175,7 @@ public class Database {
 
     // Doing this because heroku db is readonly via the web app query tool and using postgres remotely via their app is aids.
     // Run once on existing table to update structure, if initial run don't bother
+    // Yep this is a big mess, damn heroku and their readonly postgres
     public void modifyDbSchemaForExposure() {
         Connection connection=connect();
         try {
@@ -188,6 +189,19 @@ public class Database {
         } catch (SQLException e) {
             System.out.println("Unable to modify schema: "+e.getMessage());
         }
+        try {
+            // UID (auto-gen, int), Campus string, Building String, ExposurePeriod String, CleaningStatus String, HealthAdvice String, retrieved DATETIME
+            connection.prepareStatement("ALTER TABLE exposure ADD COLUMN Campus VARCHAR(75);").executeQuery();
+        } catch (SQLException e) {
+            System.out.println("Unable to modify schema: "+e.getMessage());
+        }
+        try {
+            // Wipe table
+            connection.prepareStatement("DELETE FROM exposure;").executeQuery();
+        } catch (SQLException e) {
+            System.out.println("Unable to modify schema: "+e.getMessage());
+        }
+
     }
 
 
