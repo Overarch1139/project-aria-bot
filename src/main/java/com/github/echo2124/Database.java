@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.Map;
 
 import static com.github.echo2124.Main.constants.activityLog;
 
@@ -128,7 +129,7 @@ public class Database {
                 break;
             case "NEWS":
                     try {
-                        if (Boolean.parseBoolean(this.getDBEntry("NEWS_CHECK_CATEGORY", action))) {
+                        if (Boolean.parseBoolean(this.getDBEntry("NEWS_CHECK_CATEGORY", new HashMap<String, String>(Map.of("id", action))))) {
                             sqlQuery = connection.prepareStatement("DELETE FROM NEWS WHERE origin=?");
                             sqlQuery.setString(1, action);
                             sqlQuery.execute();
@@ -198,17 +199,17 @@ public class Database {
     }
 
 
-    public String getDBEntry(String originModule, String req) {
+    public String getDBEntry(String request, HashMap data) {
         System.out.println("Grabbing DB Entry");
         String ret="";
         PreparedStatement sqlQuery;
         Connection connection=connect();
         try {
-            switch (originModule) {
+            switch (request) {
                 case "CERT":
                     activityLog.sendActivityMsg("[DATABASE] Fetching verify data from verify table",1);
                 sqlQuery=connection.prepareStatement("SELECT * FROM CERT_MODULE WHERE discordID=?");
-                sqlQuery.setLong(1,Long.parseLong(req));
+                sqlQuery.setLong(1,Long.parseLong(data.get("id").toString()));
                 if (sqlQuery!=null) {
                     ResultSet rs = sqlQuery.executeQuery();
                     System.out.println("Ran query");
@@ -218,7 +219,7 @@ public class Database {
                         ret+="Verified Status: "+rs.getBoolean(4)+"\n";
                         ret+="Time of Verification: "+rs.getTimestamp(5)+"\n";
                     }
-                    System.out.println("Query result: \n"+req);
+                    System.out.println("Query result: \n"+data.get("id").toString());
                     if (ret=="") {
                         ret = "No results found";
                     }
@@ -227,13 +228,13 @@ public class Database {
                 case "NEWS_CHECK_CATEGORY":
                     activityLog.sendActivityMsg("[DATABASE] Fetching news data from news table",1);
                     sqlQuery=connection.prepareStatement("SELECT * FROM NEWS WHERE origin=?");
-                    sqlQuery.setString(1, req);
+                    sqlQuery.setString(1, data.get("category").toString());
                     if (sqlQuery!=null) {
                         ResultSet rs = sqlQuery.executeQuery();
                         while (rs.next()) {
                             ret=rs.getString(1);
                         }
-                        if (ret.equals(req)) {
+                        if (ret.equals(data.get("category").toString())) {
                             ret="true";
                         } else {
                             ret="false";
@@ -244,17 +245,14 @@ public class Database {
                     break;
                 case "NEWS_CHECK_LASTITLE":
                     sqlQuery=connection.prepareStatement("SELECT * FROM NEWS WHERE origin=? AND lastTitle=?");
-                    String[] parsed=req.split("##");
-                    System.out.println("[Database] Split value origin: "+parsed[0]);
-                    System.out.println("[Database] Split value lastTitle: "+parsed[1]);
-                    sqlQuery.setString(1, parsed[0]);
-                    sqlQuery.setString(2,parsed[1]);
+                    sqlQuery.setString(1,data.get("category").toString());
+                    sqlQuery.setString(2,data.get("lasttitle").toString());
                     if (sqlQuery!=null) {
                         ResultSet rs = sqlQuery.executeQuery();
                         while (rs.next()) {
                             ret=rs.getString(2);
                         }
-                        if (ret.equals(parsed[1])) {
+                        if (ret.equals(data.get("lasttitle").toString())) {
                             ret="true";
                         } else {
                             ret="false";
@@ -262,32 +260,14 @@ public class Database {
                         System.out.println("[Database] Last News Title Exists="+ret);
                     }
                     break;
-                case "CHECK_EXPOSURE_INDEX":
+                case "CHECK_EXPOSURE_ENTRY":
+                    // checks if x entry is similar to any in table if not then return true else false
+                    // initial check building & exposure period if exists then cleaning status and health advice
+                    // diff health & cleaning if different then update existing entry & push update msg
                     activityLog.sendActivityMsg("[DATABASE] Fetching exposure data from exposure table",1);
-                    //TODO check for origin instead (there is probably an issue with the current method of checking for a table which is causing these sorts of problems that exist currently)
-                    ResultSet rs = connection.prepareStatement("SELECT EXISTS ( SELECT FROM pg_tables WHERE tablename='exposure');").executeQuery();
-                    while (rs.next()) {
-                        if (rs.getBoolean(1)) {
-                            System.out.println("[Database] checking db for exposure info");
-                            sqlQuery = connection.prepareStatement("SELECT len FROM EXPOSURE WHERE origin=?");
-                            sqlQuery.setString(1, req);
-                            if (sqlQuery != null) {
-                                ResultSet res = sqlQuery.executeQuery();
-                                while (res.next()) {
-                                    ret = String.valueOf(res.getInt(1));
-                                }
-                                if (ret == null || ret == "") {
-                                    ret = "0";
-                                }
-                            }
-                        } else {
-                            System.out.println("[Database] exposure table doesn't exist. creating...");
-                            // ADD TABLE TO DB (EXPOSURE)
-                            connection.prepareStatement("CREATE TABLE EXPOSURE (origin VARCHAR(50), len NUMERIC(15));").executeQuery();
-                            ret="0";
-                        }
+                    sqlQuery=connection.prepareStatement("SELECT * FROM exposure WHERE building=? AND exposureperiod=?;");
+                   // sqlQuery.setString("1", );
                     break;
-                    }
             }
         } catch (SQLException e) {
             System.err.println(this.getClass().getName()+"Unable to get Entry"+e.getMessage());

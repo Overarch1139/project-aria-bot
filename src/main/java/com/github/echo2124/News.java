@@ -1,6 +1,7 @@
 package com.github.echo2124;
 
 
+import com.iwebpp.crypto.TweetNaclFast;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
@@ -54,19 +55,19 @@ public class News {
             }
         } else if (newsType.equals("Monash")) {
             feedOrg = "Monash";
-            if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", "technology"))) {
+            if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", new HashMap<String, String>(Map.of("category","technology"))))) {
                 System.out.println("[News] Technology Category Found!");
                 initRSS("https://www.monash.edu/_webservices/news/rss?category=engineering+%26+technology", "technology", true);
             } else {
                 initRSS("https://www.monash.edu/_webservices/news/rss?category=engineering+%26+technology", "technology", false);
             }
-            if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", "covid"))) {
+            if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", new HashMap<String, String>(Map.of("category","covid"))))) {
                 System.out.println("[News] COVID Category Found!");
                 initRSS("https://www.monash.edu/_webservices/news/rss?query=covid", "covid", true);
             } else {
                 initRSS("https://www.monash.edu/_webservices/news/rss?query=covid", "covid", false);
             }
-            if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY", "news"))) {
+            if (Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_CATEGORY",  new HashMap<String, String>(Map.of("category","news"))))) {
                 System.out.println("[News] News Category Found!");
                 initRSS("https://www.monash.edu/_webservices/news/rss?category=university+%26+news", "news", true);
             } else {
@@ -191,7 +192,10 @@ public class News {
     }
 
     public void sendMsg(SyndFeed feed, String category, Boolean checkState) {
-        if (!checkState || !Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_LASTITLE",category+"##"+feed.getEntries().get(feedIndex).getTitle()))) {
+        HashMap<String, String> x= new HashMap<>();
+        x.put("category", category);
+        x.put("lasttitle", feed.getEntries().get(feedIndex).getTitle());
+        if (!checkState || !Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_LASTITLE",x))) {
             MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.config.getChannelMonashNewsId());
             EmbedBuilder newEmbed = new EmbedBuilder();
             if (feed.getEntries().get(feedIndex).getAuthor().equals("") || feed.getAuthor() == null) {
@@ -287,6 +291,7 @@ public class News {
             Timestamp ts=new Timestamp(date.getTime());
         System.out.println("Dumping exposure entries into db...");
             for (int i=0; i<numExposures;i++) {
+                // add checker here, check if entries with similar attributes exists
 
                 HashMap<String, String> parsedData = new HashMap<String, String>();
                 JSONObject data = jsonParentObject.getJSONObject(String.valueOf(i));

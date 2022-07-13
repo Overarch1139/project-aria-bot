@@ -90,7 +90,7 @@ public class SSOVerify extends Thread {
 
     public boolean checkVerification() {
         boolean isVerified = false;
-        if (db.getDBEntry("CERT", user.getId()).contains("true")) {
+        if (db.getDBEntry("CERT", new HashMap<String, String>(Map.of("id", user.getId()))).contains("true")) {
             activityLog.sendActivityMsg("[VERIFY] User has already been verified!",1);
             isVerified = true;
         }

@@ -11,6 +11,9 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.json.JSONObject;
 
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.github.echo2124.Main.constants.*;
 
 public class Main extends ListenerAdapter {
@@ -97,12 +100,12 @@ public class Main extends ListenerAdapter {
                         activityLog.sendActivityMsg("[MAIN] User lookup command triggered",1);
                         String id=msg.getAuthor().getId();
                         embed.setDescription("This command has returned **all** information associated with your account that was collected during the verification process.");
-                        if (db.getDBEntry("CERT", id).equals("No results found")) {
+                        if (db.getDBEntry("CERT", new HashMap<String, String>(Map.of("id",id))).equals("No results found")) {
                             embed.setColor(Color.RED);
                             embed.addField("Status:", "Your account has not been verified therefore there is no collected data associated with your discord id", false);
                         } else {
                             embed.setColor(Color.ORANGE);
-                            embed.addField("Status:", db.getDBEntry("CERT", id), false);
+                            embed.addField("Status:", db.getDBEntry("CERT", new HashMap<String, String>(Map.of("id",id))), false);
                         }
                         embed.setFooter("Data sourced from Aria's internal database");
                     } catch (Exception e) {
@@ -127,9 +130,9 @@ public class Main extends ListenerAdapter {
                             Long.parseLong(parsedContents[1]);
                             if (!msg.getMentions().getUsers().isEmpty()) {
                                 User x= msg.getMentions().getUsers().get(0);
-                                embed.setDescription("Results for: " +  x.getId()+"\n" + db.getDBEntry("CERT", x.getId()));
+                                embed.setDescription("Results for: " +  x.getId()+"\n" + db.getDBEntry("CERT", new HashMap<String, String>(Map.of("id", x.getId()))));
                             } else {
-                                embed.setDescription("Results for: " + parsedContents[1] + "\n" + db.getDBEntry("CERT", parsedContents[1]));
+                                embed.setDescription("Results for: " + parsedContents[1] + "\n" + db.getDBEntry("CERT", new HashMap<String, String>(Map.of("id",parsedContents[1]))));
                             }
                             embed.setFooter("data sourced from internal database");
                         } catch (Exception e) {
