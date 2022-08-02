@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.requests.restaction.RoleAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.ZoneId;
@@ -39,7 +40,6 @@ public class OnCampus extends ListenerAdapter {
         if(now.compareTo(resetNextRun) > 0)
             resetNextRun = resetNextRun.plusDays(1);
         Duration resetDuration = Duration.between(now, resetNextRun);
-
         long generateInitialDelay = generateDuration.getSeconds();
         long resetInitialDelay = resetDuration.getSeconds();
         Runnable generateHandler = new Runnable() {
@@ -54,8 +54,18 @@ public class OnCampus extends ListenerAdapter {
                 Role oncampus = Main.constants.jda.getRoleById(config.getRoleOnCampusId());
                 TextChannel msgChannel = Main.constants.jda.getTextChannelById(config.getChannelOnCampusId());
                 resetEntities(oncampus, msgChannel, guild);
-                if (day!=Calendar.SUNDAY && day!=Calendar.SATURDAY || state) {
-                    generateMsg(oncampus,msgChannel);
+                TimerTask generateDelay = new TimerTask() {
+                    @Override
+                    public void run() {
+                        if (day != Calendar.SUNDAY && day != Calendar.SATURDAY || state) {
+                            generateMsg(oncampus, msgChannel);
+                        }
+                    }
+                };
+                if (!state) {
+                    new java.util.Timer().schedule(generateDelay,10000);
+                } else {
+                    generateDelay.run();
                 }
             }
         };
@@ -80,6 +90,7 @@ public class OnCampus extends ListenerAdapter {
                 resetInitialDelay,
                 TimeUnit.DAYS.toSeconds(1),
                 TimeUnit.SECONDS);
+
         if (state) {
             generateHandler.run();
         }
