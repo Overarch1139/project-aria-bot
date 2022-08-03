@@ -9,6 +9,8 @@ import com.github.scribejava.core.oauth2.OAuth2Error;
 import com.iwebpp.crypto.TweetNaclFast;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -159,8 +161,27 @@ public class SSOVerify extends Thread {
         authEmbed.addField("Code: ", code, false);
         authEmbed.setFooter("This access token will expire in **5 Mins!**");
         activityLog.sendActivityMsg("[VERIFY] Send FAQ & Auth request message via DMs",1);
-        this.user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(faqEmbed.build())).queue();
-        this.user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(authEmbed.build())).queue();
+        try {
+            this.user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(faqEmbed.build())).queue();
+            this.user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(authEmbed.build())).queue();
+        } catch (ErrorResponseException e) {
+            if (e.getErrorCode()==50007) {
+                sendIssuePrompt();
+            }
+        }
+    }
+
+    // Explains to the user why they aren't receiving a DM
+    public void sendIssuePrompt() {
+        activityLog.sendActivityMsg("[VERIFY] Sending DM Issue Prompt....", 2);
+        EmbedBuilder issueEmbed = new EmbedBuilder();
+        issueEmbed.setColor(Color.RED);
+        issueEmbed.setTitle("\uD83D\uDEA8 Unable To Send DM! \uD83D\uDEA8");
+        issueEmbed.addField("How to fix the problem: ", "Go to IT @ Monash > Privacy Settings > Enable Allow direct messages from server members. (NOTE: After you are verified you can disable DMs again). If you need a visual guide then click the visual demonstration button.", false);
+        issueEmbed.setFooter("Contact Echo2124#3778 for help with the bot");
+        ArrayList<net.dv8tion.jda.api.interactions.components.buttons.Button> btns = new ArrayList<net.dv8tion.jda.api.interactions.components.buttons.Button>();
+        btns.add(Button.link("https://cdn.discordapp.com/attachments/802537874590269460/996675231940874270/SPOILER_re-enable-dms2.gif", "Visual Demonstration").withEmoji(Emoji.fromUnicode("U+2139")));
+        msgChannel.sendMessageEmbeds(issueEmbed.build()).setActionRow(btns).queue();
     }
 
     public void verify() throws IOException, InterruptedException, ExecutionException {
