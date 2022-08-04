@@ -8,8 +8,10 @@ import com.github.scribejava.core.oauth.OAuth20Service;
 import com.github.scribejava.core.oauth2.OAuth2Error;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.json.JSONObject;
 import java.awt.*;
 import java.io.IOException;
@@ -156,16 +158,8 @@ public class SSOVerify extends Thread {
         authEmbed.addField("Code: ", code, false);
         authEmbed.setFooter("This access token will expire in **5 Mins!**");
         activityLog.sendActivityMsg("[VERIFY] Send FAQ & Auth request message via DMs",1);
-        try {
-            this.user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(faqEmbed.build())).queue();
-            this.user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(authEmbed.build())).queue();
-        } catch (ErrorResponseException e) {
-            System.out.println("Exception catched sending msg");
-            System.out.println("Error code: "+e.getErrorCode());
-            if (e.getErrorCode()==50007) {
-                sendIssuePrompt();
-            }
-        }
+            this.user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(faqEmbed.build())).queue(null, new ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE).handle(ErrorResponse.CANNOT_SEND_TO_USER,(e) -> sendIssuePrompt()));
+            this.user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(authEmbed.build())).queue(null, new ErrorHandler().ignore(ErrorResponse.UNKNOWN_MESSAGE).handle(ErrorResponse.CANNOT_SEND_TO_USER,(e) -> System.out.println("Secondary msg error - expected if user does not have DMs enabled")));
     }
 
     // Explains to the user why they aren't receiving a DM
