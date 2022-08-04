@@ -160,6 +160,8 @@ public class SSOVerify extends Thread {
             this.user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(faqEmbed.build())).queue();
             this.user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(authEmbed.build())).queue();
         } catch (ErrorResponseException e) {
+            System.out.println("Exception catched sending msg");
+            System.out.println("Error code: "+e.getErrorCode());
             if (e.getErrorCode()==50007) {
                 sendIssuePrompt();
             }
