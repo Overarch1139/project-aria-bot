@@ -15,7 +15,7 @@ repositories {
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
-    implementation 'net.dv8tion:JDA:5.0.0-alpha.17'
+    implementation("net.dv8tion:JDA:5.0.0-alpha.12")
     implementation 'javax.servlet:javax.servlet-api:4.0.1'
     implementation 'com.rometools:rome:1.18.0'
     implementation 'org.twitter4j:twitter4j-core:4.0.7'

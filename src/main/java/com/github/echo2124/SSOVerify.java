@@ -4,7 +4,6 @@ import com.github.scribejava.core.builder.ScopeBuilder;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.apis.GoogleApi20;
 import com.github.scribejava.core.model.*;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.github.scribejava.core.oauth2.OAuth2Error;
 import net.dv8tion.jda.api.EmbedBuilder;
