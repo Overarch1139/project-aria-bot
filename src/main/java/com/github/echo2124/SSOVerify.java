@@ -4,20 +4,16 @@ import com.github.scribejava.core.builder.ScopeBuilder;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.apis.GoogleApi20;
 import com.github.scribejava.core.model.*;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.github.scribejava.core.oauth2.OAuth2Error;
-import com.iwebpp.crypto.TweetNaclFast;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.awt.*;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 

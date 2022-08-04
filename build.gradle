@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'org.echo2124'
-version '1.0-SNAPSHOT'
+version '1.2.4-Stable'
 def mainClassName = 'com.github.echo2124.Main'
 repositories {
     mavenCentral()
@@ -12,29 +12,20 @@ repositories {
     }
 }
 
-
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
-// https://mvnrepository.com/artifact/net.dv8tion/JDA
-    implementation 'net.dv8tion:JDA:5.0.0-alpha.12'
+    implementation 'net.dv8tion:JDA:5.0.0-alpha.17'
     implementation 'javax.servlet:javax.servlet-api:4.0.1'
-// https://mvnrepository.com/artifact/com.rometools/rome
     implementation 'com.rometools:rome:1.18.0'
     implementation 'org.twitter4j:twitter4j-core:4.0.7'
     implementation 'org.twitter4j:twitter4j-stream:4.0.7'
-    // https://mvnrepository.com/artifact/com.github.scribejava/scribejava-apis
     implementation 'com.github.scribejava:scribejava-apis:8.3.1'
-    // https://mvnrepository.com/artifact/com.github.scribejava/scribejava-core
     implementation 'com.github.scribejava:scribejava-core:8.3.1'
-    // https://mvnrepository.com/artifact/org.json/json
     implementation 'org.json:json:20210307'
-// https://mvnrepository.com/artifact/org.postgresql/postgresql
     implementation 'org.postgresql:postgresql:42.3.4'
-    // jsoup HTML parser library @ https://jsoup.org/
     implementation 'org.jsoup:jsoup:1.14.3'
     implementation 'com.google.code.gson:gson:2.9.0'
-
 }
 
 test {
