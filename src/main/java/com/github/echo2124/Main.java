@@ -38,7 +38,7 @@ public class Main extends ListenerAdapter {
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .build();
         jda.awaitReady();
-        constants.jda = jda;git 
+        constants.jda = jda;git
         activityLog = new ActivityLog();
         Close close = new Close();
         Runtime.getRuntime().addShutdownHook(close);
