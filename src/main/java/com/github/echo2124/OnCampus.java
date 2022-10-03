@@ -25,9 +25,11 @@ import static com.github.echo2124.Main.constants.*;
 
 public class OnCampus extends ListenerAdapter {
     public final String checkUnicode = "U+2705";
-    public OnCampus(Boolean state) {
+    public final String guildID;
+    public OnCampus(Boolean state, String guildID) {
            initScheduler(state);
            restoreListener();
+           this.guildID=guildID;
     }
 
     public void initScheduler(Boolean state) {
@@ -51,8 +53,8 @@ public class OnCampus extends ListenerAdapter {
                 Guild guild = Main.constants.jda.getGuilds().get(0);
                 // test
                 System.out.println("[OnCampus] Running task");
-                Role oncampus = Main.constants.jda.getRoleById(config.getRoleOnCampusId());
-                TextChannel msgChannel = Main.constants.jda.getTextChannelById(config.getChannelOnCampusId());
+                Role oncampus = Main.constants.jda.getRoleById(config.get(guildID).getRoleOnCampusId());
+                TextChannel msgChannel = Main.constants.jda.getTextChannelById(config.get(guildID).getChannelOnCampusId());
                 resetEntities(oncampus, msgChannel, guild);
                 TimerTask generateDelay = new TimerTask() {
                     @Override
@@ -73,8 +75,8 @@ public class OnCampus extends ListenerAdapter {
             @Override
             public void run() {
                 activityLog.sendActivityMsg("[ONCAMPUS] Running reset task",1);
-                Role oncampus = Main.constants.jda.getRoleById(config.getRoleOnCampusId());
-                TextChannel msgChannel = Main.constants.jda.getTextChannelById(config.getChannelOnCampusId());
+                Role oncampus = Main.constants.jda.getRoleById(config.get(guildID).getRoleOnCampusId());
+                TextChannel msgChannel = Main.constants.jda.getTextChannelById(config.get(guildID).getChannelOnCampusId());
                 Guild guild = Main.constants.jda.getGuilds().get(0);
                 resetEntities(oncampus,msgChannel,guild);
             }
@@ -147,8 +149,8 @@ public class OnCampus extends ListenerAdapter {
 
 
     public void restoreListener() {
-        Role oncampus = Main.constants.jda.getRoleById(config.getRoleOnCampusId());
-        TextChannel msgChannel = Main.constants.jda.getTextChannelById(config.getChannelOnCampusId());
+        Role oncampus = Main.constants.jda.getRoleById(config.get(guildID).getRoleOnCampusId());
+        TextChannel msgChannel = Main.constants.jda.getTextChannelById(config.get(guildID).getChannelOnCampusId());
         MessageHistory msgHistory = msgChannel.getHistory();
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Australia/Melbourne"));
         activityLog.sendActivityMsg("[ONCAMPUS] Attempting to restore listener...",1);

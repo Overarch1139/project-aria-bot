@@ -49,9 +49,12 @@ public class Main extends ListenerAdapter {
         new News("Covid", db);
         new News("Monash", db);
         new News("ExposureBuilding",db);
-        OnCampus x =new OnCampus(false);
-      for (String key: config.keySet()) {
+        // dual purpose loop - report config loaded & generate oncampus module for supported guilds
+        for (String key: config.keySet()) {
           activityLog.sendActivityMsg("Config File For "+config.get(key).getConfigName()+" has loaded successfully!", 1);
+          if (config.get(key).getOnCampusModuleEnabled()) {
+              new OnCampus(false, config.get(key).getServerId());
+          }
       }
         activityLog.sendActivityMsg("[MAIN] Aria Bot has initialised successfully!",1);
     }
@@ -144,9 +147,14 @@ public class Main extends ListenerAdapter {
                     channel.sendMessageEmbeds(embed.build()).queue();
 
                 } else if (msgContents.contains(">resetOnCampus")) {
-                    OnCampus x =new OnCampus(true);
-                    activityLog.sendActivityMsg("[MAIN] resetOnCampus command has been activated!",2);
-                   channel.sendMessage("On Campus feature has been successfully reset!");
+                    try {
+                        OnCampus x = new OnCampus(true, event.getGuild().getId());
+                        activityLog.sendActivityMsg("[MAIN] resetOnCampus command has been activated!",2);
+                        channel.sendMessage("On Campus feature has been successfully reset!");
+                    } catch (Exception e) {
+                        activityLog.sendActivityMsg("[MAIN] unable to generate oncampus module", 3);
+                    }
+
                 } else if (msgContents.contains(">serviceMode")) {
                     String[] parsedContents = msgContents.split(" ");
                     serviceMode=true;
