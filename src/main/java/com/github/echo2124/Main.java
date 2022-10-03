@@ -11,6 +11,8 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.json.JSONObject;
 
 import java.awt.*;
+import java.util.HashMap;
+
 import static com.github.echo2124.Main.constants.*;
 
 public class Main extends ListenerAdapter {
@@ -20,15 +22,15 @@ public class Main extends ListenerAdapter {
         public static ActivityLog activityLog=null;
         public static boolean serviceMode=false;
         public static Database db=null;
-        public static Config[] config;
+        public static HashMap<String, Config> config;
     }
     public static void main(String[] arguments) throws Exception {
         // load config here before anything else
         ConfigParser parser = new ConfigParser();
-        Config[] config =parser.parseDefaults();
+        HashMap<String, Config> config =parser.parseDefaults();
         Main.constants.config=config;
         // grabs from first config, since we are using the same bot instance with different guilds the bot activity *must* remain the same
-        String activity=config[0].getActivityState();
+        String activity=config.get(config.keySet().toArray()[0]).getActivityState();
         // setters for various props
         String BOT_TOKEN = System.getenv("DISCORD_CLIENT_SECRET");
         JDA jda = JDABuilder.createLight(BOT_TOKEN, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES)
@@ -44,22 +46,26 @@ public class Main extends ListenerAdapter {
         Runtime.getRuntime().addShutdownHook(close);
         activityLog.sendActivityMsg("[MAIN] Aria Bot is starting up...",1);
         db = new Database();
-         new News("Covid", db);
+        new News("Covid", db);
         new News("Monash", db);
         new News("ExposureBuilding",db);
-      OnCampus x =new OnCampus(false);
-        activityLog.sendActivityMsg("Config File For "+config.getConfigName()+" has loaded successfully!", 1);
+        OnCampus x =new OnCampus(false);
+      for (String key: config.keySet()) {
+          activityLog.sendActivityMsg("Config File For "+config.get(key).getConfigName()+" has loaded successfully!", 1);
+      }
         activityLog.sendActivityMsg("[MAIN] Aria Bot has initialised successfully!",1);
     }
 
+    // SOLUTION: store different instances of config class as a hashmap, the guild is the key
     public void onMessageReceived(MessageReceivedEvent event) {
         Message msg = event.getMessage();
         User user = event.getAuthor();
         MessageChannel channel = event.getChannel();
         News news;
         String msgContents = msg.getContentRaw();
+        String serverId=event.getGuild().getId();
         if (msgContents.contains(">")) {
-            if (channel.getId().equals(config.getChannelVerifyId())) {
+            if (channel.getId().equals(config.get(serverId).getChannelVerifyId())) {
                 if (msgContents.equals(">verify")) {
                    SSOVerify newVerify= new SSOVerify(user, event.getGuild(), channel, db);
                    newVerify.start();
@@ -113,7 +119,7 @@ public class Main extends ListenerAdapter {
                 }
             }
 
-            if (channel.getId().equals(config.getChannelAdminId())) {
+            if (channel.getId().equals(config.get(serverId).getChannelAdminId())) {
                 if (msgContents.contains(">userLookup")) {
                     System.out.println("Running userLookup cmd");
                     // todo move this to a different class to prevent function envy
@@ -145,12 +151,12 @@ public class Main extends ListenerAdapter {
                     String[] parsedContents = msgContents.split(" ");
                     serviceMode=true;
                     Misc misc = new Misc();
-                    MessageChannel verify= Main.constants.jda.getTextChannelById(config.getChannelVerifyId());
+                    MessageChannel verify= Main.constants.jda.getTextChannelById(config.get(serverId).getChannelVerifyId());
                     misc.sendServiceModeMsg(verify,"Aria is currently in maintenance mode. The ability to verify has now been temporarily disabled, the estimated downtime will be "+parsedContents[1]+". Sorry for any inconvenience.");
                     activityLog.sendActivityMsg("[MAIN] Service mode is now active",2);
                 } else if (msgContents.contains(">reactivate")) {
                     Misc misc = new Misc();
-                    MessageChannel verify= Main.constants.jda.getTextChannelById(config.getChannelVerifyId());
+                    MessageChannel verify= Main.constants.jda.getTextChannelById(config.get(serverId).getChannelVerifyId());
                     misc.sendServiceModeMsg(verify,"Aria has reactivated the ability to verify and has exited maintenance mode.");
                     activityLog.sendActivityMsg("[MAIN] Aria bot has exited service mode",2);
                 } else if (msgContents.contains(">help")) {
