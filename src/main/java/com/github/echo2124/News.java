@@ -299,22 +299,25 @@ public class News {
     }
 
     public void buildMsgFromWebScrape(JSONObject data) {
-        activityLog.sendActivityMsg("[NEWS] Building exposure message",1);
-        MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.config.getChannelExposureSiteId());
-        EmbedBuilder embed = new EmbedBuilder();
-        embed.setTitle("Exposure Sites Update");
-        // will be the contents of above method **if** there is an update
-        embed.addField("Campus: ", data.getString("Campus"), false);
-        embed.addField("Building: ", data.getString("Building"), false);
-        embed.addField("Exposure Period: ", data.getString("ExposurePeriod"), false);
-        embed.addField("Cleaning Status: ", data.getString("CleaningStatus"), false);
-        embed.addField("Health Advice: ", data.getString("HealthAdvice"), false);
-        embed.setDescription("As always if you test positive to covid and have been on campus please report it to Monash University using the button below.");
-        embed.setAuthor("Monash University");
-        embed.setThumbnail("http://www.monash.edu/__data/assets/image/0008/492389/monash-logo.png");
-        ArrayList<Button> btns = new ArrayList<Button>();
-        btns.add(Button.link("https://www.monash.edu/news/coronavirus-updates", "Monash COVID Bulletin").withEmoji(Emoji.fromUnicode("U+2139")));
-        btns.add(Button.link("https://forms.monash.edu/covid19-self-reporting", "Monash COVID Self-Report").withEmoji(Emoji.fromUnicode("U+1F4DD")));
-        channel.sendMessageEmbeds(embed.build()).setActionRow(btns).queue();
+        for (String key : Main.constants.config.keySet()) {
+            if (Main.constants.config.get(key).get
+            activityLog.sendActivityMsg("[NEWS] Building exposure message", 1);
+            MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.config.getChannelExposureSiteId());
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.setTitle("Exposure Sites Update");
+            // will be the contents of above method **if** there is an update
+            embed.addField("Campus: ", data.getString("Campus"), false);
+            embed.addField("Building: ", data.getString("Building"), false);
+            embed.addField("Exposure Period: ", data.getString("ExposurePeriod"), false);
+            embed.addField("Cleaning Status: ", data.getString("CleaningStatus"), false);
+            embed.addField("Health Advice: ", data.getString("HealthAdvice"), false);
+            embed.setDescription("As always if you test positive to covid and have been on campus please report it to Monash University using the button below.");
+            embed.setAuthor("Monash University");
+            embed.setThumbnail("http://www.monash.edu/__data/assets/image/0008/492389/monash-logo.png");
+            ArrayList<Button> btns = new ArrayList<Button>();
+            btns.add(Button.link("https://www.monash.edu/news/coronavirus-updates", "Monash COVID Bulletin").withEmoji(Emoji.fromUnicode("U+2139")));
+            btns.add(Button.link("https://forms.monash.edu/covid19-self-reporting", "Monash COVID Self-Report").withEmoji(Emoji.fromUnicode("U+1F4DD")));
+            channel.sendMessageEmbeds(embed.build()).setActionRow(btns).queue();
+        }
     }
 }

@@ -14,8 +14,11 @@ public class Config {
     private final String channelOnCampusId;
     private final String channelExposureSiteId;
     private final String channelActivityLogId;
+    private final Boolean verifiedModuleEnabled;
+    private final Boolean newsModuleEnabled;
+    private final Boolean onCampusModuleEnabled;
 
-    public Config(String configName, String serverId, String activityState, String roleVerifiedId, String roleOncampusId, String roleDevTeamId, String channelVerifyId, String channelAdminId, String channelMonashNewsId, String channelCovidUpdateId, String channelExposureSiteId, String channelActivityLogId, String channelOnCampusId) {
+    public Config(String configName, String serverId, String activityState, String roleVerifiedId, String roleOncampusId, String roleDevTeamId, String channelVerifyId, String channelAdminId, String channelMonashNewsId, String channelCovidUpdateId, String channelExposureSiteId, String channelActivityLogId, String channelOnCampusId, Boolean verifiedModuleEnabled, Boolean newsModuleEnabled, Boolean onCampusModuleEnabled) {
         this.configName = configName;
         this.serverId = serverId;
         this.activityState = activityState;
@@ -29,6 +32,9 @@ public class Config {
         this.channelOnCampusId = channelOnCampusId;
         this.channelExposureSiteId = channelExposureSiteId;
         this.channelActivityLogId = channelActivityLogId;
+        this.verifiedModuleEnabled = verifiedModuleEnabled;
+        this.newsModuleEnabled = newsModuleEnabled;
+        this.onCampusModuleEnabled = onCampusModuleEnabled;
     }
 
     public String getConfigName() {
@@ -82,6 +88,11 @@ public class Config {
     public String getChannelActivityLogId() {
         return channelActivityLogId;
     }
+    public Boolean getVerifiedModuleEnabled() {return verifiedModuleEnabled;}
+
+    public Boolean getNewsModuleEnabled() {return newsModuleEnabled;}
+
+    public Boolean getOnCampusModuleEnabled() {return onCampusModuleEnabled;}
 
     @Override
     public String toString() {
@@ -99,6 +110,9 @@ public class Config {
                 ", channelOnCampusId='" + channelOnCampusId + '\'' +
                 ", channelExposureSiteId='" + channelExposureSiteId + '\'' +
                 ", channelActivityLogId='" + channelActivityLogId + '\'' +
+                ", verifiedModuleEnabled='" + verifiedModuleEnabled + '\'' +
+                ", newsModuleEnabled='" + newsModuleEnabled + '\'' +
+                ", onCampusModuleEnabled='" + onCampusModuleEnabled + '\'' +
                 '}';
     }
 }
