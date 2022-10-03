@@ -192,63 +192,72 @@ public class News {
     public void sendMsg(SyndFeed feed, String category, Boolean checkState) {
         if (!checkState || !Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_LASTITLE",category+"##"+feed.getEntries().get(feedIndex).getTitle()))) {
             // check for guilds
-            MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.config.getChannelMonashNewsId());
-            EmbedBuilder newEmbed = new EmbedBuilder();
-            if (feed.getEntries().get(feedIndex).getAuthor().equals("") || feed.getAuthor() == null) {
-                if (feedOrg.equals("Monash")) {
-                    newEmbed.setAuthor(defaultAuthors[0]);
+            for (String key : Main.constants.config.keySet()) {
+                if (Main.constants.config.get(key).getNewsModuleEnabled()) {
+                    MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.config.get(key).getChannelMonashNewsId());
+                    EmbedBuilder newEmbed = new EmbedBuilder();
+                    if (feed.getEntries().get(feedIndex).getAuthor().equals("") || feed.getAuthor() == null) {
+                        if (feedOrg.equals("Monash")) {
+                            newEmbed.setAuthor(defaultAuthors[0]);
+                        }
+                    } else {
+                        newEmbed.setAuthor(feed.getEntries().get(feedIndex).getAuthor());
+                    }
+                    newEmbed.setTitle(feed.getEntries().get(feedIndex).getTitle(), feed.getEntries().get(feedIndex).getLink());
+                    newEmbed.setDescription(feed.getEntries().get(feedIndex).getDescription().getValue());
+                    if (!feed.getEntries().get(feedIndex).getEnclosures().isEmpty()) {
+                        newEmbed.setImage(feed.getEntries().get(feedIndex).getEnclosures().get(0).getUrl());
+                    }
+                    newEmbed.setThumbnail(feed.getImage().getUrl());
+                    switch (category) {
+                        case "technology":
+                            newEmbed.setFooter(monashCategories[0]);
+                            break;
+                        case "covid":
+                            newEmbed.setFooter(monashCategories[1]);
+                            break;
+                        case "news":
+                            newEmbed.setFooter(monashCategories[2]);
+                            break;
+                        default:
+                            newEmbed.setFooter(feed.getDescription());
+                            break;
+                    }
+                    channel.sendMessageEmbeds(newEmbed.build()).queue();
+                    activityLog.sendActivityMsg("[NEWS] Sending Monash News update", 1);
+                    HashMap<String, String> data = new HashMap<String, String>();
+                    data.put("title", feed.getEntries().get(feedIndex).getTitle());
+                    db.modifyDB("NEWS", category, data);
                 }
-            } else {
-                newEmbed.setAuthor(feed.getEntries().get(feedIndex).getAuthor());
             }
-            newEmbed.setTitle(feed.getEntries().get(feedIndex).getTitle(), feed.getEntries().get(feedIndex).getLink());
-            newEmbed.setDescription(feed.getEntries().get(feedIndex).getDescription().getValue());
-            if (!feed.getEntries().get(feedIndex).getEnclosures().isEmpty()) {
-                newEmbed.setImage(feed.getEntries().get(feedIndex).getEnclosures().get(0).getUrl());
-            }
-            newEmbed.setThumbnail(feed.getImage().getUrl());
-            switch (category) {
-                case "technology":
-                    newEmbed.setFooter(monashCategories[0]);
-                    break;
-                case "covid":
-                    newEmbed.setFooter(monashCategories[1]);
-                    break;
-                case "news":
-                    newEmbed.setFooter(monashCategories[2]);
-                    break;
-                default:
-                    newEmbed.setFooter(feed.getDescription());
-                    break;
-            }
-            channel.sendMessageEmbeds(newEmbed.build()).queue();
-            activityLog.sendActivityMsg("[NEWS] Sending Monash News update",1);
-            HashMap<String, String> data = new HashMap<String, String>();
-            data.put("title", feed.getEntries().get(feedIndex).getTitle());
-            db.modifyDB("NEWS", category,data);
         }
     }
 
     public void buildMsgFromTweet(Status status, String type) {
-        System.out.println("Building MSG From tweet");
-        MessageChannel channel =null;
-        if (type.equals("covid_update")) {
-            channel = Main.constants.jda.getTextChannelById(Main.constants.config.getChannelCovidUpdateId());
-        }
-        EmbedBuilder newEmbed = new EmbedBuilder();
-        newEmbed.setTitle("Victoria Covid Update");
-        newEmbed.setDescription(status.getText());
-        newEmbed.setAuthor("Victorian Department of Health");
-        newEmbed.setThumbnail(status.getUser().getProfileImageURL());
-        MediaEntity[] media = status.getMediaEntities();
-        if (media.length >0) {
-            if (media[0].getMediaURL().contains("twimg")) {
-                System.out.println("Media detected");
-                newEmbed.setImage(media[0].getMediaURL());
+        for (String key : Main.constants.config.keySet()) {
+            System.out.println("Building MSG From tweet");
+            MessageChannel channel =null;
+            if (type.equals("covid_update")) {
+                    if (Main.constants.config.get(key).getNewsModuleEnabled()) {
+                        channel = Main.constants.jda.getTextChannelById(Main.constants.config.get(key).getChannelCovidUpdateId());
+                    }
+                }
+
+            EmbedBuilder newEmbed = new EmbedBuilder();
+            newEmbed.setTitle("Victoria Covid Update");
+            newEmbed.setDescription(status.getText());
+            newEmbed.setAuthor("Victorian Department of Health");
+            newEmbed.setThumbnail(status.getUser().getProfileImageURL());
+            MediaEntity[] media = status.getMediaEntities();
+            if (media.length >0) {
+                if (media[0].getMediaURL().contains("twimg")) {
+                    System.out.println("Media detected");
+                    newEmbed.setImage(media[0].getMediaURL());
+                }
             }
+            newEmbed.setFooter(status.getUser().getDescription());
+            channel.sendMessageEmbeds(newEmbed.build()).queue();
         }
-        newEmbed.setFooter(status.getUser().getDescription());
-        channel.sendMessageEmbeds(newEmbed.build()).queue();
     }
 
     public void fetchCovidExposureInfo(Document doc) {
@@ -300,24 +309,25 @@ public class News {
 
     public void buildMsgFromWebScrape(JSONObject data) {
         for (String key : Main.constants.config.keySet()) {
-            if (Main.constants.config.get(key).get
-            activityLog.sendActivityMsg("[NEWS] Building exposure message", 1);
-            MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.config.getChannelExposureSiteId());
-            EmbedBuilder embed = new EmbedBuilder();
-            embed.setTitle("Exposure Sites Update");
-            // will be the contents of above method **if** there is an update
-            embed.addField("Campus: ", data.getString("Campus"), false);
-            embed.addField("Building: ", data.getString("Building"), false);
-            embed.addField("Exposure Period: ", data.getString("ExposurePeriod"), false);
-            embed.addField("Cleaning Status: ", data.getString("CleaningStatus"), false);
-            embed.addField("Health Advice: ", data.getString("HealthAdvice"), false);
-            embed.setDescription("As always if you test positive to covid and have been on campus please report it to Monash University using the button below.");
-            embed.setAuthor("Monash University");
-            embed.setThumbnail("http://www.monash.edu/__data/assets/image/0008/492389/monash-logo.png");
-            ArrayList<Button> btns = new ArrayList<Button>();
-            btns.add(Button.link("https://www.monash.edu/news/coronavirus-updates", "Monash COVID Bulletin").withEmoji(Emoji.fromUnicode("U+2139")));
-            btns.add(Button.link("https://forms.monash.edu/covid19-self-reporting", "Monash COVID Self-Report").withEmoji(Emoji.fromUnicode("U+1F4DD")));
-            channel.sendMessageEmbeds(embed.build()).setActionRow(btns).queue();
+            if (Main.constants.config.get(key).getNewsModuleEnabled()) {
+                activityLog.sendActivityMsg("[NEWS] Building exposure message", 1);
+                MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.config.get(key).getChannelExposureSiteId());
+                EmbedBuilder embed = new EmbedBuilder();
+                embed.setTitle("Exposure Sites Update");
+                // will be the contents of above method **if** there is an update
+                embed.addField("Campus: ", data.getString("Campus"), false);
+                embed.addField("Building: ", data.getString("Building"), false);
+                embed.addField("Exposure Period: ", data.getString("ExposurePeriod"), false);
+                embed.addField("Cleaning Status: ", data.getString("CleaningStatus"), false);
+                embed.addField("Health Advice: ", data.getString("HealthAdvice"), false);
+                embed.setDescription("As always if you test positive to covid and have been on campus please report it to Monash University using the button below.");
+                embed.setAuthor("Monash University");
+                embed.setThumbnail("http://www.monash.edu/__data/assets/image/0008/492389/monash-logo.png");
+                ArrayList<Button> btns = new ArrayList<Button>();
+                btns.add(Button.link("https://www.monash.edu/news/coronavirus-updates", "Monash COVID Bulletin").withEmoji(Emoji.fromUnicode("U+2139")));
+                btns.add(Button.link("https://forms.monash.edu/covid19-self-reporting", "Monash COVID Self-Report").withEmoji(Emoji.fromUnicode("U+1F4DD")));
+                channel.sendMessageEmbeds(embed.build()).setActionRow(btns).queue();
+            }
         }
     }
 }
