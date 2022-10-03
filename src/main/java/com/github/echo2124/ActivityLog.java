@@ -43,7 +43,7 @@ public class ActivityLog {
         concat+=endingSymbol;
         concat+="\n```";
         if (user!=null) {
-            msgChannel.sendMessage(concat+user.getAsMention()).queue();
+            msgChannel.sendMessage(concat+.getAsMention()).queue();
         } else {
             msgChannel.sendMessage(concat).queue();
         }

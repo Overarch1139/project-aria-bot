@@ -11,5 +11,8 @@
     "channelCovidUpdateId":"913081128188014592",
     "channelOnCampusId": "978762060655632424",
     "channelExposureSiteId":"951902910759977001",
-    "channelActivityLogId": "981605485138567228"
+    "channelActivityLogId": "981605485138567228",
+    "verifiedModuleEnabled": true,
+    "newsModuleEnabled": true,
+    "onCampusModuleEnabled": true
 }
