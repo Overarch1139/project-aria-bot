@@ -108,6 +108,18 @@ public class Database {
         }
     }
 
+    // Migrate to new schema for multiguild support
+    public void migrateDB(Connection connect) {
+        try {
+            Statement stmt = connect.createStatement();
+            String query = "ALTER TABLE CERT_MODULE ADD guildID VARCHAR(64);";
+            stmt.executeUpdate(query);
+            stmt.close();
+        } catch (Exception e) {
+            System.out.println("Unable to migrate db schema"+ e.getMessage());
+        }
+    }
+
     public void modifyDB(String originModule, String action, HashMap data) {
         PreparedStatement sqlQuery=null;
         Connection connection = connect();
@@ -266,6 +278,4 @@ public class Database {
         disconnect(connection);
         return ret;
     }
-
-
 }
