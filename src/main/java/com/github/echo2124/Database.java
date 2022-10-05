@@ -82,7 +82,7 @@ public class Database {
             System.err.println(e.getClass().getName()+": "+e.getMessage());
             System.exit(0);
         }
-        activityLog.sendActivityMsg("[DATABASE] Connected Successfully",1);
+        activityLog.sendActivityMsg("[DATABASE] Connected Successfully",1, null);
         System.out.println("Opened database successfully");
     return connect;
     }
@@ -103,7 +103,7 @@ public class Database {
         } catch (Exception e) {
             if (!e.getMessage().contains("warn_module")) {
                 System.err.println("Unable to setup DB " + e.getMessage());
-                activityLog.sendActivityMsg("[DATABASE] Unable to setup DB",2);
+                activityLog.sendActivityMsg("[DATABASE] Unable to setup DB",2, null);
             }
         }
     }
@@ -117,7 +117,7 @@ public class Database {
             case "CERT":
                     if (action.equals("add")) {
                         try {
-                            activityLog.sendActivityMsg("[DATABASE] Inserting verify data into verify table",1);
+                            activityLog.sendActivityMsg("[DATABASE] Inserting verify data into verify table",1, null);
                              sqlQuery=connection.prepareStatement("INSERT INTO CERT_MODULE VALUES (?,?,?,?,?)");
                             sqlQuery.setLong(1, Long.parseLong(data.get("discordID").toString()));
                             sqlQuery.setString(2, data.get("name").toString());
@@ -136,7 +136,7 @@ public class Database {
                             sqlQuery.setString(1, action);
                             sqlQuery.execute();
                         }
-                        activityLog.sendActivityMsg("[DATABASE] Updating news data in news table",1);
+                        activityLog.sendActivityMsg("[DATABASE] Updating news data in news table",1, null);
                         sqlQuery = connection.prepareStatement("INSERT INTO NEWS VALUES (?,?)");
                         sqlQuery.setString(1, action);
                         sqlQuery.setString(2, data.get("title").toString());
@@ -146,7 +146,7 @@ public class Database {
                 break;
             case "EXPOSURE_SITE":
                 try {
-                    activityLog.sendActivityMsg("[DATABASE] Inserting exposure data into exposure table",1);
+                    activityLog.sendActivityMsg("[DATABASE] Inserting exposure data into exposure table",1, null);
                     sqlQuery = connection.prepareStatement("UPDATE exposure SET len=? WHERE origin='EXPOSURE_SITE'");
                     sqlQuery.setInt(1,Integer.parseInt(data.get("size").toString()));
                 } catch (Exception e) {
@@ -161,9 +161,9 @@ public class Database {
                 sqlQuery.execute();
             }
             disconnect(connection);
-            activityLog.sendActivityMsg("[DATABASE] Connection closed",1);
+            activityLog.sendActivityMsg("[DATABASE] Connection closed",1, null);
         } catch (Exception e) {
-            activityLog.sendActivityMsg("[DATABASE] Failed to modify: "+e.getMessage(),3);
+            activityLog.sendActivityMsg("[DATABASE] Failed to modify: "+e.getMessage(),3, null);
             System.err.println(this.getClass().getName()+"Modify DB failed"+e.getMessage());
         }
     }
@@ -176,7 +176,7 @@ public class Database {
         try {
             switch (originModule) {
                 case "CERT":
-                    activityLog.sendActivityMsg("[DATABASE] Fetching verify data from verify table",1);
+                    activityLog.sendActivityMsg("[DATABASE] Fetching verify data from verify table",1, null);
                 sqlQuery=connection.prepareStatement("SELECT * FROM CERT_MODULE WHERE discordID=?");
                 sqlQuery.setLong(1,Long.parseLong(req));
                 if (sqlQuery!=null) {
@@ -195,7 +195,7 @@ public class Database {
                 }
                 break;
                 case "NEWS_CHECK_CATEGORY":
-                    activityLog.sendActivityMsg("[DATABASE] Fetching news data from news table",1);
+                    activityLog.sendActivityMsg("[DATABASE] Fetching news data from news table",1, null);
                     sqlQuery=connection.prepareStatement("SELECT * FROM NEWS WHERE origin=?");
                     sqlQuery.setString(1, req);
                     if (sqlQuery!=null) {
@@ -233,7 +233,7 @@ public class Database {
                     }
                     break;
                 case "CHECK_EXPOSURE_INDEX":
-                    activityLog.sendActivityMsg("[DATABASE] Fetching exposure data from exposure table",1);
+                    activityLog.sendActivityMsg("[DATABASE] Fetching exposure data from exposure table",1, null);
                     //TODO check for origin instead (there is probably an issue with the current method of checking for a table which is causing these sorts of problems that exist currently)
                     ResultSet rs = connection.prepareStatement("SELECT EXISTS ( SELECT FROM pg_tables WHERE tablename='exposure');").executeQuery();
                     while (rs.next()) {
@@ -262,7 +262,7 @@ public class Database {
         } catch (SQLException e) {
             System.err.println(this.getClass().getName()+"Unable to get Entry"+e.getMessage());
         }
-        activityLog.sendActivityMsg("[DATABASE] Connection closed",1);
+        activityLog.sendActivityMsg("[DATABASE] Connection closed",1, null);
         disconnect(connection);
         return ret;
     }
