@@ -112,7 +112,8 @@ public class Database {
     public void migrateDB(Connection connect) {
         try {
             Statement stmt = connect.createStatement();
-            String query = "ALTER TABLE CERT_MODULE ADD guildID VARCHAR(64);";
+            String query = "ALTER TABLE CERT_MODULE ADD guildID VARCHAR(64);"+
+                           "UPDATE CERT_MODULE SET guildID=CAST(802526304745553930 AS VARCHAR);";
             stmt.executeUpdate(query);
             stmt.close();
         } catch (Exception e) {
