@@ -1,6 +1,7 @@
 package com.github.echo2124;
 
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 
@@ -11,13 +12,17 @@ import java.time.format.DateTimeFormatter;
 
 public class ActivityLog {
     // 1 = info; 2=warn; 3=error;
-    public void sendActivityMsg(String msg, int type) {
-        TextChannel msgChannel = Main.constants.jda.getTextChannelById(Main.constants.config.getChannelActivityLogId());
+    public void sendActivityMsg(String msg, int type, String guildID) {
+        // guildID is null then send to all guilds
+        if (guildID==null) {
+        } else {
+            TextChannel msgChannel = Main.constants.jda.getTextChannelById(Main.constants.config.get(guildID).getChannelActivityLogId());
+        }
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Australia/Melbourne"));
         String concat="```";
         String endingSymbol="";
         String tag="";
-        User user=null;
+        Role role=null;
         switch (type) {
             case 1:
                 concat+="yaml\n";
@@ -32,7 +37,7 @@ public class ActivityLog {
                 concat+="- ";
                 tag="[ERROR]";
                 endingSymbol=" - ";
-                user=Main.constants.jda.getUserById(Main.constants.config.getRoleDevTeamId());
+                role=Main.constants.jda.getRoleById(Main.constants.config.getRoleDevTeamId());
                 break;
             default:
         }
@@ -43,7 +48,7 @@ public class ActivityLog {
         concat+=endingSymbol;
         concat+="\n```";
         if (user!=null) {
-            msgChannel.sendMessage(concat+.getAsMention()).queue();
+            msgChannel.sendMessage(concat+"<@&"+Main.constants.config.getRoleDevTeamId()+">").queue();
         } else {
             msgChannel.sendMessage(concat).queue();
         }
