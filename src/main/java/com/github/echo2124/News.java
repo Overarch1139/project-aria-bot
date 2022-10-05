@@ -80,7 +80,7 @@ public class News {
                 fetchCovidExposureInfo(doc);
             } catch (Exception e) {
                 System.out.println("[Exposure Site] ERROR: "+e.getMessage());
-                activityLog.sendActivityMsg("[NEWS] Unable to get exposure info: "+e.getMessage(),3);
+                activityLog.sendActivityMsg("[NEWS] Unable to get exposure info: "+e.getMessage(),3, null);
             }
         }
     }
@@ -114,7 +114,7 @@ public class News {
             public void onStatus(Status status) {
                 if (status.getUser().getId()==43064490){
                    if (status.getText().contains("#COVID19VicData") || status.getText().contains("More data soon")) {
-                       activityLog.sendActivityMsg("[NEWS] Building covid update msg",1);
+                       activityLog.sendActivityMsg("[NEWS] Building covid update msg",1, null);
                        buildMsgFromTweet(status, "covid_update");
                    }
                 }
@@ -153,23 +153,23 @@ public class News {
 
     public void initRSS(String feedURL, String category, Boolean checkLatest) {
         try {
-            activityLog.sendActivityMsg("[NEWS] Initialising RSS Feed listener for category: "+category,1);
+            activityLog.sendActivityMsg("[NEWS] Initialising RSS Feed listener for category: "+category,1, null);
             parseRSS(feedURL);
             sendMsg(this.feed,category,checkLatest);
         } catch (Exception e) {
-            activityLog.sendActivityMsg("[NEWS] Unable to initialise RSS Feed listener: "+e.getMessage(),3);
+            activityLog.sendActivityMsg("[NEWS] Unable to initialise RSS Feed listener: "+e.getMessage(),3, null);
             throw new Error(e);
         }
     }
 
     public void parseRSS(String feedURL) throws MalformedURLException {
-        activityLog.sendActivityMsg("[NEWS] Parsing received RSS Feed",1);
+        activityLog.sendActivityMsg("[NEWS] Parsing received RSS Feed",1, null);
         URL newURL = new URL(feedURL);
         SyndFeed feed=null;
         try {
             feed = new SyndFeedInput().build(new XmlReader(newURL));
         } catch (Exception e) {
-            activityLog.sendActivityMsg("[NEWS] Unable to parse RSS Feed: "+e.getMessage(),3);
+            activityLog.sendActivityMsg("[NEWS] Unable to parse RSS Feed: "+e.getMessage(),3, null);
         }
         this.feed=feed;
     }
@@ -224,7 +224,7 @@ public class News {
                             break;
                     }
                     channel.sendMessageEmbeds(newEmbed.build()).queue();
-                    activityLog.sendActivityMsg("[NEWS] Sending Monash News update", 1);
+                    activityLog.sendActivityMsg("[NEWS] Sending Monash News update", 1, null);
                     HashMap<String, String> data = new HashMap<String, String>();
                     data.put("title", feed.getEntries().get(feedIndex).getTitle());
                     db.modifyDB("NEWS", category, data);
@@ -261,7 +261,7 @@ public class News {
     }
 
     public void fetchCovidExposureInfo(Document doc) {
-        activityLog.sendActivityMsg("[NEWS] Fetching exposure info from remote",1);
+        activityLog.sendActivityMsg("[NEWS] Fetching exposure info from remote",1, null);
         JSONObject jsonParentObject = new JSONObject();
         int numExposures = 0;
         try {
@@ -287,7 +287,7 @@ public class News {
             }
         } catch (Exception e) {
             System.out.println("[NEWS] ERROR: unable to parse exposure site table");
-            activityLog.sendActivityMsg("[NEWS] ERROR: unable to parse exposure site table",3);
+            activityLog.sendActivityMsg("[NEWS] ERROR: unable to parse exposure site table",3, null);
         }
         System.out.println("JSON:");
         System.out.println(jsonParentObject.toString());
@@ -310,7 +310,7 @@ public class News {
     public void buildMsgFromWebScrape(JSONObject data) {
         for (String key : Main.constants.config.keySet()) {
             if (Main.constants.config.get(key).getNewsModuleEnabled()) {
-                activityLog.sendActivityMsg("[NEWS] Building exposure message", 1);
+                activityLog.sendActivityMsg("[NEWS] Building exposure message", 1, null);
                 MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.config.get(key).getChannelExposureSiteId());
                 EmbedBuilder embed = new EmbedBuilder();
                 embed.setTitle("Exposure Sites Update");

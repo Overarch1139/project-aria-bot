@@ -47,7 +47,7 @@ public class OnCampus extends ListenerAdapter {
         Runnable generateHandler = new Runnable() {
             @Override
             public void run() {
-                activityLog.sendActivityMsg("[ONCAMPUS] Running generate task",1);
+                activityLog.sendActivityMsg("[ONCAMPUS] Running generate task",1, guildID);
                 Calendar calendar = Calendar.getInstance();
                 int day = calendar.get(Calendar.DAY_OF_WEEK);
                 Guild guild = Main.constants.jda.getGuilds().get(0);
@@ -74,7 +74,7 @@ public class OnCampus extends ListenerAdapter {
         Runnable resetHandler = new Runnable() {
             @Override
             public void run() {
-                activityLog.sendActivityMsg("[ONCAMPUS] Running reset task",1);
+                activityLog.sendActivityMsg("[ONCAMPUS] Running reset task",1, guildID);
                 Role oncampus = Main.constants.jda.getRoleById(config.get(guildID).getRoleOnCampusId());
                 TextChannel msgChannel = Main.constants.jda.getTextChannelById(config.get(guildID).getChannelOnCampusId());
                 Guild guild = Main.constants.jda.getGuilds().get(0);
@@ -106,7 +106,7 @@ public class OnCampus extends ListenerAdapter {
                 messages.get(0).delete().queue();
             });
         } catch (Exception e) {
-            activityLog.sendActivityMsg("[ONCAMPUS] Unable to fetch last message",2);
+            activityLog.sendActivityMsg("[ONCAMPUS] Unable to fetch last message",2, guildID);
             System.out.println("[OnCampus] Unable to grab last message");
         }
         try {
@@ -116,9 +116,9 @@ public class OnCampus extends ListenerAdapter {
             }
         } catch (Exception e) {
             System.out.println("[OnCampus] Unable to remove role from users");
-            activityLog.sendActivityMsg("[ONCAMPUS] No users to remove role from",2);
+            activityLog.sendActivityMsg("[ONCAMPUS] No users to remove role from",2,  guildID);
         }
-        activityLog.sendActivityMsg("[ONCAMPUS] Removed old On Campus message & removed all users from role",1);
+        activityLog.sendActivityMsg("[ONCAMPUS] Removed old On Campus message & removed all users from role",1, guildID);
     }
 
     public void generateMsg(Role oncampus, TextChannel msgChannel) {
@@ -134,9 +134,9 @@ public class OnCampus extends ListenerAdapter {
                 @Override
                 public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
                     if (event.getMessageId().equals(message.getId()) && event.getReactionEmote().getName().equals("✅") && !event.getMember().getUser().isBot()) {
-                        activityLog.sendActivityMsg("[ONCAMPUS] React Listener triggered",1);
+                        activityLog.sendActivityMsg("[ONCAMPUS] React Listener triggered",1, guildID);
                         System.out.println("[OnCampus] Added role to member");
-                        activityLog.sendActivityMsg("[ONCAMPUS] Giving On Campus role to user",1);
+                        activityLog.sendActivityMsg("[ONCAMPUS] Giving On Campus role to user",1, guildID);
                         event.getGuild().addRoleToMember(event.getMember(), oncampus).queue();
                     }
                     super.onMessageReactionAdd(event);
@@ -144,7 +144,7 @@ public class OnCampus extends ListenerAdapter {
             };
             Main.constants.jda.addEventListener(reactionListener);
         });
-        activityLog.sendActivityMsg("[ONCAMPUS] Generated OnCampus Message",1);
+        activityLog.sendActivityMsg("[ONCAMPUS] Generated OnCampus Message",1,guildID);
     }
 
 
@@ -153,7 +153,7 @@ public class OnCampus extends ListenerAdapter {
         TextChannel msgChannel = Main.constants.jda.getTextChannelById(config.get(guildID).getChannelOnCampusId());
         MessageHistory msgHistory = msgChannel.getHistory();
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Australia/Melbourne"));
-        activityLog.sendActivityMsg("[ONCAMPUS] Attempting to restore listener...",1);
+        activityLog.sendActivityMsg("[ONCAMPUS] Attempting to restore listener...",1, guildID);
         try {
             msgHistory.retrievePast(1).queue(messages -> {
                 // checks if last oncampus message was made same day if so then try to reattach the listener
@@ -164,25 +164,25 @@ public class OnCampus extends ListenerAdapter {
                                 @Override
                                 public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
                                     if (event.getMessageId().equals(messages.get(0).getId()) && event.getReactionEmote().getName().equals("✅") && !event.getMember().getUser().isBot()) {
-                                        activityLog.sendActivityMsg("[ONCAMPUS] React Listener triggered", 1);
+                                        activityLog.sendActivityMsg("[ONCAMPUS] React Listener triggered", 1,guildID);
                                         System.out.println("[OnCampus] Added role to member");
-                                        activityLog.sendActivityMsg("[ONCAMPUS] Giving On Campus role to user", 1);
+                                        activityLog.sendActivityMsg("[ONCAMPUS] Giving On Campus role to user", 1,guildID);
                                         event.getGuild().addRoleToMember(event.getMember(), oncampus).queue();
                                     }
                                 }
                             };
                             Main.constants.jda.addEventListener(reactionListener);
-                            activityLog.sendActivityMsg("[ONCAMPUS] Restore successful, attached listener!", 1);
+                            activityLog.sendActivityMsg("[ONCAMPUS] Restore successful, attached listener!", 1,guildID);
                         } catch (Exception e) {
-                            activityLog.sendActivityMsg("[ONCAMPUS] Unable to restore: cannot attach listener", 2);
+                            activityLog.sendActivityMsg("[ONCAMPUS] Unable to restore: cannot attach listener", 2,guildID);
                         }
                     }
                 } catch (Exception e) {
-                    activityLog.sendActivityMsg("[ONCAMPUS] Unable to restore: cannot fetch last message",1);
+                    activityLog.sendActivityMsg("[ONCAMPUS] Unable to restore: cannot fetch last message",1,guildID);
                 }
             });
         } catch (Exception e) {
-            activityLog.sendActivityMsg("[ONCAMPUS] Unable to restore: cannot fetch last message",1);
+            activityLog.sendActivityMsg("[ONCAMPUS] Unable to restore: cannot fetch last message",1,guildID);
             System.out.println("[OnCampus] Unable to grab last message");
         }
     }
