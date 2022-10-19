@@ -23,15 +23,14 @@ public class Main extends ListenerAdapter {
         public static ActivityLog activityLog=null;
         public static boolean serviceMode=false;
         public static Database db=null;
-        public static HashMap<String, Config> config;
+        public static LinkedHashMap<String, Config> config;
     }
     public static void main(String[] arguments) throws Exception {
         // load config here before anything else
         ConfigParser parser = new ConfigParser();
         LinkedHashMap<String, Config> config =parser.parseDefaults();
         Main.constants.config=config;
-        // grabs from first config, since we are using the same bot instance with different guilds the bot activity *must* remain the same
-        String activity=config.get(config.values().iterator().next().getActivityState()).getActivityState();
+        String activity="Loading...";
         // setters for various props
         String BOT_TOKEN = System.getenv("DISCORD_CLIENT_SECRET");
         JDA jda = JDABuilder.createLight(BOT_TOKEN, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES)
@@ -51,8 +50,10 @@ public class Main extends ListenerAdapter {
         new News("Monash", db);
         new News("ExposureBuilding",db);
         // dual purpose loop - report config loaded & generate oncampus module for supported guilds
+        // grabs from last, since we are using the same bot instance with different guilds the bot activity *must* remain the same
         for (String key: config.keySet()) {
-          activityLog.sendActivityMsg("Config File For "+config.get(key).getConfigName()+" has loaded successfully!", 1, key);
+            jda.getPresence().setActivity(Activity.playing(config.get(key).getActivityState()));
+            activityLog.sendActivityMsg("Config File For "+config.get(key).getConfigName()+" has loaded successfully!", 1, key);
           if (config.get(key).getOnCampusModuleEnabled()) {
               new OnCampus(false, config.get(key).getServerId());
           }
