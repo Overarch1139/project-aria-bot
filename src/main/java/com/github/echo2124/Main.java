@@ -30,7 +30,7 @@ public class Main extends ListenerAdapter {
         HashMap<String, Config> config =parser.parseDefaults();
         Main.constants.config=config;
         // grabs from first config, since we are using the same bot instance with different guilds the bot activity *must* remain the same
-        String activity=config.get(config.keySet().toArray()[0]).getActivityState();
+        String activity=config.get(0).getActivityState();
         // setters for various props
         String BOT_TOKEN = System.getenv("DISCORD_CLIENT_SECRET");
         JDA jda = JDABuilder.createLight(BOT_TOKEN, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES)
