@@ -24,6 +24,7 @@ public class SSOVerify extends Thread {
     private static final String NETWORK_NAME = "Google";
     private static final String PROTECTED_RESOURCE_URL = "https://www.googleapis.com/oauth2/v3/userinfo";
     private static final int MAX_NAME_LEN = 2048;
+    private static final String DELIMITER = "##";
     private User user;
     private Guild guild;
     private String guildID;
@@ -32,6 +33,7 @@ public class SSOVerify extends Thread {
     private OAuth20Service service = null;
     private DeviceAuthorization deviceAuthorization = null;
     private long intervalMillis=5000;
+
 
     public SSOVerify(User user, Guild guild, MessageChannel channel, Database db) {
         this.user = user;
@@ -91,7 +93,7 @@ public class SSOVerify extends Thread {
 
     public boolean checkVerification() {
         boolean isVerified = false;
-        if (db.getDBEntry("CERT", user.getId()).contains("true")) {
+        if (db.getDBEntry("CERT", user.getId()+DELIMITER+guildID).contains("true")) {
             activityLog.sendActivityMsg("[VERIFY] User has already been verified!",1, guildID);
             isVerified = true;
         }
@@ -209,6 +211,7 @@ public class SSOVerify extends Thread {
                     HashMap<String, String> parsedData = new HashMap<String, String>();
                     parsedData.put("discordID", user.getId());
                     parsedData.put("name", parsedObj.getString("given_name"));
+                    parsedData.put("guildID", guildID);
                     parsedData.put("emailAddr", parsedObj.getString("email"));
                     parsedData.put("isVerified", "true");
                     db.modifyDB("CERT", "add", parsedData);

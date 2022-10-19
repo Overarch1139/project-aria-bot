@@ -131,12 +131,13 @@ public class Database {
                     if (action.equals("add")) {
                         try {
                             activityLog.sendActivityMsg("[DATABASE] Inserting verify data into verify table",1, null);
-                             sqlQuery=connection.prepareStatement("INSERT INTO CERT_MODULE VALUES (?,?,?,?,?)");
+                             sqlQuery=connection.prepareStatement("INSERT INTO CERT_MODULE VALUES (?,?,?,?,?,?)");
                             sqlQuery.setLong(1, Long.parseLong(data.get("discordID").toString()));
                             sqlQuery.setString(2, data.get("name").toString());
                             sqlQuery.setString(3, data.get("emailAddr").toString());
                             sqlQuery.setBoolean(4, Boolean.parseBoolean(data.get("isVerified").toString()));
                             sqlQuery.setTimestamp(5, ts);
+                            sqlQuery.setString(6, data.get("guildID").toString());
                         } catch (Exception e) {
                             System.out.println("Unable to Modify DB: "+ e.getMessage());
                         }
@@ -176,6 +177,7 @@ public class Database {
             disconnect(connection);
             activityLog.sendActivityMsg("[DATABASE] Connection closed",1, null);
         } catch (Exception e) {
+
             activityLog.sendActivityMsg("[DATABASE] Failed to modify: "+e.getMessage(),3, null);
             System.err.println(this.getClass().getName()+"Modify DB failed"+e.getMessage());
         }
@@ -184,14 +186,17 @@ public class Database {
     public String getDBEntry(String originModule, String req) {
         System.out.println("Grabbing DB Entry");
         String ret="";
+        String[] parsed;
         PreparedStatement sqlQuery;
         Connection connection=connect();
         try {
             switch (originModule) {
                 case "CERT":
                     activityLog.sendActivityMsg("[DATABASE] Fetching verify data from verify table",1, null);
-                sqlQuery=connection.prepareStatement("SELECT * FROM CERT_MODULE WHERE discordID=?");
-                sqlQuery.setLong(1,Long.parseLong(req));
+                sqlQuery=connection.prepareStatement("SELECT * FROM CERT_MODULE WHERE discordID=? AND guildID=?");
+                parsed=req.split("##");
+                sqlQuery.setLong(1,Long.parseLong(parsed[0]));
+                sqlQuery.setString(2, parsed[1]);
                 if (sqlQuery!=null) {
                     ResultSet rs = sqlQuery.executeQuery();
                     System.out.println("Ran query");
@@ -227,7 +232,7 @@ public class Database {
                     break;
                 case "NEWS_CHECK_LASTITLE":
                     sqlQuery=connection.prepareStatement("SELECT * FROM NEWS WHERE origin=? AND lastTitle=?");
-                    String[] parsed=req.split("##");
+                    parsed=req.split("##");
                     System.out.println("[Database] Split value origin: "+parsed[0]);
                     System.out.println("[Database] Split value lastTitle: "+parsed[1]);
                     sqlQuery.setString(1, parsed[0]);
