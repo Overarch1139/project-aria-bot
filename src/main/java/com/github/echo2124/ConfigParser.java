@@ -4,12 +4,13 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 // This class is responsible for grabbing static variables from JSON file.
 public class ConfigParser {
-    public HashMap<String, Config> parseDefaults() {
+    public LinkedHashMap<String, Config> parseDefaults() {
         // This will be loaded in before JDA therefore activitylog cannot be used instead use system logs
-        HashMap<String, Config> configs= new HashMap<String, Config>();
+        LinkedHashMap<String, Config> configs= new LinkedHashMap<String, Config>();
         try {
             // can grab multiple configs now
             String target=System.getenv("CONFIG_FILE");
@@ -17,6 +18,7 @@ public class ConfigParser {
             for (int i=0; parsedConfigs.length<i; i++) {
                 Gson parser = new Gson();
                 Config config=parser.fromJson(new BufferedReader(new FileReader("src/main/java/com/github/echo2124/"+parsedConfigs[i])),Config.class);
+                System.out.println("Config Detected: "+config.getConfigName());
                 configs.put(config.getServerId(),config);
             }
         } catch (FileNotFoundException e ) {

@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 import java.awt.*;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import static com.github.echo2124.Main.constants.*;
 
@@ -27,10 +28,10 @@ public class Main extends ListenerAdapter {
     public static void main(String[] arguments) throws Exception {
         // load config here before anything else
         ConfigParser parser = new ConfigParser();
-        HashMap<String, Config> config =parser.parseDefaults();
+        LinkedHashMap<String, Config> config =parser.parseDefaults();
         Main.constants.config=config;
         // grabs from first config, since we are using the same bot instance with different guilds the bot activity *must* remain the same
-        String activity=config.get(0).getActivityState();
+        String activity=config.get(config.values().iterator().next().getActivityState()).getActivityState();
         // setters for various props
         String BOT_TOKEN = System.getenv("DISCORD_CLIENT_SECRET");
         JDA jda = JDABuilder.createLight(BOT_TOKEN, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES)
