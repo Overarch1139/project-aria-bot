@@ -13,8 +13,8 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
     implementation("net.dv8tion:JDA:5.0.0-alpha.12")
     implementation 'javax.servlet:javax.servlet-api:4.0.1'
     implementation 'com.rometools:rome:1.18.0'
@@ -22,10 +22,10 @@ dependencies {
     implementation 'org.twitter4j:twitter4j-stream:4.0.7'
     implementation 'com.github.scribejava:scribejava-apis:8.3.1'
     implementation 'com.github.scribejava:scribejava-core:8.3.1'
-    implementation 'org.json:json:20210307'
-    implementation 'org.postgresql:postgresql:42.3.4'
-    implementation 'org.jsoup:jsoup:1.14.3'
-    implementation 'com.google.code.gson:gson:2.9.0'
+    implementation 'org.json:json:20220924'
+    implementation 'org.postgresql:postgresql:42.5.0'
+    implementation 'org.jsoup:jsoup:1.15.3'
+    implementation 'com.google.code.gson:gson:2.9.0';
 }
 
 test {
