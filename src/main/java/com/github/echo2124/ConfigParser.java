@@ -3,6 +3,8 @@ import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -14,11 +16,16 @@ public class ConfigParser {
         try {
             // can grab multiple configs now
             String target=System.getenv("CONFIG_FILE");
-            String[] parsedConfigs=target.split(",");
+            ArrayList<String> parsedConfigs=new ArrayList<String>();
+            if (target.contains(",")) {
+                 parsedConfigs=(ArrayList<String>) Arrays.asList(target.split(","));
+            } else {
+                parsedConfigs.add(target);
+            }
             System.out.println("Attempting config load...");
-            for (int i=0; (parsedConfigs.length-1)<i; i++) {
+            for (int i=0; parsedConfigs.size()<i; i++) {
                 Gson parser = new Gson();
-                Config config=parser.fromJson(new BufferedReader(new FileReader("src/main/java/com/github/echo2124/"+parsedConfigs[i])),Config.class);
+                Config config=parser.fromJson(new BufferedReader(new FileReader("src/main/java/com/github/echo2124/"+parsedConfigs.get(i))),Config.class);
                 System.out.println("Config Detected: "+config.getConfigName());
                 configs.put(config.getServerId(),config);
             }
