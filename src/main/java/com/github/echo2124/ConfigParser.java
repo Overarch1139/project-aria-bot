@@ -15,7 +15,8 @@ public class ConfigParser {
             // can grab multiple configs now
             String target=System.getenv("CONFIG_FILE");
             String[] parsedConfigs=target.split(",");
-            for (int i=0; parsedConfigs.length<=i; i++) {
+            System.out.println("Attempting config load...");
+            for (int i=0; (parsedConfigs.length-1)<i; i++) {
                 Gson parser = new Gson();
                 Config config=parser.fromJson(new BufferedReader(new FileReader("src/main/java/com/github/echo2124/"+parsedConfigs[i])),Config.class);
                 System.out.println("Config Detected: "+config.getConfigName());
