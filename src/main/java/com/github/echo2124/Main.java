@@ -48,7 +48,8 @@ public class Main extends ListenerAdapter {
         db = new Database();
         new News("Covid", db);
         new News("Monash", db);
-        new News("ExposureBuilding",db);
+        // To be deprecated, no longer feasible due to changes to target system
+        //  new News("ExposureBuilding",db);
         // dual purpose loop - report config loaded & generate oncampus module for supported guilds
         // grabs from last, since we are using the same bot instance with different guilds the bot activity *must* remain the same
         for (String key: config.keySet()) {

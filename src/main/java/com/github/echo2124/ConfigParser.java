@@ -18,7 +18,6 @@ public class ConfigParser {
             String target=System.getenv("CONFIG_FILE");
             String[] parsedConfigs=target.split(",");
             System.out.println("Attempting config load...");
-            // likely the culprit, tbd
             for (int i=0; i< parsedConfigs.length; i++) {
                 Gson parser = new Gson();
                 Config config=parser.fromJson(new BufferedReader(new FileReader("src/main/java/com/github/echo2124/"+parsedConfigs[i])),Config.class);
