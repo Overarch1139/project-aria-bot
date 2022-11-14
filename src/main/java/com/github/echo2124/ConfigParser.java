@@ -25,12 +25,13 @@ public class ConfigParser {
             } else {
                 parsedConfigs.add(target);
                 System.out.println("[DEBUG] Target config"+parsedConfigs.get(0));
-
+                Gson parser = new Gson();
+                Config config=parser.fromJson(new BufferedReader(new FileReader("src/main/java/com/github/echo2124/"+parsedConfigs.get(0))),Config.class);
+                System.out.println("[DEBUG] Config Name: "+config.getConfigName());
             }
             System.out.println("Attempting config load...");
             // likely the culprit, tbd
-            for (int i=0; parsedConfigs.size()<i; i++) {
-
+            for (int i=0; i<parsedConfigs.size(); i++) {
                 Gson parser = new Gson();
                 Config config=parser.fromJson(new BufferedReader(new FileReader("src/main/java/com/github/echo2124/"+parsedConfigs.get(i))),Config.class);
                 System.out.println("Config Detected: "+config.getConfigName());
