@@ -42,7 +42,19 @@ public class News {
     private SyndFeed feed;
     private final int feedIndex =0;
     private final String targetedExposureBuildingUrl="https://www.monash.edu/news/coronavirus-updates/exposure-sites";
+   // COVID WEB SCRAPER CONFIG
     private final String VIC_COVID_DATA_URL="https://www.coronavirus.vic.gov.au/victorian-coronavirus-covid-19-data";
+    private final String COVID_UPDATE_ISSUED_SELECTOR="#rpl-main-content > div > div > div > div > div:nth-child(2) > div > div > h2";
+    private final String COVID_CASES_PAST_WEEK_SELECTOR="#rpl-main-content > div > div > div > div > div:nth-child(3) > div > div:nth-child(1) > div > div.rpl-markup.tide-wysiwyg.app-wysiwyg.rpl-statistics-grid__block-heading > div";
+    private final String COVID_ACTIVE_CASES_SELECTOR="#rpl-main-content > div > div > div > div > div:nth-child(3) > div > div:nth-child(2) > div > div.rpl-markup.tide-wysiwyg.app-wysiwyg.rpl-statistics-grid__block-heading > div";
+    private final String COVID_HOSPITAL_CASES_SELECTOR="#rpl-main-content > div > div > div > div > div:nth-child(5) > div > div:nth-child(1) > div > div.rpl-markup.tide-wysiwyg.app-wysiwyg.rpl-statistics-grid__block-heading > div";
+    private final String COVID_HOSPITAL_ICU_CASES_SELECTOR="#rpl-main-content > div > div > div > div > div:nth-child(5) > div > div:nth-child(2) > div > div.rpl-markup.tide-wysiwyg.app-wysiwyg.rpl-statistics-grid__block-heading > div";
+    private final String COVID_PCR_TESTS_SELECTOR="#rpl-main-content > div > div > div > div > div:nth-child(7) > div > div:nth-child(1) > div > div.rpl-markup.tide-wysiwyg.app-wysiwyg.rpl-statistics-grid__block-heading > div";
+    private final String COVID_RAT_TESTS_SELECTOR="#rpl-main-content > div > div > div > div > div:nth-child(7) > div > div:nth-child(2) > div > div.rpl-markup.tide-wysiwyg.app-wysiwyg.rpl-statistics-grid__block-heading > div";
+    private final String COVID_TOTAL_CASES_PCR_SELECTOR="#rpl-main-content > div > div > div > div > div:nth-child(7) > div > div:nth-child(3) > div > div.rpl-markup.tide-wysiwyg.app-wysiwyg.rpl-statistics-grid__block-heading > div";
+    private final String COVID_LIVES_LOST_PER_DAY_SELECTOR="#rpl-main-content > div > div > div > div > div:nth-child(9) > div > div:nth-child(1) > div > div.rpl-markup.tide-wysiwyg.app-wysiwyg.rpl-statistics-grid__block-heading > div";
+    private final String COVID_TOTAL_LIVES_LOST_SELECTOR="#rpl-main-content > div > div > div > div > div:nth-child(9) > div > div:nth-child(2) > div > div.rpl-markup.tide-wysiwyg.app-wysiwyg.rpl-statistics-grid__block-heading > div";
+    private final String COVID_CASES_RECOVERED_SELECTOR="#rpl-main-content > div > div > div > div > div:nth-child(9) > div > div:nth-child(3) > div > div.rpl-markup.tide-wysiwyg.app-wysiwyg.rpl-statistics-grid__block-heading > div";
     private Database db;
     // if category not exist, push regardless, if category check for title. Match against feed title trying to be pushed
     public News(String newsType, Database db) {
@@ -73,16 +85,6 @@ public class News {
                 initRSS("https://www.monash.edu/_webservices/news/rss?category=university+%26+news", "news", false);
             }
             setInterval();
-        } else if (newsType.equals("ExposureBuilding")) {
-            try {
-                System.out.println("[NEWS] Getting Exposure Building info");
-                Document doc = Jsoup.connect(targetedExposureBuildingUrl).get();
-                System.out.println(doc.title());
-                fetchCovidExposureInfo(doc);
-            } catch (Exception e) {
-                System.out.println("[Exposure Site] ERROR: "+e.getMessage());
-                activityLog.sendActivityMsg("[NEWS] Unable to get exposure info: "+e.getMessage(),3, null);
-            }
         }
     }
 
@@ -116,7 +118,13 @@ public class News {
                 if (status.getUser().getId()==43064490){
                    if (status.getText().contains("#COVID19VicData") || status.getText().contains("More data soon")) {
                        activityLog.sendActivityMsg("[NEWS] Building covid update msg",1, null);
-                       buildMsgFromTweet(status, "covid_update");
+                       try {
+                           Document doc = Jsoup.connect(VIC_COVID_DATA_URL).get();
+                           buildMsgFromWebScrape(doc);
+
+                       } catch (Exception e) {
+                           activityLog.sendActivityMsg("[NEWS] Unable to get covid data from scrape: "+e.getMessage(),3,null);
+                       }
                    }
                 }
             }
@@ -175,20 +183,6 @@ public class News {
         this.feed=feed;
     }
 
-    // compares prev posted msg to current to see if there's an update
-    public void pushNewMsg(SyndFeed feed) {
-        // compare this to cached prev feed. If different then push update
-        System.out.println(feed.getEntries().get(feedIndex));
-        if (cachedTitle == "") {
-            cachedTitle = feed.getEntries().get(feedIndex).getTitle();
-        } else {
-            if (cachedTitle.equals(feed.getEntries().get(feedIndex).getTitle())) {
-                System.out.println("[News] Up To Date!");
-            } else {
-
-            }
-        }
-    }
 
     public void sendMsg(SyndFeed feed, String category, Boolean checkState) {
         if (!checkState || !Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_LASTITLE",category+"##"+feed.getEntries().get(feedIndex).getTitle()))) {
@@ -261,74 +255,14 @@ public class News {
         }
     }
 
-    public void fetchCovidExposureInfo(Document doc) {
-        activityLog.sendActivityMsg("[NEWS] Fetching exposure info from remote",1, null);
-        JSONObject jsonParentObject = new JSONObject();
-        int numExposures = 0;
-        try {
-            Element table = doc.select("#covid-19_exposure_site__table").get(0);
-            System.out.println("[NEWS] Parsing exposure site data");
-            for (Element row : table.select("tr")) {
-                JSONObject jsonObject = new JSONObject();
-                Elements tds = row.select("td");
-                if (!tds.isEmpty()) {
-                    String campus = tds.get(0).text();
-                    String building = tds.get(1).text();
-                    String exposurePeriod = tds.get(2).text();
-                    String cleaningStatus = tds.get(3).text();
-                    String healthAdvice = tds.get(4).text();
-                    jsonObject.put("Campus", campus);
-                    jsonObject.put("Building", building);
-                    jsonObject.put("ExposurePeriod", exposurePeriod);
-                    jsonObject.put("CleaningStatus", cleaningStatus);
-                    jsonObject.put("HealthAdvice", healthAdvice);
-                    jsonParentObject.put(String.valueOf(numExposures), jsonObject);
-                    numExposures++;
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("[NEWS] ERROR: unable to parse exposure site table");
-            activityLog.sendActivityMsg("[NEWS] ERROR: unable to parse exposure site table",3, null);
-        }
-        System.out.println("JSON:");
-        System.out.println(jsonParentObject.toString());
-        int retrivedIndex=Integer.parseInt(db.getDBEntry("CHECK_EXPOSURE_INDEX", "EXPOSURE_SITE"));
-        if (retrivedIndex==0) {
-            retrivedIndex=numExposures-4;
-        }
-          if (numExposures>retrivedIndex) {
-            // do quick math here, find difference and reverse json object possibly
-            HashMap<String, String> data = new HashMap<String, String>();
-            data.put("col_name", "exposure_sites");
-            data.put("size", String.valueOf(numExposures));
-            db.modifyDB("EXPOSURE_SITE","", data);
-            for (int i=0; i<(numExposures-retrivedIndex);i++) {
-                buildMsgFromWebScrape(jsonParentObject.getJSONObject(String.valueOf(i)));
-            }
-          }
-    }
 
-    public void buildMsgFromWebScrape(JSONObject data) {
-        for (String key : Main.constants.config.keySet()) {
-            if (Main.constants.config.get(key).getNewsModuleEnabled()) {
-                activityLog.sendActivityMsg("[NEWS] Building exposure message", 1, null);
-                MessageChannel channel = Main.constants.jda.getTextChannelById(Main.constants.config.get(key).getChannelExposureSiteId());
-                EmbedBuilder embed = new EmbedBuilder();
-                embed.setTitle("Exposure Sites Update");
-                // will be the contents of above method **if** there is an update
-                embed.addField("Campus: ", data.getString("Campus"), false);
-                embed.addField("Building: ", data.getString("Building"), false);
-                embed.addField("Exposure Period: ", data.getString("ExposurePeriod"), false);
-                embed.addField("Cleaning Status: ", data.getString("CleaningStatus"), false);
-                embed.addField("Health Advice: ", data.getString("HealthAdvice"), false);
-                embed.setDescription("As always if you test positive to covid and have been on campus please report it to Monash University using the button below.");
-                embed.setAuthor("Monash University");
-                embed.setThumbnail("http://www.monash.edu/__data/assets/image/0008/492389/monash-logo.png");
-                ArrayList<Button> btns = new ArrayList<Button>();
-                btns.add(Button.link("https://www.monash.edu/news/coronavirus-updates", "Monash COVID Bulletin").withEmoji(Emoji.fromUnicode("U+2139")));
-                btns.add(Button.link("https://forms.monash.edu/covid19-self-reporting", "Monash COVID Self-Report").withEmoji(Emoji.fromUnicode("U+1F4DD")));
-                channel.sendMessageEmbeds(embed.build()).setActionRow(btns).queue();
-            }
+    public void buildMsgFromWebScrape(Document doc) {
+        try {
+            HashMap<String, String> data = new HashMap<String, String>();
+            data.put("update_issued",doc.select(COVID_UPDATE_ISSUED_SELECTOR).get(0).text());
+            data.put("cases_past", doc.select(COVID_CASES_PAST_WEEK_SELECTOR).get(0).text());
+        } catch (Exception e ) {
+            activityLog.sendActivityMsg("[NEWS] Unable to parse covid website data", 3, null);
         }
     }
 }
