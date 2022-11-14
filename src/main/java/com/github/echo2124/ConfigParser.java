@@ -16,24 +16,12 @@ public class ConfigParser {
         try {
             // can grab multiple configs now
             String target=System.getenv("CONFIG_FILE");
-            ArrayList<String> parsedConfigs=new ArrayList<String>();
-            if (target.contains(",")) {
-                 parsedConfigs=(ArrayList<String>) Arrays.asList(target.split(","));
-                System.out.println("[DEBUG] Target config"+parsedConfigs.get(0));
-                System.out.println("[DEBUG] Target config"+parsedConfigs.get(1));
-
-            } else {
-                parsedConfigs.add(target);
-                System.out.println("[DEBUG] Target config"+parsedConfigs.get(0));
-                Gson parser = new Gson();
-                Config config=parser.fromJson(new BufferedReader(new FileReader("src/main/java/com/github/echo2124/"+parsedConfigs.get(0))),Config.class);
-                System.out.println("[DEBUG] Config Name: "+config.getConfigName());
-            }
+            String[] parsedConfigs = new String[0];
             System.out.println("Attempting config load...");
             // likely the culprit, tbd
-            for (int i=0; i<parsedConfigs.size(); i++) {
+            for (int i=0; i< parsedConfigs.length; i++) {
                 Gson parser = new Gson();
-                Config config=parser.fromJson(new BufferedReader(new FileReader("src/main/java/com/github/echo2124/"+parsedConfigs.get(i))),Config.class);
+                Config config=parser.fromJson(new BufferedReader(new FileReader("src/main/java/com/github/echo2124/"+parsedConfigs[i])),Config.class);
                 System.out.println("Config Detected: "+config.getConfigName());
                 configs.put(config.getServerId(),config);
             }
