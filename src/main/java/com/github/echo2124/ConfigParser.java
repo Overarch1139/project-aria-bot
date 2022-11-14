@@ -16,7 +16,7 @@ public class ConfigParser {
         try {
             // can grab multiple configs now
             String target=System.getenv("CONFIG_FILE");
-            String[] parsedConfigs = new String[0];
+            String[] parsedConfigs=target.split(",");
             System.out.println("Attempting config load...");
             // likely the culprit, tbd
             for (int i=0; i< parsedConfigs.length; i++) {
