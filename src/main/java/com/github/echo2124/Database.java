@@ -26,7 +26,7 @@ public class Database {
             if (!tableExists("CERT_MODULE", tempConnection)) {
                 setupDB(tempConnection);
             }
-            migrateDB(tempConnection);
+            //migrateDB(tempConnection);
             disconnect(tempConnection);
     }
 
