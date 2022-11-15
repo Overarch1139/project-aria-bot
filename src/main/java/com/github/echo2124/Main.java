@@ -23,12 +23,12 @@ public class Main extends ListenerAdapter {
         public static ActivityLog activityLog=null;
         public static boolean serviceMode=false;
         public static Database db=null;
-        public static LinkedHashMap<String, Config> config;
+        public static LinkedHashMap<String, BotConfig> config;
     }
     public static void main(String[] arguments) throws Exception {
         // load config here before anything else
         ConfigParser parser = new ConfigParser();
-        LinkedHashMap<String, Config> config =parser.parseDefaults();
+        LinkedHashMap<String, BotConfig> config =parser.parseDefaults();
         Main.constants.config=config;
         String activity="Loading...";
         // setters for various props

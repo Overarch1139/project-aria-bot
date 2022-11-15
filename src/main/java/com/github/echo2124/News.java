@@ -34,31 +34,20 @@ import static com.github.echo2124.Main.constants.db;
 
 public class News {
 
-    private String cachedTitle="";
+    private String cachedTitle = "";
     private String feedOrg;
     // fallback if author is not available from rss feed
-    private String[] defaultAuthors= {"Monash University", "ABC News"};
-    private String[] monashCategories={"Technology Related News", "COVID-19 Related News", "General University News"};
+    private String[] defaultAuthors = {"Monash University", "ABC News"};
+    private String[] monashCategories = {"Technology Related News", "COVID-19 Related News", "General University News"};
     private SyndFeed feed;
-    private final int feedIndex =0;
-    private final String targetedExposureBuildingUrl="https://www.monash.edu/news/coronavirus-updates/exposure-sites";
-   // COVID WEB SCRAPER CONFIG
-    private final String VIC_COVID_DATA_URL="https://www.coronavirus.vic.gov.au/victorian-coronavirus-covid-19-data";
-    private final String COVID_UPDATE_ISSUED_SELECTOR="#rpl-main-content > div > div > div > div > div:nth-child(2) > div > div > h2";
-    private final String COVID_CASES_PAST_WEEK_SELECTOR="#rpl-main-content > div > div > div > div > div:nth-child(3) > div > div:nth-child(1) > div > div.rpl-markup.tide-wysiwyg.app-wysiwyg.rpl-statistics-grid__block-heading > div";
-    private final String COVID_ACTIVE_CASES_SELECTOR="#rpl-main-content > div > div > div > div > div:nth-child(3) > div > div:nth-child(2) > div > div.rpl-markup.tide-wysiwyg.app-wysiwyg.rpl-statistics-grid__block-heading > div";
-    private final String COVID_HOSPITAL_CASES_SELECTOR="#rpl-main-content > div > div > div > div > div:nth-child(5) > div > div:nth-child(1) > div > div.rpl-markup.tide-wysiwyg.app-wysiwyg.rpl-statistics-grid__block-heading > div";
-    private final String COVID_HOSPITAL_ICU_CASES_SELECTOR="#rpl-main-content > div > div > div > div > div:nth-child(5) > div > div:nth-child(2) > div > div.rpl-markup.tide-wysiwyg.app-wysiwyg.rpl-statistics-grid__block-heading > div";
-    private final String COVID_PCR_TESTS_SELECTOR="#rpl-main-content > div > div > div > div > div:nth-child(7) > div > div:nth-child(1) > div > div.rpl-markup.tide-wysiwyg.app-wysiwyg.rpl-statistics-grid__block-heading > div";
-    private final String COVID_RAT_TESTS_SELECTOR="#rpl-main-content > div > div > div > div > div:nth-child(7) > div > div:nth-child(2) > div > div.rpl-markup.tide-wysiwyg.app-wysiwyg.rpl-statistics-grid__block-heading > div";
-    private final String COVID_TOTAL_CASES_PCR_SELECTOR="#rpl-main-content > div > div > div > div > div:nth-child(7) > div > div:nth-child(3) > div > div.rpl-markup.tide-wysiwyg.app-wysiwyg.rpl-statistics-grid__block-heading > div";
-    private final String COVID_LIVES_LOST_PER_DAY_SELECTOR="#rpl-main-content > div > div > div > div > div:nth-child(9) > div > div:nth-child(1) > div > div.rpl-markup.tide-wysiwyg.app-wysiwyg.rpl-statistics-grid__block-heading > div";
-    private final String COVID_TOTAL_LIVES_LOST_SELECTOR="#rpl-main-content > div > div > div > div > div:nth-child(9) > div > div:nth-child(2) > div > div.rpl-markup.tide-wysiwyg.app-wysiwyg.rpl-statistics-grid__block-heading > div";
-    private final String COVID_CASES_RECOVERED_SELECTOR="#rpl-main-content > div > div > div > div > div:nth-child(9) > div > div:nth-child(3) > div > div.rpl-markup.tide-wysiwyg.app-wysiwyg.rpl-statistics-grid__block-heading > div";
+    private final int feedIndex = 0;
+    private final String targetedExposureBuildingUrl = "https://www.monash.edu/news/coronavirus-updates/exposure-sites";
+    private final String VIC_COVID_DATA_URL = "https://www.coronavirus.vic.gov.au/victorian-coronavirus-covid-19-data";
     private Database db;
+
     // if category not exist, push regardless, if category check for title. Match against feed title trying to be pushed
     public News(String newsType, Database db) {
-        this.db=db;
+        this.db = db;
         if (newsType.equals("Covid")) {
             feedOrg = "ABC";
             if (!Boolean.parseBoolean(System.getenv("IS_DEV"))) {
@@ -94,11 +83,11 @@ public class News {
         TimerTask updateMonashNews = new TimerTask() {
             public void run() {
                 new News("Monash", Main.constants.db);
-                new News("ExposureBuilding",Main.constants.db);
+                new News("ExposureBuilding", Main.constants.db);
             }
         };
         Timer timer = new Timer("Timer");
-        long delay=(int) 2.16e7;
+        long delay = (int) 2.16e7;
         timer.schedule(updateMonashNews, delay);
     }
 
@@ -115,19 +104,20 @@ public class News {
         StatusListener listener = new StatusListener() {
             @Override
             public void onStatus(Status status) {
-                if (status.getUser().getId()==43064490){
-                   if (status.getText().contains("#COVID19VicData") || status.getText().contains("More data soon")) {
-                       activityLog.sendActivityMsg("[NEWS] Building covid update msg",1, null);
-                       try {
-                           Document doc = Jsoup.connect(VIC_COVID_DATA_URL).get();
-                           buildMsgFromWebScrape(doc);
+                if (status.getUser().getId() == 43064490) {
+                    if (status.getText().contains("#COVID19VicData") || status.getText().contains("More data soon")) {
+                        activityLog.sendActivityMsg("[NEWS] Building covid update msg", 1, null);
+                        try {
+                            Document doc = Jsoup.connect(VIC_COVID_DATA_URL).get();
+                            buildMsgFromWebScrape(doc);
 
-                       } catch (Exception e) {
-                           activityLog.sendActivityMsg("[NEWS] Unable to get covid data from scrape: "+e.getMessage(),3,null);
-                       }
-                   }
+                        } catch (Exception e) {
+                            activityLog.sendActivityMsg("[NEWS] Unable to get covid data from scrape: " + e.getMessage(), 3, null);
+                        }
+                    }
                 }
             }
+
             @Override
             public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
 
@@ -156,36 +146,36 @@ public class News {
         ts.addListener(listener);
         ts.sample();
         FilterQuery filter = new FilterQuery();
-        filter.follow(new long[] {43064490});
+        filter.follow(new long[]{43064490});
         ts.filter(filter);
     }
 
     public void initRSS(String feedURL, String category, Boolean checkLatest) {
         try {
-            activityLog.sendActivityMsg("[NEWS] Initialising RSS Feed listener for category: "+category,1, null);
+            activityLog.sendActivityMsg("[NEWS] Initialising RSS Feed listener for category: " + category, 1, null);
             parseRSS(feedURL);
-            sendMsg(this.feed,category,checkLatest);
+            sendMsg(this.feed, category, checkLatest);
         } catch (Exception e) {
-            activityLog.sendActivityMsg("[NEWS] Unable to initialise RSS Feed listener: "+e.getMessage(),3, null);
+            activityLog.sendActivityMsg("[NEWS] Unable to initialise RSS Feed listener: " + e.getMessage(), 3, null);
             throw new Error(e);
         }
     }
 
     public void parseRSS(String feedURL) throws MalformedURLException {
-        activityLog.sendActivityMsg("[NEWS] Parsing received RSS Feed",1, null);
+        activityLog.sendActivityMsg("[NEWS] Parsing received RSS Feed", 1, null);
         URL newURL = new URL(feedURL);
-        SyndFeed feed=null;
+        SyndFeed feed = null;
         try {
             feed = new SyndFeedInput().build(new XmlReader(newURL));
         } catch (Exception e) {
-            activityLog.sendActivityMsg("[NEWS] Unable to parse RSS Feed: "+e.getMessage(),3, null);
+            activityLog.sendActivityMsg("[NEWS] Unable to parse RSS Feed: " + e.getMessage(), 3, null);
         }
-        this.feed=feed;
+        this.feed = feed;
     }
 
 
     public void sendMsg(SyndFeed feed, String category, Boolean checkState) {
-        if (!checkState || !Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_LASTITLE",category+"##"+feed.getEntries().get(feedIndex).getTitle()))) {
+        if (!checkState || !Boolean.parseBoolean(db.getDBEntry("NEWS_CHECK_LASTITLE", category + "##" + feed.getEntries().get(feedIndex).getTitle()))) {
             // check for guilds
             for (String key : Main.constants.config.keySet()) {
                 if (Main.constants.config.get(key).getNewsModuleEnabled()) {
@@ -231,12 +221,12 @@ public class News {
     public void buildMsgFromTweet(Status status, String type) {
         for (String key : Main.constants.config.keySet()) {
             System.out.println("Building MSG From tweet");
-            MessageChannel channel =null;
+            MessageChannel channel = null;
             if (type.equals("covid_update")) {
-                    if (Main.constants.config.get(key).getNewsModuleEnabled()) {
-                        channel = Main.constants.jda.getTextChannelById(Main.constants.config.get(key).getChannelCovidUpdateId());
-                    }
+                if (Main.constants.config.get(key).getNewsModuleEnabled()) {
+                    channel = Main.constants.jda.getTextChannelById(Main.constants.config.get(key).getChannelCovidUpdateId());
                 }
+            }
 
             EmbedBuilder newEmbed = new EmbedBuilder();
             newEmbed.setTitle("Victoria Covid Update");
@@ -244,7 +234,7 @@ public class News {
             newEmbed.setAuthor("Victorian Department of Health");
             newEmbed.setThumbnail(status.getUser().getProfileImageURL());
             MediaEntity[] media = status.getMediaEntities();
-            if (media.length >0) {
+            if (media.length > 0) {
                 if (media[0].getMediaURL().contains("twimg")) {
                     System.out.println("Media detected");
                     newEmbed.setImage(media[0].getMediaURL());
@@ -256,13 +246,43 @@ public class News {
     }
 
 
-    public void buildMsgFromWebScrape(Document doc) {
+    public HashMap<String, String> parseWebScrapeCovid(Document doc) {
+        HashMap<String, String> data = new HashMap<String, String>();
         try {
-            HashMap<String, String> data = new HashMap<String, String>();
-            data.put("update_issued",doc.select(COVID_UPDATE_ISSUED_SELECTOR).get(0).text());
+            data.put("update_issued", doc.select(COVID_UPDATE_ISSUED_SELECTOR).get(0).text());
             data.put("cases_past", doc.select(COVID_CASES_PAST_WEEK_SELECTOR).get(0).text());
-        } catch (Exception e ) {
+            data.put("active_cases", doc.select(COVID_ACTIVE_CASES_SELECTOR).get(0).text());
+            data.put("hospital_cases", doc.select(COVID_HOSPITAL_CASES_SELECTOR).get(0).text());
+            data.put("hospital_icu", doc.select(COVID_HOSPITAL_ICU_CASES_SELECTOR).get(0).text());
+            data.put("covid_pcr_tests", doc.select(COVID_PCR_TESTS_SELECTOR).get(0).text());
+            data.put("covid_rat_tests", doc.select(COVID_RAT_TESTS_SELECTOR).get(0).text());
+            data.put("covid_total_pcr", doc.select(COVID_TOTAL_CASES_PCR_SELECTOR).get(0).text());
+            data.put("covid_lives_lost_day", doc.select(COVID_LIVES_LOST_PER_DAY_SELECTOR).get(0).text());
+            data.put("covid_total_lives_lost", doc.select(COVID_TOTAL_LIVES_LOST_SELECTOR).get(0).text());
+            data.put("covid_cases_recovered", doc.select(COVID_CASES_RECOVERED_SELECTOR).get(0).text());
+
+        } catch (Exception e) {
             activityLog.sendActivityMsg("[NEWS] Unable to parse covid website data", 3, null);
         }
+        return data;
     }
+
+
+    public void buildMsgFromScrape(HashMap<String, String> data) {
+        for (String key : Main.constants.config.keySet()) {
+            System.out.println("Building MSG From tweet");
+            MessageChannel channel = null;
+                if (Main.constants.config.get(key).getNewsModuleEnabled()) {
+                    channel = Main.constants.jda.getTextChannelById(Main.constants.config.get(key).getChannelCovidUpdateId());
+                }
+        }
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setTitle("\uD83E\uDDA0 Victorian COVID-19 Data Update", VIC_COVID_DATA_URL);
+        embed.setDescription("Data updates on COVID-19 including statistics \uD83D\uDCCA");
+        embed.addField("Cases:", , false);
+        embed.addField("Current cases in hospital", "")
+        embed.setFooter(data.get("update_issued"));
+        embed.setAuthor("Victorian Department of Health");
+    }
+
 }

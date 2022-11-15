@@ -1,6 +1,6 @@
 package com.github.echo2124;
 
-public class Config {
+public class BotConfig {
     private final String configName;
     private final String serverId;
     private final String activityState;
@@ -18,7 +18,7 @@ public class Config {
     private final Boolean newsModuleEnabled;
     private final Boolean onCampusModuleEnabled;
 
-    public Config(String configName, String serverId, String activityState, String roleVerifiedId, String roleOncampusId, String roleDevTeamId, String channelVerifyId, String channelAdminId, String channelMonashNewsId, String channelCovidUpdateId, String channelExposureSiteId, String channelActivityLogId, String channelOnCampusId, Boolean verifiedModuleEnabled, Boolean newsModuleEnabled, Boolean onCampusModuleEnabled) {
+    public BotConfig(String configName, String serverId, String activityState, String roleVerifiedId, String roleOncampusId, String roleDevTeamId, String channelVerifyId, String channelAdminId, String channelMonashNewsId, String channelCovidUpdateId, String channelExposureSiteId, String channelActivityLogId, String channelOnCampusId, Boolean verifiedModuleEnabled, Boolean newsModuleEnabled, Boolean onCampusModuleEnabled) {
         this.configName = configName;
         this.serverId = serverId;
         this.activityState = activityState;
