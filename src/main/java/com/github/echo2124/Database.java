@@ -95,9 +95,7 @@ public class Database {
             Statement stmt = connect.createStatement();
             String sqlQuery = "CREATE TABLE WARN_MODULE (discordID bigint, issuerID bigint, warnDesc text, issueTime TIMESTAMP);"+
                             "CREATE TABLE CERT_MODULE (discordID bigint, name VARCHAR(2048), emailAddr VARCHAR(100), isVerified bool, verifiedTime TIMESTAMP);"+
-                            "CREATE TABLE NEWS (origin VARCHAR(50), lastTitle text);"+
-                            "CREATE TABLE EXPOSURE (origin VARCHAR(50), len NUMERIC(15));"+
-                            "CREATE TABLE ONCAMPUS (discordID bigint, )";
+                            "CREATE TABLE NEWS (origin VARCHAR(50), lastTitle text);";
             stmt.executeUpdate(sqlQuery);
             stmt.close();
 
@@ -158,15 +156,6 @@ public class Database {
                     } catch (Exception e) {
                         System.out.println("Unable to Modify DB: " + e.getMessage());
                     }
-                break;
-            case "EXPOSURE_SITE":
-                try {
-                    activityLog.sendActivityMsg("[DATABASE] Inserting exposure data into exposure table",1, null);
-                    sqlQuery = connection.prepareStatement("UPDATE exposure SET len=? WHERE origin='EXPOSURE_SITE'");
-                    sqlQuery.setInt(1,Integer.parseInt(data.get("size").toString()));
-                } catch (Exception e) {
-                    System.out.println("UNABLE TO MODIFY EXPOSURE_SITE MSG:"+e.getMessage());
-                }
                 break;
             default:
                 System.out.println("[DB] Invalid Origin Module");
@@ -251,32 +240,6 @@ public class Database {
                         System.out.println("[Database] Last News Title Exists="+ret);
                     }
                     break;
-                case "CHECK_EXPOSURE_INDEX":
-                    activityLog.sendActivityMsg("[DATABASE] Fetching exposure data from exposure table",1, null);
-                    //TODO check for origin instead (there is probably an issue with the current method of checking for a table which is causing these sorts of problems that exist currently)
-                    ResultSet rs = connection.prepareStatement("SELECT EXISTS ( SELECT FROM pg_tables WHERE tablename='exposure');").executeQuery();
-                    while (rs.next()) {
-                        if (rs.getBoolean(1)) {
-                            System.out.println("[Database] checking db for exposure info");
-                            sqlQuery = connection.prepareStatement("SELECT len FROM EXPOSURE WHERE origin=?");
-                            sqlQuery.setString(1, req);
-                            if (sqlQuery != null) {
-                                ResultSet res = sqlQuery.executeQuery();
-                                while (res.next()) {
-                                    ret = String.valueOf(res.getInt(1));
-                                }
-                                if (ret == null || ret == "") {
-                                    ret = "0";
-                                }
-                            }
-                        } else {
-                            System.out.println("[Database] exposure table doesn't exist. creating...");
-                            // ADD TABLE TO DB (EXPOSURE)
-                            connection.prepareStatement("CREATE TABLE EXPOSURE (origin VARCHAR(50), len NUMERIC(15));").executeQuery();
-                            ret="0";
-                        }
-                    break;
-                    }
             }
         } catch (SQLException e) {
             System.err.println(this.getClass().getName()+"Unable to get Entry"+e.getMessage());

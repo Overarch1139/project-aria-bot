@@ -41,7 +41,6 @@ public class News {
     private String[] monashCategories = {"Technology Related News", "COVID-19 Related News", "General University News"};
     private SyndFeed feed;
     private final int feedIndex = 0;
-    private final String targetedExposureBuildingUrl = "https://www.monash.edu/news/coronavirus-updates/exposure-sites";
     private final String VIC_COVID_DATA_URL = "https://www.coronavirus.vic.gov.au/victorian-coronavirus-covid-19-data";
     private Database db;
 
@@ -83,7 +82,6 @@ public class News {
         TimerTask updateMonashNews = new TimerTask() {
             public void run() {
                 new News("Monash", Main.constants.db);
-                new News("ExposureBuilding", Main.constants.db);
             }
         };
         Timer timer = new Timer("Timer");

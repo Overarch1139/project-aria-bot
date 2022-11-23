@@ -12,13 +12,12 @@ public class BotConfig {
     private final String channelMonashNewsId;
     private final String channelCovidUpdateId;
     private final String channelOnCampusId;
-    private final String channelExposureSiteId;
     private final String channelActivityLogId;
     private final Boolean verifiedModuleEnabled;
     private final Boolean newsModuleEnabled;
     private final Boolean onCampusModuleEnabled;
 
-    public BotConfig(String configName, String serverId, String activityState, String roleVerifiedId, String roleOncampusId, String roleDevTeamId, String channelVerifyId, String channelAdminId, String channelMonashNewsId, String channelCovidUpdateId, String channelExposureSiteId, String channelActivityLogId, String channelOnCampusId, Boolean verifiedModuleEnabled, Boolean newsModuleEnabled, Boolean onCampusModuleEnabled) {
+    public BotConfig(String configName, String serverId, String activityState, String roleVerifiedId, String roleOncampusId, String roleDevTeamId, String channelVerifyId, String channelAdminId, String channelMonashNewsId, String channelCovidUpdateId, String channelActivityLogId, String channelOnCampusId, Boolean verifiedModuleEnabled, Boolean newsModuleEnabled, Boolean onCampusModuleEnabled) {
         this.configName = configName;
         this.serverId = serverId;
         this.activityState = activityState;
@@ -30,7 +29,6 @@ public class BotConfig {
         this.channelMonashNewsId = channelMonashNewsId;
         this.channelCovidUpdateId = channelCovidUpdateId;
         this.channelOnCampusId = channelOnCampusId;
-        this.channelExposureSiteId = channelExposureSiteId;
         this.channelActivityLogId = channelActivityLogId;
         this.verifiedModuleEnabled = verifiedModuleEnabled;
         this.newsModuleEnabled = newsModuleEnabled;
@@ -81,10 +79,6 @@ public class BotConfig {
         return channelOnCampusId;
     }
 
-    public String getChannelExposureSiteId() {
-        return channelExposureSiteId;
-    }
-
     public String getChannelActivityLogId() {
         return channelActivityLogId;
     }
@@ -108,7 +102,6 @@ public class BotConfig {
                 ", channelMonashNewsId='" + channelMonashNewsId + '\'' +
                 ", channelCovidUpdateId='" + channelCovidUpdateId + '\'' +
                 ", channelOnCampusId='" + channelOnCampusId + '\'' +
-                ", channelExposureSiteId='" + channelExposureSiteId + '\'' +
                 ", channelActivityLogId='" + channelActivityLogId + '\'' +
                 ", verifiedModuleEnabled='" + verifiedModuleEnabled + '\'' +
                 ", newsModuleEnabled='" + newsModuleEnabled + '\'' +
