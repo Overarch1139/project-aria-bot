@@ -109,7 +109,7 @@ public class News {
                         activityLog.sendActivityMsg("[NEWS] Building covid update msg", 1, null);
                         try {
                             Document doc = Jsoup.connect(VIC_COVID_DATA_URL).get();
-                            buildMsgFromWebScrape(doc);
+                            parseWebScrapeCovid(doc);
 
                         } catch (Exception e) {
                             activityLog.sendActivityMsg("[NEWS] Unable to get covid data from scrape: " + e.getMessage(), 3, null);
@@ -249,17 +249,19 @@ public class News {
     public HashMap<String, String> parseWebScrapeCovid(Document doc) {
         HashMap<String, String> data = new HashMap<String, String>();
         try {
-            data.put("update_issued", doc.select(COVID_UPDATE_ISSUED_SELECTOR).get(0).text());
-            data.put("cases_past", doc.select(COVID_CASES_PAST_WEEK_SELECTOR).get(0).text());
-            data.put("active_cases", doc.select(COVID_ACTIVE_CASES_SELECTOR).get(0).text());
-            data.put("hospital_cases", doc.select(COVID_HOSPITAL_CASES_SELECTOR).get(0).text());
-            data.put("hospital_icu", doc.select(COVID_HOSPITAL_ICU_CASES_SELECTOR).get(0).text());
-            data.put("covid_pcr_tests", doc.select(COVID_PCR_TESTS_SELECTOR).get(0).text());
-            data.put("covid_rat_tests", doc.select(COVID_RAT_TESTS_SELECTOR).get(0).text());
-            data.put("covid_total_pcr", doc.select(COVID_TOTAL_CASES_PCR_SELECTOR).get(0).text());
-            data.put("covid_lives_lost_day", doc.select(COVID_LIVES_LOST_PER_DAY_SELECTOR).get(0).text());
-            data.put("covid_total_lives_lost", doc.select(COVID_TOTAL_LIVES_LOST_SELECTOR).get(0).text());
-            data.put("covid_cases_recovered", doc.select(COVID_CASES_RECOVERED_SELECTOR).get(0).text());
+            // try to assign uid instead of hardcoded names
+            // could use ttl for each dp however it may not be unique
+            data.put("update_issued", doc.select(CovidUpdateConf.covidUpdateIssued).get(0).text());
+            data.put("cases_past", doc.select(CovidUpdateConf.covidDp_0_data).get(0).text());
+            data.put("active_cases", doc.select(CovidUpdateConf.covidDp_1_data).get(0).text());
+            data.put("hospital_cases", doc.select(CovidUpdateConf.covidDp_2_data).get(0).text());
+            data.put("hospital_icu", doc.select(CovidUpdateConf.covidDp_3_data).get(0).text());
+            data.put("covid_pcr_tests", doc.select(CovidUpdateConf.covidDp_4_data).get(0).text());
+            data.put("covid_rat_tests", doc.select(CovidUpdateConf.covidDp_5_data).get(0).text());
+            data.put("covid_total_pcr", doc.select(CovidUpdateConf.covidDp_6_data).get(0).text());
+            data.put("covid_lives_lost_day", doc.select(CovidUpdateConf.covidDp_7_data).get(0).text());
+            data.put("covid_total_lives_lost", doc.select(CovidUpdateConf.covidDp_8_data).get(0).text());
+            data.put("covid_cases_recovered", doc.select(CovidUpdateConf.covidDp_9_data).get(0).text());
 
         } catch (Exception e) {
             activityLog.sendActivityMsg("[NEWS] Unable to parse covid website data", 3, null);
@@ -270,7 +272,7 @@ public class News {
 
     public void buildMsgFromScrape(HashMap<String, String> data) {
         for (String key : Main.constants.config.keySet()) {
-            System.out.println("Building MSG From tweet");
+            System.out.println("Building MSG From Web Scrape");
             MessageChannel channel = null;
                 if (Main.constants.config.get(key).getNewsModuleEnabled()) {
                     channel = Main.constants.jda.getTextChannelById(Main.constants.config.get(key).getChannelCovidUpdateId());
@@ -279,8 +281,17 @@ public class News {
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle("\uD83E\uDDA0 Victorian COVID-19 Data Update", VIC_COVID_DATA_URL);
         embed.setDescription("Data updates on COVID-19 including statistics \uD83D\uDCCA");
-        embed.addField("Cases:", , false);
-        embed.addField("Current cases in hospital", "")
+        // one category=field; category has subfields
+        // concat strings before adding as param
+        String covidCategory_0_data="";
+        String covidCategory_1_data="";
+        String covidCategory_2_data="";
+        String covidCategory_3_data="";
+        embed.addField(CovidUpdateConf.covidCategory_0, covidCategory_0_data, false);
+        embed.addField(CovidUpdateConf.covidCategory_1, covidCategory_1_data, false);
+        embed.addField(CovidUpdateConf.covidCategory_2, covidCategory_2_data, false);
+        embed.addField(CovidUpdateConf.covidCategory_3, covidCategory_3_data, false);
+
         embed.setFooter(data.get("update_issued"));
         embed.setAuthor("Victorian Department of Health");
     }
