@@ -13,6 +13,6 @@
     "channelExposureSiteId":"951902910759977001",
     "channelActivityLogId": "981605485138567228",
     "verifiedModuleEnabled": true,
-    "newsModuleEnabled": true,
+    "newsModuleEnabled": false,
     "onCampusModuleEnabled": true
 }
