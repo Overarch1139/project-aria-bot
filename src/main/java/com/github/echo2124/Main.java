@@ -148,7 +148,25 @@ public class Main extends ListenerAdapter {
                         }
                     channel.sendMessageEmbeds(embed.build()).queue();
 
-                } else if (msgContents.contains(">resetOnCampus")) {
+                } else if (msgContents.contains(">manualVerify")) {
+                    final String[] fields= {"discordID", "name", "emailAddr"};
+                    try {
+                        // check for fields
+                        int i,x=0;
+                        for (i=0; i<fields.length; i++) {
+                            if (msgContents.toLowerCase().contains(fields[i])) {
+                                x++;
+                            };
+                        }
+                        if (x!=i) {
+                            
+                            throw new Exception("Fields not met");
+                        }
+                    } catch (Exception e) {
+
+                    }
+                }
+                else if (msgContents.contains(">resetOnCampus")) {
                     try {
                         OnCampus x = new OnCampus(true, event.getGuild().getId());
                         activityLog.sendActivityMsg("[MAIN] resetOnCampus command has been activated!",2, serverId);
