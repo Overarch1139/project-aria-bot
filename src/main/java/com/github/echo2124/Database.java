@@ -145,6 +145,8 @@ public class Database {
                     } else if (action.equals("remove")) {
                         try {
                             activityLog.sendActivityMsg("[DATABASE] Removing entry from verify table",1, null);
+                            sqlQuery=connection.prepareStatement("REMOVE FROM CERT_MODULE WHERE (?)");
+                            sqlQuery.setLong(1, Long.parseLong(data.get("discordID").toString()));
                         } catch (Exception e) {
                             System.out.println("Unable to Modify DB: "+ e.getMessage());
                         }
