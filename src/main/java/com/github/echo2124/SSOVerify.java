@@ -249,7 +249,9 @@ public class SSOVerify extends Thread {
         }
     }
 
-    public void manualModify(String msgContents, MessageChannel channel) {
+
+    // 0=insert, 1=remove
+    public void manualModify(String msgContents, MessageChannel channel, int mode) {
         try {
             // check for fields
             String params = msgContents.split(">manualVerify")[1];

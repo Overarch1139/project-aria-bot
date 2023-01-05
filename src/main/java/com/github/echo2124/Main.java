@@ -152,11 +152,12 @@ public class Main extends ListenerAdapter {
                     channel.sendMessageEmbeds(embed.build()).queue();
 
                 } else if (msgContents.contains(">manualVerify")) {
-
-                    }
+                    SSOVerify verify= new SSOVerify(user, event.getGuild(), channel, db);
+                    verify.manualModify(msgContents, channel,0);
                 }
                 else if (msgContents.contains(">manualDelete")) {
-
+                    SSOVerify verify= new SSOVerify(user, event.getGuild(), channel, db);
+                    verify.manualModify(msgContents, channel,1);
                 }
                 else if (msgContents.contains(">resetOnCampus")) {
                     try {
