@@ -15,10 +15,12 @@ import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.json.JSONObject;
 import java.awt.*;
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
-import static com.github.echo2124.Main.constants.activityLog;
+import static com.github.echo2124.Main.constants.*;
+import static com.github.echo2124.Main.constants.db;
 
 public class SSOVerify extends Thread {
     private static final String NETWORK_NAME = "Google";
@@ -244,6 +246,46 @@ public class SSOVerify extends Thread {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             System.out.println("[ERROR] Probably a permission issue");
+        }
+    }
+
+    public void manualModify(String msgContents, MessageChannel channel) {
+        try {
+            // check for fields
+            String params = msgContents.split(">manualVerify")[1];
+            String[] parsedParams = params.split(",");
+            String email = "", discordID = "", name = "";
+            if (parsedParams.length != FIELD_NUM) {
+                channel.sendMessage("[ERROR] Required fields are missing");
+                throw new Exception("Fields not met");
+            }
+            // Doing it this way so param order is irrelevant
+            for (int i = 0; i < parsedParams.length; i++) {
+                if (i == 1 && parsedParams[i].contains("null")) {
+                    name = "null";
+                }
+                if (i == 2 && parsedParams[i].contains("null")) {
+                    email = "null";
+                }
+                if (parsedParams[i].contains("@")) {
+                    email = parsedParams[i];
+                }
+                if (parsedParams[i].matches("[0-9]+")) {
+                    discordID = parsedParams[i];
+                }
+            }
+            HashMap<String, String> parsedData = new HashMap<String, String>();
+            parsedData.put("discordID", discordID);
+            parsedData.put("name", name);
+            parsedData.put("guildID", guildID);
+            parsedData.put("emailAddr", email);
+            parsedData.put("isVerified", "true");
+            Connection a = db.connect();
+            db.modifyDB("CERT", "add", parsedData);
+            db.disconnect(a);
+        } catch (Exception e) {
+            activityLog.sendActivityMsg("[MAIN] " + e.getMessage(), 3, guildID);
+
         }
     }
 
