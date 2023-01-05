@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.json.JSONObject;
 
 import java.awt.*;
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -154,12 +155,36 @@ public class Main extends ListenerAdapter {
                     try {
                         // check for fields
                         String params =msgContents.split(">manualVerify")[1];
-                        String[] parsedParams= msgContents.split(",");
+                        String[] parsedParams= params.split(",");
+                        String email="", discordID="", name="";
                         if (parsedParams.length!=FIELD_NUM) {
                             channel.sendMessage("[ERROR] Required fields are missing");
                             throw new Exception("Fields not met");
                         }
-
+                        // Doing it this way so param order is irrelevant
+                        for (int i=0; i< parsedParams.length; i++) {
+                            if (i==1 && parsedParams[i].contains("null")) {
+                                name = "null";
+                            }
+                            if (i==2 && parsedParams[i].contains("null")) {
+                                email = "null";
+                            }
+                            if (parsedParams[i].contains("@")) {
+                                email=parsedParams[i];
+                            }
+                            if (parsedParams[i].matches("[0-9]+")) {
+                                discordID=parsedParams[i];
+                            }
+                        }
+                        HashMap<String, String> parsedData = new HashMap<String, String>();
+                        parsedData.put("discordID", user.getId());
+                        parsedData.put("name", name);
+                        parsedData.put("guildID", serverId);
+                        parsedData.put("emailAddr", email);
+                        parsedData.put("isVerified", "true");
+                        Connection a = db.connect();
+                        db.modifyDB("CERT", "add", parsedData);
+                        db.disconnect(a);
                     } catch (Exception e) {
                         activityLog.sendActivityMsg("[MAIN] "+e.getMessage(),3, serverId);
 
