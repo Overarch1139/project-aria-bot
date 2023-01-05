@@ -177,7 +177,7 @@ public class Main extends ListenerAdapter {
                             }
                         }
                         HashMap<String, String> parsedData = new HashMap<String, String>();
-                        parsedData.put("discordID", user.getId());
+                        parsedData.put("discordID", discordID);
                         parsedData.put("name", name);
                         parsedData.put("guildID", serverId);
                         parsedData.put("emailAddr", email);
