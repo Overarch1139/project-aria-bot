@@ -209,7 +209,7 @@ public class SSOVerify extends Thread {
             if (verifyEmail(parsedObj) == true) {
                 /// insert into db > add role > notify user
                 if (parsedObj.getString("given_name").length() <= MAX_NAME_LEN) {
-                    addVerifiedRole();
+                    modifiyVerifiedRole(user,0);
                     HashMap<String, String> parsedData = new HashMap<String, String>();
                     parsedData.put("discordID", user.getId());
                     parsedData.put("name", parsedObj.getString("given_name"));
@@ -238,11 +238,25 @@ public class SSOVerify extends Thread {
         return isValid;
     }
 
-    public void addVerifiedRole() {
+    // 0=add, 1=remove
+    public void modifiyVerifiedRole(User user, int modeset) {
         try {
-            guild.addRoleToMember(UserSnowflake.fromId(user.getIdLong()), guild.getRoleById(Main.constants.config.get(guildID).getRoleVerifiedId())).queue();
-            activityLog.sendActivityMsg("[VERIFY] Gave user ("+user.getAsTag()+") verified role",1, guildID);
-            System.out.println("[VERBOSE] Added role");
+            switch (modeset) {
+                case 0:
+                    guild.addRoleToMember(UserSnowflake.fromId(user.getIdLong()), guild.getRoleById(Main.constants.config.get(guildID).getRoleVerifiedId())).queue();
+                    activityLog.sendActivityMsg("[VERIFY] Gave user ("+user.getAsTag()+") verified role",1, guildID);
+                    System.out.println("[VERBOSE] Added role");
+                    break;
+                case 1:
+                    guild.removeRoleFromMember(UserSnowflake.fromId(user.getIdLong()), guild.getRoleById(Main.constants.config.get(guildID).getRoleVerifiedId())).queue();
+                    activityLog.sendActivityMsg("[VERIFY] Removed user ("+user.getAsTag()+") verified role",1, guildID);
+                    System.out.println("[VERBOSE] Added role");
+                    break;
+                default:
+                    activityLog.sendActivityMsg("[VERIFY] Invalid mode set",3, guildID);
+
+            }
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
             System.out.println("[ERROR] Probably a permission issue");
@@ -276,6 +290,9 @@ public class SSOVerify extends Thread {
                     discordID = parsedParams[i];
                 }
             }
+            if (mode==0 && guild.getMemberById(discordID)==null) {
+                throw new Exception("DiscordID does not match user in server");
+            }
             HashMap<String, String> parsedData = new HashMap<String, String>();
             parsedData.put("discordID", discordID);
             parsedData.put("name", name);
@@ -284,9 +301,13 @@ public class SSOVerify extends Thread {
             parsedData.put("isVerified", "true");
             switch (mode) {
                 case 0:
+                    modifiyVerifiedRole(guild.getMemberById(discordID).getUser(),0);
                     db.modifyDB("CERT", "add", parsedData);
                     break;
                 case 1:
+                    if (guild.getMemberById(discordID)!=null) {
+                        modifiyVerifiedRole(guild.getMemberById(discordID).getUser(),1);
+                    }
                     db.modifyDB("CERT", "remove", parsedData);
                     break;
                 default:
