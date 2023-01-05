@@ -24,6 +24,8 @@ public class Main extends ListenerAdapter {
         public static boolean serviceMode=false;
         public static Database db=null;
         public static LinkedHashMap<String, Config> config;
+        // 3 fields (discordid, name, addr)
+        public static final int FIELD_NUM=2;
     }
     public static void main(String[] arguments) throws Exception {
         // load config here before anything else
@@ -149,20 +151,17 @@ public class Main extends ListenerAdapter {
                     channel.sendMessageEmbeds(embed.build()).queue();
 
                 } else if (msgContents.contains(">manualVerify")) {
-                    final String[] fields= {"discordID", "name", "emailAddr"};
                     try {
                         // check for fields
-                        int i,x=0;
-                        for (i=0; i<fields.length; i++) {
-                            if (msgContents.toLowerCase().contains(fields[i])) {
-                                x++;
-                            };
-                        }
-                        if (x!=i) {
-                            
+                        String params =msgContents.split(">manualVerify")[1];
+                        String[] parsedParams= msgContents.split(",");
+                        if (parsedParams.length!=FIELD_NUM) {
+                            channel.sendMessage("[ERROR] Required fields are missing");
                             throw new Exception("Fields not met");
                         }
+
                     } catch (Exception e) {
+                        activityLog.sendActivityMsg("[MAIN] "+e.getMessage(),3, serverId);
 
                     }
                 }
