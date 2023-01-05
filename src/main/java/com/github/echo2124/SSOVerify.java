@@ -282,9 +282,17 @@ public class SSOVerify extends Thread {
             parsedData.put("guildID", guildID);
             parsedData.put("emailAddr", email);
             parsedData.put("isVerified", "true");
-            Connection a = db.connect();
-            db.modifyDB("CERT", "add", parsedData);
-            db.disconnect(a);
+            switch (mode) {
+                case 0:
+                    db.modifyDB("CERT", "add", parsedData);
+                    break;
+                case 1:
+                    db.modifyDB("CERT", "remove", parsedData);
+                    break;
+                default:
+                    activityLog.sendActivityMsg("[VERIFY] Invalid mode set",3, guildID);
+
+            }
         } catch (Exception e) {
             activityLog.sendActivityMsg("[MAIN] " + e.getMessage(), 3, guildID);
 

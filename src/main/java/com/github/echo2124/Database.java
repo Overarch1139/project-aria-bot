@@ -142,6 +142,12 @@ public class Database {
                         } catch (Exception e) {
                             System.out.println("Unable to Modify DB: "+ e.getMessage());
                         }
+                    } else if (action.equals("remove")) {
+                        try {
+                            activityLog.sendActivityMsg("[DATABASE] Removing entry from verify table",1, null);
+                        } catch (Exception e) {
+                            System.out.println("Unable to Modify DB: "+ e.getMessage());
+                        }
                     }
                 break;
             case "NEWS":
