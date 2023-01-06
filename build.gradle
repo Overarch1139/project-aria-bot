@@ -15,7 +15,7 @@ repositories {
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.1'
-    implementation("net.dv8tion:JDA:v5.0.0-beta.2")
+    implementation("net.dv8tion:JDA:5.0.0-beta.2")
     implementation 'javax.servlet:javax.servlet-api:4.0.1'
     implementation 'com.rometools:rome:1.18.0'
     // Deprecate this, remove redundant twitter parsing code
