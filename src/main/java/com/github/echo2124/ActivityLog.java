@@ -1,8 +1,9 @@
 package com.github.echo2124;
 
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.*;
+
 import net.dv8tion.jda.api.entities.User;
 
 import java.time.ZoneId;

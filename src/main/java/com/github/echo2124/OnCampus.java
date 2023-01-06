@@ -2,6 +2,8 @@ package com.github.echo2124;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -129,11 +131,11 @@ public class OnCampus extends ListenerAdapter {
         embed.setColor(Color.CYAN);
         embed.setFooter("NOTE: This post will be recreated everyday & role will be removed from everyone");
         msgChannel.sendMessageEmbeds(embed.build()).queue(message -> {
-            message.addReaction(checkUnicode).queue();
+            message.addReaction(Emoji.fromUnicode(checkUnicode)).queue();
             ListenerAdapter reactionListener = new ListenerAdapter() {
                 @Override
                 public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
-                    if (event.getMessageId().equals(message.getId()) && event.getReactionEmote().getName().equals("✅") && !event.getMember().getUser().isBot()) {
+                    if (event.getMessageId().equals(message.getId()) && event.getReaction().getEmoji().getName().equals("✅") && !event.getMember().getUser().isBot()) {
                         activityLog.sendActivityMsg("[ONCAMPUS] React Listener triggered",1, guildID);
                         System.out.println("[OnCampus] Added role to member");
                         activityLog.sendActivityMsg("[ONCAMPUS] Giving On Campus role to user",1, guildID);
@@ -163,7 +165,7 @@ public class OnCampus extends ListenerAdapter {
                             ListenerAdapter reactionListener = new ListenerAdapter() {
                                 @Override
                                 public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
-                                    if (event.getMessageId().equals(messages.get(0).getId()) && event.getReactionEmote().getName().equals("✅") && !event.getMember().getUser().isBot()) {
+                                    if (event.getMessageId().equals(messages.get(0).getId()) && event.getReaction().getEmoji().getName().equals("✅") && !event.getMember().getUser().isBot()) {
                                         activityLog.sendActivityMsg("[ONCAMPUS] React Listener triggered", 1,guildID);
                                         System.out.println("[OnCampus] Added role to member");
                                         activityLog.sendActivityMsg("[ONCAMPUS] Giving On Campus role to user", 1,guildID);
