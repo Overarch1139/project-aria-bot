@@ -38,6 +38,7 @@
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.10/dd9b193aef96e973d5a11ab13cd17430c2e4306b/gson-2.10.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.postgresql/postgresql/42.5.1/ac2f61eb3b1b4e47ea45de47e73d2e92f49e3ce1/postgresql-42.5.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.dv8tion/JDA/5.0.0-beta.2/e7e08ebe63b82abcf19b89c87b48fd1a9bc6b74c/JDA-5.0.0-beta.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.wso2.orbit.org.apache.commons/commons-lang3/3.12.0.wso2v1/d13db378b2bab583dc3b290cf587a4d7ddc83815/commons-lang3-3.12.0.wso2v1.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

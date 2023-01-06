@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.events.message.*;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
 
 import java.awt.*;
@@ -150,6 +151,7 @@ public class Main extends ListenerAdapter {
                             System.out.println(e);
                             System.out.println(e.getMessage());
                             System.out.println(e.getCause());
+                            System.out.println(ExceptionUtils.getStackTrace(e));
                             activityLog.sendActivityMsg("[MAIN] "+e.getMessage(),3, serverId);
                             embed.setDescription("**Lookup failed, please ensure you've correctly copied the discord ID**");
                             embed.setFooter("data sourced from internal database");

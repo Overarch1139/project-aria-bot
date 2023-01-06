@@ -18,6 +18,7 @@ dependencies {
     implementation("net.dv8tion:JDA:5.0.0-beta.2")
     implementation 'javax.servlet:javax.servlet-api:4.0.1'
     implementation 'com.rometools:rome:1.18.0'
+    implementation 'org.wso2.orbit.org.apache.commons:commons-lang3:3.12.0.wso2v1'
     // Deprecate this, remove redundant twitter parsing code
     implementation 'org.twitter4j:twitter4j-core:4.0.7'
     implementation 'org.twitter4j:twitter4j-stream:4.0.7'
