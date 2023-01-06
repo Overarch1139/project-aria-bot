@@ -147,6 +147,9 @@ public class Main extends ListenerAdapter {
                             embed.setFooter("data sourced from internal database");
                         } catch (Exception e) {
                             System.out.println("Long failed");
+                            System.out.println(e);
+                            System.out.println(e.getMessage());
+                            System.out.println(e.getCause());
                             activityLog.sendActivityMsg("[MAIN] "+e.getMessage(),3, serverId);
                             embed.setDescription("**Lookup failed, please ensure you've correctly copied the discord ID**");
                             embed.setFooter("data sourced from internal database");
