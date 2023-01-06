@@ -54,7 +54,6 @@ public class Main extends ListenerAdapter {
         db = new Database();
         new News("Covid", db);
         new News("Monash", db);
-        new News("ExposureBuilding",db);
         // dual purpose loop - report config loaded & generate oncampus module for supported guilds
         // grabs from last, since we are using the same bot instance with different guilds the bot activity *must* remain the same
         for (String key: config.keySet()) {
@@ -141,9 +140,9 @@ public class Main extends ListenerAdapter {
                             Long.parseLong(parsedContents[1]);
                             if (!msg.getMentions().getUsers().isEmpty()) {
                                 User x= msg.getMentions().getUsers().get(0);
-                                embed.setDescription("Results for: " +  x.getId()+"\n" + db.getDBEntry("CERT", x.getId()));
+                                embed.setDescription("Results for: " +  x.getId()+"\n" + db.getDBEntry("CERT", x.getId()+"##"+serverId));
                             } else {
-                                embed.setDescription("Results for: " + parsedContents[1] + "\n" + db.getDBEntry("CERT", parsedContents[1]));
+                                embed.setDescription("Results for: " + parsedContents[1] + "\n" + db.getDBEntry("CERT", parsedContents[1]+"##"+serverId));
                             }
                             embed.setFooter("data sourced from internal database");
                         } catch (Exception e) {
