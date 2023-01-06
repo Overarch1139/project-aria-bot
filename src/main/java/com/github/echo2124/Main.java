@@ -73,7 +73,10 @@ public class Main extends ListenerAdapter {
         MessageChannel channel = event.getChannel();
         News news;
         String msgContents = msg.getContentRaw();
-        String serverId=event.getGuild().getId();
+        String serverId="";
+        if (event.isFromGuild()) {
+            serverId = event.getGuild().getId();
+        }
         if (msgContents.contains(">")) {
             if (channel.getId().equals(config.get(serverId).getChannelVerifyId())) {
                 if (msgContents.equals(">verify")) {
