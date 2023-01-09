@@ -254,7 +254,7 @@ public class SSOVerify extends Thread {
                 case 1:
                     try {
                         guild.removeRoleFromMember(UserSnowflake.fromId(user.getIdLong()), guild.getRoleById(Main.constants.config.get(guildID).getRoleVerifiedId())).queue();
-                    } catch (Exception e) {
+                    } catch (NullPointerException e) {
                         activityLog.sendActivityMsg("Unable to remove role, discord id is probably wrong or doesn't exist", 3, guildID);
                     }
                     activityLog.sendActivityMsg("[VERIFY] Removed user ("+user.getAsTag()+") verified role",1, guildID);
