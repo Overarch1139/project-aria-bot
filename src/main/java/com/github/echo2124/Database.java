@@ -131,7 +131,7 @@ public class Database {
             case "CERT":
                     if (action.equals("add")) {
                         try {
-                            activityLog.sendActivityMsg("[DATABASE] Inserting verify data into verify table",1, null);
+                            activityLog.sendActivityMsg("[DATABASE] Inserting verify data into verify table",1, data.get("guildID").toString());
                              sqlQuery=connection.prepareStatement("INSERT INTO CERT_MODULE VALUES (?,?,?,?,?,?)");
                             sqlQuery.setLong(1, Long.parseLong(data.get("discordID").toString()));
                             sqlQuery.setString(2, data.get("name").toString());
@@ -140,16 +140,17 @@ public class Database {
                             sqlQuery.setTimestamp(5, ts);
                             sqlQuery.setString(6, data.get("guildID").toString());
                         } catch (Exception e) {
-                            activityLog.sendActivityMsg("[DATABASE] Unable to insert verify data into table", 3, null);
+                            activityLog.sendActivityMsg("[DATABASE] Unable to insert verify data into table", 3, data.get("guildID").toString());
                             System.out.println("Unable to Modify DB: "+ e.getMessage());
                         }
                     } else if (action.equals("remove")) {
                         try {
-                            activityLog.sendActivityMsg("[DATABASE] Removing entry from verify table",1, null);
-                            sqlQuery=connection.prepareStatement("DELETE FROM CERT_MODULE WHERE (?)");
+                            activityLog.sendActivityMsg("[DATABASE] Removing entry from verify table",1, data.get("guildID").toString());
+                            sqlQuery=connection.prepareStatement("DELETE FROM CERT_MODULE WHERE Discordid=? AND Guildid=?");
                             sqlQuery.setLong(1, Long.parseLong(data.get("discordID").toString()));
+                            sqlQuery.setString(2, data.get("guildID").toString());
                         } catch (Exception e) {
-                            activityLog.sendActivityMsg("[DATABASE] Unable to remove verify data from table", 3, null);
+                            activityLog.sendActivityMsg("[DATABASE] Unable to remove verify data from table", 3, data.get("guildID").toString());
                             System.out.println("Unable to Modify DB: "+ e.getMessage());
                         }
                     }
