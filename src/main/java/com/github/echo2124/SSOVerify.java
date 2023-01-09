@@ -272,10 +272,17 @@ public class SSOVerify extends Thread {
         try {
             // check for fields
             String params = msgContents.split(">manualVerify")[1];
-            String[] parsedParams = params.split(",");
             String email = "", discordID = "", name = "";
-            if (parsedParams.length != FIELD_NUM) {
+            String[] parsedParams;
+            if (mode==0) {
+                parsedParams=params.split(",");
+            } else {
+                parsedParams=new String[1];
+                parsedParams[0]=params;
+            }
+            if (mode==0 && parsedParams.length != FIELD_NUM) {
                 channel.sendMessage("[ERROR] Required fields are missing");
+
                 throw new Exception("Fields not met");
             }
             // Doing it this way so param order is irrelevant
