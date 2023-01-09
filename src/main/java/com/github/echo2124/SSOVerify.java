@@ -272,7 +272,18 @@ public class SSOVerify extends Thread {
     public void manualModify(String msgContents, MessageChannel channel, int mode) {
         try {
             // check for fields
-            String params = msgContents.split(">manualVerify")[1];
+            String params="";
+
+            switch (mode) {
+                case 0:
+                    params=msgContents.split(">manualVerify")[1];
+                    break;
+                case 1:
+                    params=msgContents.split(">manualDelete")[1];
+                    break;
+                default:
+                    throw new Exception("Invalid modeset");
+            }
             String email = "", discordID = "", name = "";
             String[] parsedParams;
             if (mode==0) {
