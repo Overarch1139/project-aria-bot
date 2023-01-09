@@ -252,7 +252,11 @@ public class SSOVerify extends Thread {
                     System.out.println("[VERBOSE] Added role");
                     break;
                 case 1:
-                    guild.removeRoleFromMember(UserSnowflake.fromId(user.getIdLong()), guild.getRoleById(Main.constants.config.get(guildID).getRoleVerifiedId())).queue();
+                    try {
+                        guild.removeRoleFromMember(UserSnowflake.fromId(user.getIdLong()), guild.getRoleById(Main.constants.config.get(guildID).getRoleVerifiedId())).queue();
+                    } catch (Exception e) {
+                        activityLog.sendActivityMsg("Unable to remove role, discord id is probably wrong or doesn't exist", 3, guildID);
+                    }
                     activityLog.sendActivityMsg("[VERIFY] Removed user ("+user.getAsTag()+") verified role",1, guildID);
                     System.out.println("[VERBOSE] Added role");
                     break;
@@ -333,10 +337,7 @@ public class SSOVerify extends Thread {
                     db.modifyDB("CERT", "add", parsedData);
                     break;
                 case 1:
-                    guild.getMembers();
-                    if (guild.getMemberById(discordID).getUser()==null) {
-                        modifiyVerifiedRole(guild.getMemberById(discordID).getUser(), 1);
-                    }
+                    modifiyVerifiedRole(guild.getMemberById(discordID).getUser(), 1);
                     db.modifyDB("CERT", "remove", parsedData);
                     break;
                 default:
