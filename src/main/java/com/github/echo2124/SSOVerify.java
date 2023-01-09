@@ -333,11 +333,9 @@ public class SSOVerify extends Thread {
                     db.modifyDB("CERT", "add", parsedData);
                     break;
                 case 1:
-                    try {
-                        guild.retrieveMemberById(discordID);
-                        modifiyVerifiedRole(guild.getMemberById(discordID).getUser(),1);
-                    } catch (ErrorResponseException e) {
-                        activityLog.sendActivityMsg(e.getMessage(), 3, guildID);
+                    guild.getMembers();
+                    if (guild.getMemberById(discordID).getUser()==null) {
+                        modifiyVerifiedRole(guild.getMemberById(discordID).getUser(), 1);
                     }
                     db.modifyDB("CERT", "remove", parsedData);
                     break;
