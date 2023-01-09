@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.ErrorResponse;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
 import java.awt.*;
 import java.io.IOException;
@@ -326,7 +327,7 @@ public class SSOVerify extends Thread {
             }
         } catch (Exception e) {
             activityLog.sendActivityMsg("[MAIN] " + e.getMessage(), 3, guildID);
-
+            System.out.println(ExceptionUtils.getStackTrace(e));
         }
     }
 
