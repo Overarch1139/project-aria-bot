@@ -118,7 +118,7 @@ public class Main extends ListenerAdapter {
                             embed.addField("Status:", "Your account has not been verified therefore there is no collected data associated with your discord id", false);
                         } else {
                             embed.setColor(Color.ORANGE);
-                            embed.addField("Status:", db.getDBEntry("CERT", id), false);
+                            embed.addField("Status:", db.getDBEntry("CERT", id+"##"+serverId), false);
                         }
                         embed.setFooter("Data sourced from Aria's internal database");
                     } catch (Exception e) {
