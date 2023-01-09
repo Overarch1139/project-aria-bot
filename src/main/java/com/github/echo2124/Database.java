@@ -140,6 +140,7 @@ public class Database {
                             sqlQuery.setTimestamp(5, ts);
                             sqlQuery.setString(6, data.get("guildID").toString());
                         } catch (Exception e) {
+                            activityLog.sendActivityMsg("[DATABASE] Unable to insert verify data into table", 3, null);
                             System.out.println("Unable to Modify DB: "+ e.getMessage());
                         }
                     } else if (action.equals("remove")) {
@@ -148,6 +149,7 @@ public class Database {
                             sqlQuery=connection.prepareStatement("DELETE FROM CERT_MODULE WHERE (?)");
                             sqlQuery.setLong(1, Long.parseLong(data.get("discordID").toString()));
                         } catch (Exception e) {
+                            activityLog.sendActivityMsg("[DATABASE] Unable to remove verify data from table", 3, null);
                             System.out.println("Unable to Modify DB: "+ e.getMessage());
                         }
                     }

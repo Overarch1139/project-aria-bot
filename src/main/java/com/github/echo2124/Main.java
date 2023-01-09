@@ -52,8 +52,8 @@ public class Main extends ListenerAdapter {
         Runtime.getRuntime().addShutdownHook(close);
         activityLog.sendActivityMsg("[MAIN] Aria Bot is starting up...",1, null);
         db = new Database();
-        new News("Covid", db);
-        new News("Monash", db);
+        //new News("Covid", db);
+       // new News("Monash", db);
         // dual purpose loop - report config loaded & generate oncampus module for supported guilds
         // grabs from last, since we are using the same bot instance with different guilds the bot activity *must* remain the same
         for (String key: config.keySet()) {
@@ -161,10 +161,12 @@ public class Main extends ListenerAdapter {
                     channel.sendMessageEmbeds(embed.build()).queue();
 
                 } else if (msgContents.contains(">manualVerify")) {
+                    activityLog.sendActivityMsg("[MAIN] Manual verify active", 2, serverId);
                     SSOVerify verify= new SSOVerify(user, event.getGuild(), channel, db);
                     verify.manualModify(msgContents, channel,0);
                 }
                 else if (msgContents.contains(">manualDelete")) {
+                    activityLog.sendActivityMsg("[MAIN] Manual delete active", 2, serverId);
                     SSOVerify verify= new SSOVerify(user, event.getGuild(), channel, db);
                     verify.manualModify(msgContents, channel,1);
                 }
