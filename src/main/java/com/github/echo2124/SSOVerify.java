@@ -321,6 +321,7 @@ public class SSOVerify extends Thread {
             parsedData.put("guildID", guildID);
             parsedData.put("emailAddr", email);
             parsedData.put("isVerified", "true");
+            System.out.println("DiscordID: "+discordID);
             switch (mode) {
                 case 0:
                     modifiyVerifiedRole(guild.getMemberById(discordID).getUser(),0);
