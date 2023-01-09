@@ -276,10 +276,10 @@ public class SSOVerify extends Thread {
 
             switch (mode) {
                 case 0:
-                    params=msgContents.split(">manualVerify")[1];
+                    params=msgContents.split(">manualVerify ")[1];
                     break;
                 case 1:
-                    params=msgContents.split(">manualDelete")[1];
+                    params=msgContents.split(">manualDelete ")[1];
                     break;
                 default:
                     throw new Exception("Invalid modeset");
@@ -308,8 +308,13 @@ public class SSOVerify extends Thread {
                 if (parsedParams[i].contains("@")) {
                     email = parsedParams[i];
                 }
-                if (parsedParams[i].matches("[0-9]+")) {
+                try {
+                    Long.parseLong(parsedParams[i]);
                     discordID = parsedParams[i];
+                } catch (NumberFormatException e) {
+                    if (mode==0) {
+                        throw new Exception("Invalid discord id");
+                    }
                 }
             }
             if (mode==0 && guild.getMemberById(discordID)==null) {
