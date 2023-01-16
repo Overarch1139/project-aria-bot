@@ -213,7 +213,7 @@ public class SSOVerify extends Thread {
             if (verifyEmail(parsedObj) == true) {
                 /// insert into db > add role > notify user
                 if (parsedObj.getString("given_name").length() <= MAX_NAME_LEN) {
-                    modifiyVerifiedRole(user,0);
+                    modifiyVerifiedRole(user.getId(),0);
                     HashMap<String, String> parsedData = new HashMap<String, String>();
                     parsedData.put("discordID", user.getId());
                     parsedData.put("name", parsedObj.getString("given_name"));
@@ -243,17 +243,20 @@ public class SSOVerify extends Thread {
     }
 
     // 0=add, 1=remove
-    public void modifiyVerifiedRole(User user, int modeset) {
+    public void modifiyVerifiedRole(String discordID, int modeset) {
+        // get member here check whole guild (even non-cached members). Queue up REST action with method code appended to end
+        Member member = guild.retrieveMemberById(discordID).complete();
+        User user = Main.constants.jda.getUserById(discordID);
         try {
             switch (modeset) {
                 case 0:
-                    guild.addRoleToMember(UserSnowflake.fromId(user.getIdLong()), guild.getRoleById(Main.constants.config.get(guildID).getRoleVerifiedId())).queue();
+                    guild.addRoleToMember(member, guild.getRoleById(Main.constants.config.get(guildID).getRoleVerifiedId())).queue();
                     activityLog.sendActivityMsg("[VERIFY] Gave user ("+user.getAsTag()+") verified role",1, guildID);
                     System.out.println("[VERBOSE] Added role");
                     break;
                 case 1:
                     try {
-                        guild.removeRoleFromMember(UserSnowflake.fromId(user.getIdLong()), guild.getRoleById(Main.constants.config.get(guildID).getRoleVerifiedId())).queue();
+                        guild.removeRoleFromMember(member, guild.getRoleById(Main.constants.config.get(guildID).getRoleVerifiedId())).queue();
                     } catch (NullPointerException e) {
                         activityLog.sendActivityMsg("Unable to remove role, discord id is probably wrong or doesn't exist", 3, guildID);
                     }
@@ -333,11 +336,11 @@ public class SSOVerify extends Thread {
             System.out.println("DiscordID: "+discordID);
             switch (mode) {
                 case 0:
-                    modifiyVerifiedRole(guild.getMemberById(discordID).getUser(),0);
+                    modifiyVerifiedRole(discordID,0);
                     db.modifyDB("CERT", "add", parsedData);
                     break;
                 case 1:
-                    modifiyVerifiedRole(guild.getMemberById(discordID).getUser(), 1);
+                    modifiyVerifiedRole(discordID, 1);
                     db.modifyDB("CERT", "remove", parsedData);
                     break;
                 default:
