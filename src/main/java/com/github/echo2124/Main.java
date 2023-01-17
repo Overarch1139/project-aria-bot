@@ -29,7 +29,7 @@ public class Main extends ListenerAdapter {
         public static Database db=null;
         public static LinkedHashMap<String, Config> config;
         // 3 fields (discordid, name, addr)
-        public static final int FIELD_NUM=2;
+        public static final int FIELD_NUM=3;
     }
     public static void main(String[] arguments) throws Exception {
         // load config here before anything else
