@@ -316,12 +316,14 @@ public class SSOVerify extends Thread {
                 if (parsedParams[i].contains("@")) {
                     email = parsedParams[i];
                 }
-                try {
-                    Long.parseLong(parsedParams[i]);
-                    discordID = parsedParams[i];
-                } catch (NumberFormatException e) {
-                    if (mode==0) {
-                        throw new Exception("Invalid discord id");
+                if (i==0) {
+                    try {
+                        Long.parseLong(parsedParams[i]);
+                        discordID = parsedParams[i];
+                    } catch (NumberFormatException e) {
+                        if (mode == 0) {
+                            throw new Exception("Invalid discord id");
+                        }
                     }
                 }
             }
