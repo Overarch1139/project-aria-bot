@@ -339,10 +339,22 @@ public class SSOVerify extends Thread {
                 case 0:
                     modifiyVerifiedRole(discordID,0);
                     db.modifyDB("CERT", "add", parsedData);
+                    if (!db.getDBEntry("CERT", discordID+"##"+guildID).contains("No results found")) {
+                        manualVerifyEmbed(parsedData, author, 0, true);
+                        } else {
+                        manualVerifyEmbed(parsedData, author, 0, false);
+
+                    }
                     break;
                 case 1:
                     modifiyVerifiedRole(discordID, 1);
                     db.modifyDB("CERT", "remove", parsedData);
+                    if (db.getDBEntry("CERT", discordID+"##"+guildID).contains("No results found")) {
+                        manualVerifyEmbed(parsedData, author, 0, true);
+                    } else {
+                        manualVerifyEmbed(parsedData, author, 0, false);
+
+                    }
                     break;
                 default:
                     activityLog.sendActivityMsg("[VERIFY] Invalid mode set",3, guildID);
