@@ -307,14 +307,14 @@ public class SSOVerify extends Thread {
             }
             // Doing it this way so param order is irrelevant
             for (int i = 0; i < parsedParams.length; i++) {
-                if (i == 1 && parsedParams[i].contains("null")) {
-                    name = "null";
+                if (i == 1) {
+                    name = parsedParams[i];
                 }
-                if (i == 2 && parsedParams[i].contains("null")) {
-                    email = "null";
-                }
+
                 if (parsedParams[i].contains("@")) {
                     email = parsedParams[i];
+                } else if (i == 2 && parsedParams[i].contains("null")) {
+                    email = "null";
                 }
                 if (i==0) {
                     try {
@@ -385,7 +385,7 @@ public class SSOVerify extends Thread {
             } else {
                 name=data.get("name");
             }
-            if (data.get("email").contains("null")) {
+            if (data.get("emailAddr").contains("null")) {
                 email="**No Registered Email!**";
             } else {
                 email=data.get("emailAddr");
