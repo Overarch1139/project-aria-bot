@@ -305,7 +305,7 @@ public class SSOVerify extends Thread {
 
                 throw new Exception("Fields not met");
             }
-            // Doing it this way so param order is irrelevant
+            // TODO: Doing it this way so param order is irrelevant
             for (int i = 0; i < parsedParams.length; i++) {
                 if (i == 1) {
                     name = parsedParams[i];
