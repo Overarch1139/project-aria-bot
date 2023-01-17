@@ -163,12 +163,12 @@ public class Main extends ListenerAdapter {
                 } else if (msgContents.contains(">manualVerify")) {
                     activityLog.sendActivityMsg("[MAIN] Manual verify active", 2, serverId);
                     SSOVerify verify= new SSOVerify(user, event.getGuild(), channel, db);
-                    verify.manualModify(msgContents, channel,0);
+                    verify.manualModify(msgContents, msg.getMember(), channel,0);
                 }
                 else if (msgContents.contains(">manualDelete")) {
                     activityLog.sendActivityMsg("[MAIN] Manual delete active", 2, serverId);
                     SSOVerify verify= new SSOVerify(user, event.getGuild(), channel, db);
-                    verify.manualModify(msgContents, channel,1);
+                    verify.manualModify(msgContents, msg.getMember(), channel,1);
                 }
                 else if (msgContents.contains(">resetOnCampus")) {
                     try {

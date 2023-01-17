@@ -276,7 +276,7 @@ public class SSOVerify extends Thread {
 
 
     // 0=insert, 1=remove
-    public void manualModify(String msgContents, MessageChannel channel, int mode) {
+    public void manualModify(String msgContents, Member author, MessageChannel channel, int mode) {
         try {
             // check for fields
             String params="";
@@ -299,6 +299,7 @@ public class SSOVerify extends Thread {
                 parsedParams=new String[1];
                 parsedParams[0]=params;
             }
+            activityLog.sendActivityMsg("[VERIFY] parsedparams: "+parsedParams.length,2, guildID);
             if (mode==0 && parsedParams.length != FIELD_NUM) {
                 channel.sendMessage("[ERROR] Required fields are missing");
 
@@ -351,6 +352,50 @@ public class SSOVerify extends Thread {
             activityLog.sendActivityMsg("[MAIN] " + e.getMessage(), 3, guildID);
             System.out.println(ExceptionUtils.getStackTrace(e));
         }
+    }
+
+
+    // state=true is success, state=false is failure
+    public void manualVerifyEmbed(HashMap<String, String> data, Member author, int modeset, boolean state) {
+        String action="", statemsg="", contents="", name="", email="";
+        Color color;
+        if (modeset==0) {
+            action="Insert";
+            if (data.get("name").contains("null")) {
+                name="**No Registered Name!**";
+            } else {
+                name=data.get("name");
+            }
+            if (data.get("email").contains("null")) {
+                email="**No Registered Email!**";
+            } else {
+                email=data.get("emailAddr");
+            }
+            contents="Actioned By User: " + author.getNickname() + "("+author.getId()+")"+
+                    "\n **"+action+" Details**"+
+                    "\n __Discord ID:__ "+data.get("discordID")+
+                    "\n __Name:__ "+name+
+                    "\n __Email:__ "+ email+
+                    "\n __Status:__ "+statemsg;
+        } else if (modeset==1) {
+            action="Remove";
+            contents="Actioned By User: " + author.getNickname() + "("+author.getId()+")"+
+                    "\n **"+action+" Details**"+
+                    "\n __Discord ID:__ "+data.get("discordID")+
+                    "\n __Status:__ "+statemsg;
+        }
+        if (state) {
+            statemsg="Success!";
+            color=Color.GREEN;
+        } else {
+            statemsg="*Failure*";
+            color=Color.GREEN;
+        }
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setTitle(action+" user into database");
+        embed.setColor(color);
+        embed.setDescription(contents);
+        embed.setFooter("If you have any problems please contact Echo2124#3778 (creator of Aria)");
     }
 
     // Custom implementation of token polling
