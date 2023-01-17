@@ -357,9 +357,9 @@ public class SSOVerify extends Thread {
                     modifiyVerifiedRole(discordID, 1);
                     db.modifyDB("CERT", "remove", parsedData);
                     if (db.getDBEntry("CERT", discordID+"##"+guildID).contains("No results found")) {
-                        manualVerifyEmbed(parsedData, author, 0, true);
+                        manualVerifyEmbed(parsedData, author, 1, true);
                     } else {
-                        manualVerifyEmbed(parsedData, author, 0, false);
+                        manualVerifyEmbed(parsedData, author, 1, false);
 
                     }
                     break;
@@ -378,6 +378,13 @@ public class SSOVerify extends Thread {
     public void manualVerifyEmbed(HashMap<String, String> data, Member author, int modeset, boolean state) {
         String action="", statemsg="", contents="", name="", email="";
         Color color;
+        if (state) {
+            statemsg="Success!";
+            color=Color.GREEN;
+        } else {
+            statemsg="*Failure*";
+            color=Color.GREEN;
+        }
         if (modeset==0) {
             action="Insert";
             if (data.get("name").contains("null")) {
@@ -390,7 +397,7 @@ public class SSOVerify extends Thread {
             } else {
                 email=data.get("emailAddr");
             }
-            contents="Actioned By User: " + author.getNickname() + "("+author.getId()+")"+
+            contents="Actioned By User: " + author.getNickname() + " ("+author.getId()+")"+
                     "\n **"+action+" Details**"+
                     "\n __Discord ID:__ "+data.get("discordID")+
                     "\n __Name:__ "+name+
@@ -398,18 +405,12 @@ public class SSOVerify extends Thread {
                     "\n __Status:__ "+statemsg;
         } else if (modeset==1) {
             action="Remove";
-            contents="Actioned By User: " + author.getNickname() + "("+author.getId()+")"+
+            contents="Actioned By User: " + author.getNickname() + " ("+author.getId()+")"+
                     "\n **"+action+" Details**"+
                     "\n __Discord ID:__ "+data.get("discordID")+
                     "\n __Status:__ "+statemsg;
         }
-        if (state) {
-            statemsg="Success!";
-            color=Color.GREEN;
-        } else {
-            statemsg="*Failure*";
-            color=Color.GREEN;
-        }
+
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle(action+" user into database");
         embed.setColor(color);
