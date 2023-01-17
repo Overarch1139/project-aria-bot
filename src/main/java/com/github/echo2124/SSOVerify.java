@@ -415,6 +415,8 @@ public class SSOVerify extends Thread {
         embed.setColor(color);
         embed.setDescription(contents);
         embed.setFooter("If you have any problems please contact Echo2124#3778 (creator of Aria)");
+        MessageChannel adminCh=Main.constants.jda.getTextChannelById(Main.constants.config.get(guildID).getChannelAdminId());
+        adminCh.sendMessageEmbeds(embed.build()).queue();
     }
 
     // Custom implementation of token polling
