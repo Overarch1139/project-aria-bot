@@ -377,16 +377,20 @@ public class SSOVerify extends Thread {
     // state=true is success, state=false is failure
     public void manualVerifyEmbed(HashMap<String, String> data, Member author, int modeset, boolean state) {
         String action="", statemsg="", contents="", name="", email="";
-        Color color;
+        Color color=Color.YELLOW;
         if (state) {
             statemsg="Success!";
-            color=Color.GREEN;
+            if (modeset==0) {
+                color = Color.GREEN;
+            } else if (modeset==1) {
+                color = Color.ORANGE;
+            }
         } else {
             statemsg="*Failure*";
-            color=Color.GREEN;
+            color=Color.RED;
         }
         if (modeset==0) {
-            action="Insert";
+            action="Insert user into";
             if (data.get("name").contains("null")) {
                 name="**No Registered Name!**";
             } else {
@@ -397,22 +401,22 @@ public class SSOVerify extends Thread {
             } else {
                 email=data.get("emailAddr");
             }
-            contents="Actioned By User: " + author.getNickname() + " ("+author.getId()+")"+
+            contents="__Actioned By User:__ " + author.getNickname() + " ("+author.getId()+")\n"+
                     "\n **"+action+" Details**"+
                     "\n __Discord ID:__ "+data.get("discordID")+
                     "\n __Name:__ "+name+
                     "\n __Email:__ "+ email+
                     "\n __Status:__ "+statemsg;
         } else if (modeset==1) {
-            action="Remove";
-            contents="Actioned By User: " + author.getNickname() + " ("+author.getId()+")"+
+            action="Remove user from";
+            contents="__Actioned By User:__ " + author.getNickname() + " ("+author.getId()+")"+
                     "\n **"+action+" Details**"+
                     "\n __Discord ID:__ "+data.get("discordID")+
                     "\n __Status:__ "+statemsg;
         }
 
         EmbedBuilder embed = new EmbedBuilder();
-        embed.setTitle(action+" user into database");
+        embed.setTitle(action+" database");
         embed.setColor(color);
         embed.setDescription(contents);
         embed.setFooter("If you have any problems please contact Echo2124#3778 (creator of Aria)");
