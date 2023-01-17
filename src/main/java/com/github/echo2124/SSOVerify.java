@@ -327,8 +327,13 @@ public class SSOVerify extends Thread {
                     }
                 }
             }
-            if (mode==0 && guild.getMemberById(discordID)==null) {
-                throw new Exception("DiscordID does not match user in server");
+            if (mode==0) {
+                try {
+                    guild.retrieveMemberById(discordID).complete();
+                } catch (ErrorResponseException e) {
+                        throw new Exception("DiscordID does not match user in server");
+                }
+
             }
             HashMap<String, String> parsedData = new HashMap<String, String>();
             parsedData.put("discordID", discordID);
