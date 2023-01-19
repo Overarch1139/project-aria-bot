@@ -138,6 +138,7 @@ public class Main extends ListenerAdapter {
                     // todo move this to a different class to prevent function envy
                     String[] parsedContents = msgContents.split(" ");
                     EmbedBuilder embed = new EmbedBuilder();
+
                     embed.setTitle("User lookup: ");
                         try {
                             Long.parseLong(parsedContents[1]);
@@ -188,9 +189,13 @@ public class Main extends ListenerAdapter {
                     activityLog.sendActivityMsg("[MAIN] Service mode is now active",2, serverId);
                 } else if (msgContents.contains(">reactivate")) {
                     Misc misc = new Misc();
-                    MessageChannel verify= Main.constants.jda.getTextChannelById(config.get(serverId).getChannelVerifyId());
-                    misc.sendServiceModeMsg(verify,"Aria has reactivated the ability to verify and has exited maintenance mode.");
-                    activityLog.sendActivityMsg("[MAIN] Aria bot has exited service mode",2, serverId);
+                    MessageChannel verify = Main.constants.jda.getTextChannelById(config.get(serverId).getChannelVerifyId());
+                    misc.sendServiceModeMsg(verify, "Aria has reactivated the ability to verify and has exited maintenance mode.");
+                    activityLog.sendActivityMsg("[MAIN] Aria bot has exited service mode", 2, serverId);
+                } else if (msgContents.contains(">parseSheet")) {
+                    new SheetParser(msg.getAttachments().get(0));
+                    activityLog.sendActivityMsg("[MAIN] Parse sheet active!",1, serverId);
+
                 } else if (msgContents.contains(">help")) {
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.setColor(Color.MAGENTA);
