@@ -39,48 +39,11 @@ public class Main extends ListenerAdapter {
         Main.constants.config=config;
         String activity="Loading...";
         if (System.getenv("IS_DEV").contains("true")) {
-           if (!System.getenv("EMULATED_GUILD").contains("null")) {
-              System.getenv("EMULATED_GUILD");
-              String[] parsedModuleList = System.getenv("ENABLED_MODULES").split(",");
-              for (int i=0; i<parsedModuleList.length; i++) {
-                  switch(parsedModuleList[i]) {
-                      case "sheetParser":
-                          new SheetParser();
-                          break;
-                      case "covidUpdate":
-                          new News("Covid", db);
-                          break;
-                      case "monashNews":
-                          new News("Monash", db);
-                          break;
-                      default:
-                          System.out.println("[ERROR] INVALID MODULE SELECTED");
-                  }
-              }
-           } else {
-               System.out.println("[ERROR] NO VALID GUILD TO EMULATE");
-           }
-
+            initDevMode();
             return;
         }
         constants.jda = initJDA(activity);
-        activityLog = new ActivityLog();
-        Close close = new Close();
-        Runtime.getRuntime().addShutdownHook(close);
-        activityLog.sendActivityMsg("[MAIN] Aria Bot is starting up...",1, null);
-        db = new Database();
-        //new News("Covid", db);
-       // new News("Monash", db);
-        // dual purpose loop - report config loaded & generate oncampus module for supported guilds
-        // grabs from last, since we are using the same bot instance with different guilds the bot activity *must* remain the same
-        for (String key: config.keySet()) {
-            jda.getPresence().setActivity(Activity.playing(config.get(key).getActivityState()));
-            activityLog.sendActivityMsg("Config File For "+config.get(key).getConfigName()+" has loaded successfully!", 1, key);
-          if (config.get(key).getOnCampusModuleEnabled()) {
-              new OnCampus(false, config.get(key).getServerId());
-          }
-      }
-        activityLog.sendActivityMsg("[MAIN] Aria Bot has initialised successfully!",1, null);
+        initModules();
     }
 
 
@@ -98,6 +61,52 @@ public class Main extends ListenerAdapter {
             System.out.println("[ERROR] UNABLE TO INIT JDA");
         }
         return jda;
+    }
+
+    public static void initModules() {
+        activityLog = new ActivityLog();
+        Close close = new Close();
+        Runtime.getRuntime().addShutdownHook(close);
+        activityLog.sendActivityMsg("[MAIN] Aria Bot is starting up...",1, null);
+        db = new Database();
+        //new News("Covid", db);
+        // new News("Monash", db);
+        // dual purpose loop - report config loaded & generate oncampus module for supported guilds
+        // grabs from last, since we are using the same bot instance with different guilds the bot activity *must* remain the same
+        for (String key: config.keySet()) {
+            jda.getPresence().setActivity(Activity.playing(config.get(key).getActivityState()));
+            activityLog.sendActivityMsg("Config File For "+config.get(key).getConfigName()+" has loaded successfully!", 1, key);
+            if (config.get(key).getOnCampusModuleEnabled()) {
+                new OnCampus(false, config.get(key).getServerId());
+            }
+        }
+        activityLog.sendActivityMsg("[MAIN] Aria Bot has initialised successfully!",1, null);
+    }
+
+    public static void initDevMode() {
+        if (!System.getenv("EMULATED_GUILD").contains("null")) {
+            System.getenv("EMULATED_GUILD");
+            String[] parsedModuleList = System.getenv("ENABLED_MODULES").split(",");
+            for (int i=0; i<parsedModuleList.length; i++) {
+                switch(parsedModuleList[i]) {
+                    case "sheetParser":
+                        new SheetParser();
+                        break;
+                    case "covidUpdate":
+                        // **requires db
+                        new News("Covid", db);
+                        break;
+                    case "monashNews":
+                        // **requires db
+                        new News("Monash", db);
+                        break;
+                    default:
+                        System.out.println("[ERROR] INVALID MODULE SELECTED");
+                }
+            }
+        } else {
+            System.out.println("[ERROR] NO VALID GUILD TO EMULATE");
+        }
     }
 
 

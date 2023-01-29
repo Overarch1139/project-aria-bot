@@ -37,7 +37,6 @@ public class Database {
             System.out.println("Unable to disconnect from db");
         }
     }
-
     public void checkEnv() {
         try {
             URI dbUri = new URI(System.getenv("DATABASE_URL"));
