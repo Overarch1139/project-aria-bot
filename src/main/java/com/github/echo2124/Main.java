@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.json.JSONObject;
 
 import java.awt.*;
@@ -37,16 +38,32 @@ public class Main extends ListenerAdapter {
         LinkedHashMap<String, Config> config =parser.parseDefaults();
         Main.constants.config=config;
         String activity="Loading...";
-        // setters for various props
-        String BOT_TOKEN = System.getenv("DISCORD_CLIENT_SECRET");
-        JDA jda = JDABuilder.createLight(BOT_TOKEN, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES)
-                .addEventListeners(new Main())
-                .setActivity(Activity.playing(activity))
-                .enableIntents(GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MEMBERS, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT)
-                .setMemberCachePolicy(MemberCachePolicy.ALL)
-                .build();
-        jda.awaitReady();
-        constants.jda = jda;
+        if (System.getenv("IS_DEV").contains("true")) {
+           if (!System.getenv("EMULATED_GUILD").contains("null")) {
+              System.getenv("EMULATED_GUILD");
+              String[] parsedModuleList = System.getenv("ENABLED_MODULES").split(",");
+              for (int i=0; i<parsedModuleList.length; i++) {
+                  switch(parsedModuleList[i]) {
+                      case "sheetParser":
+                          new SheetParser();
+                          break;
+                      case "covidUpdate":
+                          new News("Covid", db);
+                          break;
+                      case "monashNews":
+                          new News("Monash", db);
+                          break;
+                      default:
+                          System.out.println("[ERROR] INVALID MODULE SELECTED");
+                  }
+              }
+           } else {
+               System.out.println("[ERROR] NO VALID GUILD TO EMULATE");
+           }
+
+            return;
+        }
+        constants.jda = initJDA(activity);
         activityLog = new ActivityLog();
         Close close = new Close();
         Runtime.getRuntime().addShutdownHook(close);
@@ -66,7 +83,24 @@ public class Main extends ListenerAdapter {
         activityLog.sendActivityMsg("[MAIN] Aria Bot has initialised successfully!",1, null);
     }
 
-    // SOLUTION: store different instances of config class as a hashmap, the guild is the key
+
+    public static JDA initJDA(String activity) {
+        try {
+            String BOT_TOKEN = System.getenv("DISCORD_CLIENT_SECRET");
+            JDA jda = JDABuilder.createLight(BOT_TOKEN, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES)
+                    .addEventListeners(new Main())
+                    .setActivity(Activity.playing(activity))
+                    .enableIntents(GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MEMBERS, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT)
+                    .setMemberCachePolicy(MemberCachePolicy.ALL)
+                    .build();
+            jda.awaitReady();
+        } catch (Exception e) {
+            System.out.println("[ERROR] UNABLE TO INIT JDA");
+        }
+        return jda;
+    }
+
+
     public void onMessageReceived(MessageReceivedEvent event) {
         Message msg = event.getMessage();
         User user = event.getAuthor();

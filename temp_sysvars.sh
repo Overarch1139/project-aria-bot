@@ -14,4 +14,8 @@ export TWITTER_ACCESS_TOKEN=null
 export TWITTER_CONSUMER_KEY=null
 export TWITTER_CONSUMER_SECRET=null
 export TZ=Australia/Melbourne
+# Guild to grab config from (dev env only var)
+export EMULATE_GUILD=null
+# Comma delimiter list (modules enabled in dev env)
+export ENABLED_MODULES=sheetParser
 echo "Done!"
