@@ -1,0 +1,18 @@
+{
+  "configName":"Monash Students",
+  "serverId":"1010880694215524454",
+  "activityState":"Routines!",
+  "roleVerifiedId":"1069880831163777045",
+  "roleOnCampusId": null,
+  "roleDevTeamId": null,
+  "channelVerifyId":"1069880107394674698",
+  "channelAdminId":"1069880134959636540",
+  "channelMonashNewsId": null,
+  "channelCovidUpdateId": null,
+  "channelOnCampusId": null,
+  "channelExposureSiteId":null,
+  "channelActivityLogId": "1069880166052020264",
+  "verifiedModuleEnabled": true,
+  "newsModuleEnabled": false,
+  "onCampusModuleEnabled": false
+}
