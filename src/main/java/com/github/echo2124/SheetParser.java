@@ -1,6 +1,7 @@
 package com.github.echo2124;
 
 import net.dv8tion.jda.api.entities.Message;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -30,7 +31,8 @@ public class SheetParser {
             msgattached.getProxy().download();
             parser(futureStream.get());
         } catch (Exception e) {
-            activityLog.sendActivityMsg("[SHEET_PARSER] "+e.getMessage(),3, null);
+            //activityLog.sendActivityMsg("[SHEET_PARSER] "+e.getMessage(),3, null);
+            System.out.println(e.getMessage());
 
         }
     }
@@ -39,12 +41,12 @@ public class SheetParser {
     // test constructor
     public SheetParser() {
         // todo implement direct file input (for testing purpose)
-        File file= new File("src/main/java/com/github/echo2124/test.xls");
+        File file= new File(System.getProperty("TEST_ENV_PATH")+"test.xlsx");
         InputStream targetStream=null;
         try {
             targetStream = new FileInputStream(file);
         } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage());
+            System.out.println(ExceptionUtils.getStackTrace(e));
         }
         this.serverId=null;
         parser(targetStream);
@@ -88,7 +90,9 @@ public class SheetParser {
                 i++;
             }
         } catch (Exception e) {
-            activityLog.sendActivityMsg("[SHEET_PARSER] "+e.getMessage(),3, null);
+            System.out.println(ExceptionUtils.getStackTrace(e));
+
+            //  activityLog.sendActivityMsg("[SHEET_PARSER] "+e.getMessage(),3, null);
         }
     }
 

@@ -39,7 +39,7 @@ public class Database {
     }
     public void checkEnv() {
         try {
-            URI dbUri = new URI(System.getenv("DATABASE_URL"));
+            URI dbUri = new URI(System.getProperty("DATABASE_URL"));
             if (dbUri!=null) {
                 DB_URL= "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath() + "?sslmode=require";
                 USERNAME=dbUri.getUserInfo().split(":")[0];

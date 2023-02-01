@@ -22,7 +22,7 @@ public class Config {
 
 
 
-    public Config(String configName, String serverId, String activityState, String roleVerifiedId, String roleOncampusId, String roleDevTeamId, String channelVerifyId, String channelAdminId, String channelMonashNewsId, String channelCovidUpdateId, String channelExposureSiteId, String channelActivityLogId, String channelOnCampusId, Boolean verifiedModuleEnabled, Boolean newsModuleEnabled, Boolean onCampusModuleEnabled, Boolean sheetParserModuleEnabled, String[] sheetParserParentColumns, Boolean sheetParserModuleEnabled1, String[] sheetParserParentColumns1) {
+    public Config(String configName, String serverId, String activityState, String roleVerifiedId, String roleOncampusId, String roleDevTeamId, String channelVerifyId, String channelAdminId, String channelMonashNewsId, String channelCovidUpdateId, String channelExposureSiteId, String channelActivityLogId, String channelOnCampusId, Boolean verifiedModuleEnabled, Boolean newsModuleEnabled, Boolean onCampusModuleEnabled, Boolean sheetParserModuleEnabled, String[] sheetParserParentColumns) {
         this.configName = configName;
         this.serverId = serverId;
         this.activityState = activityState;

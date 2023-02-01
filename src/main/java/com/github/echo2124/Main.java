@@ -32,16 +32,22 @@ public class Main extends ListenerAdapter {
         // 3 fields (discordid, name, addr)
         public static final int FIELD_NUM=3;
     }
+
+    // todo switch to sys props instead of env vars (will make testing easier)
     public static void main(String[] arguments) throws Exception {
-        // load config here before anything else
+        // Initialise System Properties
+        new InitSystemProps();
+        // load config here
         ConfigParser parser = new ConfigParser();
         LinkedHashMap<String, Config> config =parser.parseDefaults();
         Main.constants.config=config;
-        String activity="Loading...";
-        if (System.getenv("IS_DEV").contains("true")) {
+        if (System.getProperty("IS_DEV").contains("true")) {
             initDevMode();
             return;
         }
+
+        String activity="Loading...";
+
         constants.jda = initJDA(activity);
         initModules();
     }
@@ -49,7 +55,7 @@ public class Main extends ListenerAdapter {
 
     public static JDA initJDA(String activity) {
         try {
-            String BOT_TOKEN = System.getenv("DISCORD_CLIENT_SECRET");
+            String BOT_TOKEN = System.getProperty("DISCORD_CLIENT_SECRET");
             JDA jda = JDABuilder.createLight(BOT_TOKEN, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES)
                     .addEventListeners(new Main())
                     .setActivity(Activity.playing(activity))
@@ -84,9 +90,9 @@ public class Main extends ListenerAdapter {
     }
 
     public static void initDevMode() {
-        if (!System.getenv("EMULATED_GUILD").contains("null")) {
-            System.getenv("EMULATED_GUILD");
-            String[] parsedModuleList = System.getenv("ENABLED_MODULES").split(",");
+        if (!System.getProperty("EMULATED_GUILD").contains("null")) {
+            System.getProperty("EMULATED_GUILD");
+            String[] parsedModuleList = System.getProperty("ENABLED_MODULES").split(",");
             for (int i=0; i<parsedModuleList.length; i++) {
                 switch(parsedModuleList[i]) {
                     case "sheetParser":
@@ -194,9 +200,6 @@ public class Main extends ListenerAdapter {
                             embed.setFooter("data sourced from internal database");
                         } catch (Exception e) {
                             System.out.println("Long failed");
-                            System.out.println(e);
-                            System.out.println(e.getMessage());
-                            System.out.println(e.getCause());
                             System.out.println(ExceptionUtils.getStackTrace(e));
                             activityLog.sendActivityMsg("[MAIN] "+e.getMessage(),3, serverId);
                             embed.setDescription("**Lookup failed, please ensure you've correctly copied the discord ID**");

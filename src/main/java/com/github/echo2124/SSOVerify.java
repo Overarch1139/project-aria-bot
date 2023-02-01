@@ -186,8 +186,8 @@ public class SSOVerify extends Thread {
     }
 
     public void verify() throws IOException, InterruptedException, ExecutionException {
-        final String clientId = System.getenv("GOOGLE_SSO_CLIENT_ID");
-        final String clientSecret = System.getenv("GOOGLE_SSO_CLIENT_SECRET");
+        final String clientId = System.getProperty("GOOGLE_SSO_CLIENT_ID");
+        final String clientSecret = System.getProperty("GOOGLE_SSO_CLIENT_SECRET");
         service = new ServiceBuilder(clientId)
                 .debug()
                 .apiSecret(clientSecret)
