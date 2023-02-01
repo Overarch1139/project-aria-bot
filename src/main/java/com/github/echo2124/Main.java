@@ -91,12 +91,13 @@ public class Main extends ListenerAdapter {
 
     public static void initDevMode() {
         if (!System.getProperty("EMULATED_GUILD").contains("null")) {
-            System.getProperty("EMULATED_GUILD");
+            String serverId=System.getProperty("EMULATED_GUILD");
             String[] parsedModuleList = System.getProperty("ENABLED_MODULES").split(",");
             for (int i=0; i<parsedModuleList.length; i++) {
                 switch(parsedModuleList[i]) {
                     case "sheetParser":
-                        new SheetParser();
+
+                        new SheetParser(serverId);
                         break;
                     case "covidUpdate":
                         // **requires db

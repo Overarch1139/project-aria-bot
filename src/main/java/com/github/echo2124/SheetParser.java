@@ -10,7 +10,9 @@ import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 
@@ -18,18 +20,15 @@ import static com.github.echo2124.Main.constants.activityLog;
 
 public class SheetParser {
 
-    private String serverId;
-
     public SheetParser(Message.Attachment msgattached, String serverId) {
         InputStream stream;
         String fileName="";
-        this.serverId=serverId;
         CompletableFuture<InputStream> futureStream = new CompletableFuture<InputStream>();
         // using input stream instead of file due to given file not being stored & current file impl being changed in DiscordJDA
         try {
             fileName=msgattached.getFileName();
             msgattached.getProxy().download();
-            parser(futureStream.get());
+            parser(futureStream.get(), serverId);
         } catch (Exception e) {
             //activityLog.sendActivityMsg("[SHEET_PARSER] "+e.getMessage(),3, null);
             System.out.println(e.getMessage());
@@ -39,33 +38,38 @@ public class SheetParser {
 
 
     // test constructor
-    public SheetParser() {
+    public SheetParser(String serverId) {
         // todo implement direct file input (for testing purpose)
         File file= new File(System.getProperty("TEST_ENV_PATH")+"test.xlsx");
         InputStream targetStream=null;
+        System.out.println(serverId);
         try {
             targetStream = new FileInputStream(file);
         } catch (FileNotFoundException e) {
             System.out.println(ExceptionUtils.getStackTrace(e));
         }
-        this.serverId=null;
-        parser(targetStream);
+        parser(targetStream, serverId);
     }
 
-    public void parser(InputStream msgattached) {
+    public void parser(InputStream msgattached, String serverId) {
         try {
             Workbook workbook = new XSSFWorkbook(msgattached);
             Sheet sheet = workbook.getSheetAt(0);
 
             /* TODO:
-             -- (1) determine each column and index them for next part
-             -- (2) iterate through each row and grab needed information to cross reference
+                Make columnName define header of column. Unable to grab from Apache POI
+                without hacky stuff like checking if its bold. Instead iterate through
+                first few rows looking for columns that contain one of the "parentColumns"
+                Then get the given index (position) to id the column.
              */
             int i=0;
+            System.out.println(serverId);
+            System.out.println(Arrays.toString(Main.constants.config.get(serverId).getSheetParserParentColumns()));
             for (Row row : sheet) {
                 HashMap<String, String> data = new HashMap<String, String>();
                 for (Cell cell : row) {
                     String columnName=getCellName(cell);
+                    System.out.println("Column Name:" +columnName);
                     String[] parentColumns=Main.constants.config.get(serverId).getSheetParserParentColumns();
                     for (int a=0; a<parentColumns.length; a++) {
                         if (columnName.contains(parentColumns[a])) {
@@ -76,17 +80,15 @@ public class SheetParser {
                             // convert to db column format
                             if (parentColumns[a].toLowerCase().contains("email")) {
                                 data.put("emailAddr", cellContents);
+                                System.out.println("Email: "+cellContents);
                             }
-                            if (parentColumns[a].toLowerCase().contains("name")) {
+                            if (parentColumns[a].toLowerCase().contains("first name")) {
                                 data.put("name", cellContents);
+                                System.out.println("Email: "+cellContents);
                             }
                         }
                     }
                 }
-                // debug
-                data.entrySet().forEach(entry -> {
-                    System.out.println(entry.getKey() + " " + entry.getValue());
-                });
                 i++;
             }
         } catch (Exception e) {
