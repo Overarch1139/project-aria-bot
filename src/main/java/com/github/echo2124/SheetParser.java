@@ -14,6 +14,7 @@ import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.concurrent.CompletableFuture;
 
 import static com.github.echo2124.Main.constants.activityLog;
@@ -65,27 +66,18 @@ public class SheetParser {
             int i=0;
             System.out.println(serverId);
             System.out.println(Arrays.toString(Main.constants.config.get(serverId).getSheetParserParentColumns()));
+            LinkedHashMap<String, Character> nameIndexes;
+            nameIndexes=setNameIndexes(sheet, serverId);
             for (Row row : sheet) {
                 HashMap<String, String> data = new HashMap<String, String>();
                 for (Cell cell : row) {
-                    String columnName=getCellName(cell);
-                    System.out.println("Column Name:" +columnName);
                     String[] parentColumns=Main.constants.config.get(serverId).getSheetParserParentColumns();
-                    for (int a=0; a<parentColumns.length; a++) {
-                        if (columnName.contains(parentColumns[a])) {
-                            String cellContents=cell.getStringCellValue();
-                            if (cell.getStringCellValue().isEmpty()) {
-                                cellContents="null";
-                            }
-                            // convert to db column format
-                            if (parentColumns[a].toLowerCase().contains("email")) {
-                                data.put("emailAddr", cellContents);
-                                System.out.println("Email: "+cellContents);
-                            }
-                            if (parentColumns[a].toLowerCase().contains("first name")) {
-                                data.put("name", cellContents);
-                                System.out.println("Email: "+cellContents);
-                            }
+
+                    char currentIndex=CellReference.convertNumToColString(cell.getColumnIndex()).charAt(0);
+                    // Will need to offset this by row as parent loop is iterating over the whole sheet, something to think about I guess
+                    for (String key: nameIndexes.keySet()) {
+                        if (nameIndexes.get(key)==currentIndex) {
+
                         }
                     }
                 }
@@ -98,10 +90,32 @@ public class SheetParser {
         }
     }
 
-    // https://stackoverflow.com/questions/8202319/get-columns-names-in-excel-file-using-apache-poi
-    private static String getCellName(Cell cell)
-    {
-        return CellReference.convertNumToColString(cell.getColumnIndex()) + (cell.getRowIndex() + 1);
+    private LinkedHashMap<String, Character> setNameIndexes(Sheet sheet, String serverID) {
+        LinkedHashMap<String, Character> data = new LinkedHashMap<>();
+        // Todo clean up this test prototyping code
+        for (Row row : sheet) {
+            for (Cell cell : row) {
+                for (int i=0; i<Main.constants.config.get(serverID).getSheetParserParentColumns().length; i++) {
+                   if (getColumnIndexOffset(Main.constants.config.get(serverID).getSheetParserParentColumns()[i], cell)=='_') {
+                   } else {
+                       data.put(Main.constants.config.get(serverID).getSheetParserParentColumns()[i], getColumnIndexOffset(Main.constants.config.get(serverID).getSheetParserParentColumns()[i], cell));
+                   }
+                }
+            }
+        }
+        return data;
+    }
+
+    /*
+     Will likely need to move the datatype of this method from char to string as there could be column indexes with more than one char
+     This could break this code. During testing this isn't a concern because we already know the offset only has a single char
+    */
+    private char getColumnIndexOffset(String targetColumn, Cell targetCell) {
+        char columnIndex='_';
+        if (targetCell.getStringCellValue().toLowerCase().contains(targetColumn)) {
+            columnIndex=CellReference.convertNumToColString(targetCell.getColumnIndex()).charAt(0);
+        }
+        return columnIndex;
     }
 
 }
