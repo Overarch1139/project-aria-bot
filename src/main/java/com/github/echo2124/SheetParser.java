@@ -66,17 +66,17 @@ public class SheetParser {
             int i=0;
             System.out.println(serverId);
             System.out.println(Arrays.toString(Main.constants.config.get(serverId).getSheetParserParentColumns()));
-            LinkedHashMap<String, Character> nameIndexes;
+            LinkedHashMap<String, String> nameIndexes;
             nameIndexes=setNameIndexes(sheet, serverId);
             for (Row row : sheet) {
                 HashMap<String, String> data = new HashMap<String, String>();
                 for (Cell cell : row) {
                     String[] parentColumns=Main.constants.config.get(serverId).getSheetParserParentColumns();
 
-                    char currentIndex=CellReference.convertNumToColString(cell.getColumnIndex()).charAt(0);
+                    String currentIndex=CellReference.convertNumToColString(cell.getColumnIndex());
                     // Will need to offset this by row as parent loop is iterating over the whole sheet, something to think about I guess
                     for (String key: nameIndexes.keySet()) {
-                        if (nameIndexes.get(key)==currentIndex) {
+                        if (nameIndexes.get(key).contains(currentIndex)) {
 
                         }
                     }
@@ -90,13 +90,13 @@ public class SheetParser {
         }
     }
 
-    private LinkedHashMap<String, Character> setNameIndexes(Sheet sheet, String serverID) {
-        LinkedHashMap<String, Character> data = new LinkedHashMap<>();
+    private LinkedHashMap<String, String> setNameIndexes(Sheet sheet, String serverID) {
+        LinkedHashMap<String, String> data = new LinkedHashMap<>();
         // Todo clean up this test prototyping code
         for (Row row : sheet) {
             for (Cell cell : row) {
                 for (int i=0; i<Main.constants.config.get(serverID).getSheetParserParentColumns().length; i++) {
-                   if (getColumnIndexOffset(Main.constants.config.get(serverID).getSheetParserParentColumns()[i], cell)=='_') {
+                   if (getColumnIndexOffset(Main.constants.config.get(serverID).getSheetParserParentColumns()[i], cell)==null) {
                    } else {
                        data.put(Main.constants.config.get(serverID).getSheetParserParentColumns()[i], getColumnIndexOffset(Main.constants.config.get(serverID).getSheetParserParentColumns()[i], cell));
                    }
@@ -106,14 +106,10 @@ public class SheetParser {
         return data;
     }
 
-    /*
-     Will likely need to move the datatype of this method from char to string as there could be column indexes with more than one char
-     This could break this code. During testing this isn't a concern because we already know the offset only has a single char
-    */
-    private char getColumnIndexOffset(String targetColumn, Cell targetCell) {
-        char columnIndex='_';
+    private String getColumnIndexOffset(String targetColumn, Cell targetCell) {
+        String columnIndex=null;
         if (targetCell.getStringCellValue().toLowerCase().contains(targetColumn)) {
-            columnIndex=CellReference.convertNumToColString(targetCell.getColumnIndex()).charAt(0);
+            columnIndex=CellReference.convertNumToColString(targetCell.getColumnIndex());
         }
         return columnIndex;
     }
