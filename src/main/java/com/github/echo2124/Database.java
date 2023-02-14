@@ -198,6 +198,7 @@ public class Database {
         System.out.println("Grabbing DB Entry");
         String ret="";
         String[] parsed;
+        ResultSet rs;
         PreparedStatement sqlQuery;
         Connection connection=connect();
         try {
@@ -209,7 +210,7 @@ public class Database {
                 sqlQuery.setLong(1,Long.parseLong(parsed[0]));
                 sqlQuery.setString(2, parsed[1]);
                 if (sqlQuery!=null) {
-                    ResultSet rs = sqlQuery.executeQuery();
+                    rs = sqlQuery.executeQuery();
                     System.out.println("Ran query");
                     // loop through the result set
                     while (rs.next()) {
@@ -223,12 +224,32 @@ public class Database {
                     }
                 }
                 break;
+                case "CERT_SHEET":
+                    activityLog.sendActivityMsg("[DATABASE] Fetching verify data from verify table",1, null);
+                    sqlQuery=connection.prepareStatement("SELECT * FROM CERT_MODULE WHERE name=? AND email=? AND guildID=?");
+                    parsed=req.split("##");
+                    sqlQuery.setString(1,parsed[0]);
+                    sqlQuery.setString(2, parsed[1]);
+                    sqlQuery.setString(3, parsed[2]);
+                       rs = sqlQuery.executeQuery();
+                        System.out.println("Ran query");
+                        // loop through the result set
+                        while (rs.next()) {
+                            ret="Name: "+rs.getString(2)+"\n";
+                            ret+="Verified Status: "+rs.getBoolean(4)+"\n";
+                            ret+="Time of Verification: "+rs.getTimestamp(5)+"\n";
+                        }
+                        System.out.println("Query result: \n"+req);
+                        if (ret=="") {
+                            ret = "No results found";
+                        }
+                    break;
                 case "NEWS_CHECK_CATEGORY":
                     activityLog.sendActivityMsg("[DATABASE] Fetching news data from news table",1, null);
                     sqlQuery=connection.prepareStatement("SELECT * FROM NEWS WHERE origin=?");
                     sqlQuery.setString(1, req);
                     if (sqlQuery!=null) {
-                        ResultSet rs = sqlQuery.executeQuery();
+                         rs = sqlQuery.executeQuery();
                         while (rs.next()) {
                             ret=rs.getString(1);
                         }
@@ -249,7 +270,7 @@ public class Database {
                     sqlQuery.setString(1, parsed[0]);
                     sqlQuery.setString(2,parsed[1]);
                     if (sqlQuery!=null) {
-                        ResultSet rs = sqlQuery.executeQuery();
+                        rs = sqlQuery.executeQuery();
                         while (rs.next()) {
                             ret=rs.getString(2);
                         }
@@ -264,7 +285,7 @@ public class Database {
                 case "CHECK_EXPOSURE_INDEX":
                     activityLog.sendActivityMsg("[DATABASE] Fetching exposure data from exposure table",1, null);
                     //TODO check for origin instead (there is probably an issue with the current method of checking for a table which is causing these sorts of problems that exist currently)
-                    ResultSet rs = connection.prepareStatement("SELECT EXISTS ( SELECT FROM pg_tables WHERE tablename='exposure');").executeQuery();
+                    rs = connection.prepareStatement("SELECT EXISTS ( SELECT FROM pg_tables WHERE tablename='exposure');").executeQuery();
                     while (rs.next()) {
                         if (rs.getBoolean(1)) {
                             System.out.println("[Database] checking db for exposure info");
