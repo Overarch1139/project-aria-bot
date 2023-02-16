@@ -1,6 +1,9 @@
 package com.github.echo2124;
 
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
@@ -17,6 +20,9 @@ import static com.github.echo2124.Main.constants.db;
 public class SheetParser {
 
     final String DELIMITER="##";
+    int firstNameIndex = -1;
+    int emailIndex = -1;
+    int rowIndex = -1;
     public SheetParser(Message.Attachment msgattached, String serverId) {
         InputStream stream;
         String fileName="";
@@ -36,7 +42,6 @@ public class SheetParser {
 
     // test constructor
     public SheetParser(String serverId) {
-        // todo implement direct file input (for testing purpose)
         File file= new File(System.getProperty("TEST_ENV_PATH")+"test.xlsx");
         InputStream targetStream=null;
         System.out.println(serverId);
@@ -52,36 +57,12 @@ public class SheetParser {
         try {
             Workbook workbook = new XSSFWorkbook(msgattached);
             Sheet sheet = workbook.getSheetAt(0);
-            chatgptcode(sheet);
-            /* TODO:
-                Make columnName define header of column. Unable to grab from Apache POI
-                without hacky stuff like checking if its bold. Instead iterate through
-                first few rows looking for columns that contain one of the "parentColumns"
-                Then get the given index (position) to id the column.
-             */
-            /*
-            int i=0;
-            System.out.println(serverId);
-            System.out.println(Arrays.toString(Main.constants.config.get(serverId).getSheetParserParentColumns()));
-            LinkedHashMap<String, String[]> nameIndexes;
-            nameIndexes=setNameIndexes(sheet, serverId);
-            for (Row row : sheet) {
-                HashMap<String, String> data = new HashMap<String, String>();
-                for (Cell cell : row) {
-                    String[] parentColumns=Main.constants.config.get(serverId).getSheetParserParentColumns();
-
-                    String currentIndex=CellReference.convertNumToColString(cell.getColumnIndex());
-                    // Will need to offset this by row as parent loop is iterating over the whole sheet, something to think about I guess
-                    for (String key: nameIndexes.keySet()) {
-                        if (nameIndexes.get(key).contains(currentIndex)) {
-
-                        }
-                    }
-                }
-                i++;
+            if (getColumnIndexes(sheet)) {
+                getTableData(sheet, serverId);
+                HashMap<String, String> data = new HashMap<>();
+                data.put("club_name", Main.constants.config.get(serverId).getConfigName());
+                db.modifyDB("CLUB_MEMBERS", "remove", data);
             }
-
-             */
         } catch (Exception e) {
             System.out.println(ExceptionUtils.getStackTrace(e));
 
@@ -90,47 +71,45 @@ public class SheetParser {
 
     }
 
-    private void chatgptcode(Sheet sheet) {
-        // Get the iterator to go through each row in the sheet
-        Iterator<Row> rowIterator = sheet.iterator();
 
-        // Keep track of the column indices for the "first name" and "email" columns
-        int firstNameIndex = -1;
-        int emailIndex = -1;
-        int rowIndex = -1;
-
+    private Boolean getColumnIndexes(Sheet sheet) {
+        Boolean isValid=false;
         // Get the indices for the "first name" and "email" columns
-            for (Row row : sheet) {
+        for (Row row : sheet) {
+            if (firstNameIndex!=-1 && emailIndex!=-1) {
+                break;
+            }
+            for (Cell cell : row) {
                 if (firstNameIndex!=-1 && emailIndex!=-1) {
                     break;
                 }
-                for (Cell cell : row) {
-                    if (firstNameIndex!=-1 && emailIndex!=-1) {
-                        break;
+                try {
+                    switch (cell.getStringCellValue().toLowerCase()) {
+                        case "first name":
+                            firstNameIndex = cell.getColumnIndex();
+                            break;
+                        case "email address":
+                            emailIndex = cell.getColumnIndex();
+                            rowIndex=cell.getRowIndex();
+                            break;
                     }
-                    try {
-                        switch (cell.getStringCellValue().toLowerCase()) {
-                            case "first name":
-                                firstNameIndex = cell.getColumnIndex();
-                                break;
-                            case "email address":
-                                emailIndex = cell.getColumnIndex();
-                                rowIndex=cell.getRowIndex();
-                                break;
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e);
-                    }
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
 
             }
         }
 
         // Check if both indices were found
-        if (firstNameIndex == -1 || emailIndex == -1) {
+        if (firstNameIndex>0 || emailIndex>0) {
+           isValid=true;
+        } else {
             System.out.println("Could not find both columns in the sheet");
-            return;
         }
+        return isValid;
+    }
 
+    private void getTableData(Sheet sheet, String serverId) {
         // Loop through each row in the sheet
         int i=rowIndex+1;
         System.out.println("First name index:"+firstNameIndex);
@@ -148,21 +127,82 @@ public class SheetParser {
             if (firstName!=null && email!=null) {
                 // Print the values
                 System.out.println("First name: " + firstName + ", email: " + email);
-
+                insertEntry(email, firstName, serverId);
             }
             i++;
         }
+    }
 
 
+    // inserts into CLUB_MEMBERS table
+    private void insertEntry(String email, String firstName, String serverId) {
+        HashMap<String, String> data= new HashMap<>();
+        data.put("club_name", Main.constants.config.get(serverId).getConfigName());
+        data.put("first_name", firstName);
+        data.put("email", email);
+        db.modifyDB("CLUB_MEMBERS", "add", data);
+    }
+
+
+
+    private void manageMemberRole(String serverId, String discordID, int modeset) {
+        Guild guild = Main.constants.jda.getGuildById(serverId);
+        Member member = guild.retrieveMemberById(discordID).complete();
+        User user = Main.constants.jda.getUserById(discordID);
+        // modeset==0 means add role; modeset==1 remove role
+        if (modeset==0) {
+            guild.addRoleToMember(member, guild.getRoleById(Main.constants.config.get(serverId).getRoleClubMemberId())).queue();
+        } else if (modeset==1) {
+            try {
+                guild.removeRoleFromMember(member, guild.getRoleById(Main.constants.config.get(serverId).getRoleClubMemberId())).queue();
+            } catch (NullPointerException e) {
+                activityLog.sendActivityMsg("Unable to remove role, discord id is probably wrong or doesn't exist", 3, serverId);
+            }
+        }
+    }
+
+
+    // Handles checking current verified users against club member list
+    private void clubMemberSupervisor(String serverId) {
+        /* grab all members from verified db table that have wired guild id
+        check it against club member list and if match add member
+
+        also get everyone with member role and check them against member list.
+        Drop role from user no longer in member list.
+         */
+        // make new method within DB interface to get club members since dbgetentry method services different way
+        // something to look at later I guess
+        ArrayList<String> clubMembers;
+        clubMembers=db.getClubMembers(Main.constants.config.get(serverId).getConfigName());
+        ArrayList<String> verifiedUsers;
+        verifiedUsers=db.getGuildVerified(serverId);
+        for (String email : verifiedUsers) {
+            if (clubMembers.contains(email)) {
+
+            }
+        }
 
     }
 
 
-    // got the data now need to figure out what I need to do. Time to make a few calls...
+
+    /* TODO
+    When we parse a new spreadsheet we remove all data that has "club_name" from CLUB_MEMBERS table
+    Then insert all relevant data from spreadsheet into table.
+
+    - if verified person is in spreadsheet then add them to a "wired member role"
+    - check for people to add every 24hrs or on request
+    - show statistics (on request/every week): wired_members/verified,
+                       wired_members/wired_members (spreadsheet),
+                       verified/discord_members
+
+
+
+     */
     private String queryEntry(String email, String firstName, String guildId) {
         String data=null;
         data=(firstName+DELIMITER+email+DELIMITER+guildId);
-        db.getDBEntry("CERT_SHEET", data);
+        db.getDBEntry("CERT_ALT", data);
         return data;
     }
 

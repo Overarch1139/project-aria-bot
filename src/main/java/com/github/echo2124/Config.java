@@ -19,10 +19,12 @@ public class Config {
     private final Boolean onCampusModuleEnabled;
     private final Boolean sheetParserModuleEnabled;
     private final String[] sheetParserParentColumns;
+    private final String roleClubMemberId;
 
 
 
-    public Config(String configName, String serverId, String activityState, String roleVerifiedId, String roleOncampusId, String roleDevTeamId, String channelVerifyId, String channelAdminId, String channelMonashNewsId, String channelCovidUpdateId, String channelExposureSiteId, String channelActivityLogId, String channelOnCampusId, Boolean verifiedModuleEnabled, Boolean newsModuleEnabled, Boolean onCampusModuleEnabled, Boolean sheetParserModuleEnabled, String[] sheetParserParentColumns) {
+
+    public Config(String configName, String serverId, String activityState, String roleVerifiedId, String roleOncampusId, String roleDevTeamId, String channelVerifyId, String channelAdminId, String channelMonashNewsId, String channelCovidUpdateId, String channelExposureSiteId, String channelActivityLogId, String channelOnCampusId, Boolean verifiedModuleEnabled, Boolean newsModuleEnabled, Boolean onCampusModuleEnabled, Boolean sheetParserModuleEnabled, String[] sheetParserParentColumns, String roleClubMemberId) {
         this.configName = configName;
         this.serverId = serverId;
         this.activityState = activityState;
@@ -41,6 +43,7 @@ public class Config {
         this.onCampusModuleEnabled = onCampusModuleEnabled;
         this.sheetParserModuleEnabled = sheetParserModuleEnabled;
         this.sheetParserParentColumns = sheetParserParentColumns;
+        this.roleClubMemberId = roleClubMemberId;
     }
 
     public String getConfigName() {
@@ -103,6 +106,7 @@ public class Config {
     public Boolean getSheetParserModuleEnabled() {return sheetParserModuleEnabled;}
 
     public String[] getSheetParserParentColumns() {return sheetParserParentColumns;}
+    public String getRoleClubMemberId() {return roleClubMemberId;}
 
     @Override
     public String toString() {
