@@ -1,9 +1,6 @@
 package com.github.echo2124;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
@@ -23,7 +20,10 @@ public class SheetParser {
     int firstNameIndex = -1;
     int emailIndex = -1;
     int rowIndex = -1;
+    Guild guild;
+    String serverId;
     public SheetParser(Message.Attachment msgattached, String serverId) {
+        initClassVariables(serverId);
         InputStream stream;
         String fileName="";
         CompletableFuture<InputStream> futureStream = new CompletableFuture<InputStream>();
@@ -42,6 +42,7 @@ public class SheetParser {
 
     // test constructor
     public SheetParser(String serverId) {
+        initClassVariables(serverId);
         File file= new File(System.getProperty("TEST_ENV_PATH")+"test.xlsx");
         InputStream targetStream=null;
         System.out.println(serverId);
@@ -53,12 +54,18 @@ public class SheetParser {
         parser(targetStream, serverId);
     }
 
+    // Doing it this way because there are two constructors. Means that I don't need to repeat the same code in both constructors
+    public void initClassVariables(String serverId) {
+        serverId=this.serverId;
+        guild=Main.constants.jda.getGuildById(serverId);
+    }
+
     public void parser(InputStream msgattached, String serverId) {
         try {
             Workbook workbook = new XSSFWorkbook(msgattached);
             Sheet sheet = workbook.getSheetAt(0);
             if (getColumnIndexes(sheet)) {
-                getTableData(sheet, serverId);
+                getTableData(sheet);
                 HashMap<String, String> data = new HashMap<>();
                 data.put("club_name", Main.constants.config.get(serverId).getConfigName());
                 db.modifyDB("CLUB_MEMBERS", "remove", data);
@@ -109,7 +116,7 @@ public class SheetParser {
         return isValid;
     }
 
-    private void getTableData(Sheet sheet, String serverId) {
+    private void getTableData(Sheet sheet) {
         // Loop through each row in the sheet
         int i=rowIndex+1;
         System.out.println("First name index:"+firstNameIndex);
@@ -127,7 +134,7 @@ public class SheetParser {
             if (firstName!=null && email!=null) {
                 // Print the values
                 System.out.println("First name: " + firstName + ", email: " + email);
-                insertEntry(email, firstName, serverId);
+                insertEntry(email, firstName);
             }
             i++;
         }
@@ -135,7 +142,7 @@ public class SheetParser {
 
 
     // inserts into CLUB_MEMBERS table
-    private void insertEntry(String email, String firstName, String serverId) {
+    private void insertEntry(String email, String firstName) {
         HashMap<String, String> data= new HashMap<>();
         data.put("club_name", Main.constants.config.get(serverId).getConfigName());
         data.put("first_name", firstName);
@@ -145,8 +152,8 @@ public class SheetParser {
 
 
 
-    private void manageMemberRole(String serverId, String discordID, int modeset) {
-        Guild guild = Main.constants.jda.getGuildById(serverId);
+    private void manageMemberRole(String discordID, int modeset) {
+
         Member member = guild.retrieveMemberById(discordID).complete();
         User user = Main.constants.jda.getUserById(discordID);
         // modeset==0 means add role; modeset==1 remove role
@@ -163,7 +170,7 @@ public class SheetParser {
 
 
     // Handles checking current verified users against club member list
-    private void clubMemberSupervisor(String serverId) {
+    private void clubMemberSupervisor() {
         /* grab all members from verified db table that have wired guild id
         check it against club member list and if match add member
 
@@ -174,11 +181,17 @@ public class SheetParser {
         // something to look at later I guess
         ArrayList<String> clubMembers;
         clubMembers=db.getClubMembers(Main.constants.config.get(serverId).getConfigName());
-        ArrayList<String> verifiedUsers;
+        HashMap<Long, String> verifiedUsers;
         verifiedUsers=db.getGuildVerified(serverId);
-        for (String email : verifiedUsers) {
-            if (clubMembers.contains(email)) {
-
+        for (HashMap.Entry<Long, String> entry : verifiedUsers.entrySet()) {
+            Long discordId = entry.getKey();
+            String email = entry.getValue();
+            for (int i=0; i<clubMembers.size(); i++) {
+                if (clubMembers.contains(email)) {
+                    // check if member already has role, if not then assign role
+                    Member member = guild.getMemberById(discordId);
+                    member.getRoles();
+                }
             }
         }
 

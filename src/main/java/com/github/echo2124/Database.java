@@ -395,11 +395,12 @@ public class Database {
         return data;
     }
 
-    public ArrayList<String> getGuildVerified(String guildId) {
+    // Hashmap (discordId, email)
+    public HashMap<Long, String> getGuildVerified(String guildId) {
         ResultSet rs;
         PreparedStatement sqlQuery;
         Connection connection=connect();
-        ArrayList<String> data= new ArrayList<String>();
+        HashMap<Long, String> data= new HashMap<Long, String>();
         try {
             sqlQuery=connection.prepareStatement("SELECT * FROM CERT_MODULE WHERE guildId=?;");
             sqlQuery.setString(1, guildId);
@@ -407,7 +408,7 @@ public class Database {
             System.out.println("Ran query");
             // loop through the result set
             while (rs.next()) {
-                data.add(rs.getString(3));
+                data.put(rs.getLong(1),rs.getString(3));
             }
         } catch(SQLException e){
             System.out.println(e);
