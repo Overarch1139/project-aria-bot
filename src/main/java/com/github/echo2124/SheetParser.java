@@ -35,7 +35,7 @@ public class SheetParser {
     public void switchActiveState(int modeset) {
         switch (modeset) {
             case 0:
-
+                clubMemberSupervisor();
                 break;
             case 1:
                 initSpreadsheetParser();

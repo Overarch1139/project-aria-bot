@@ -95,8 +95,7 @@ public class Main extends ListenerAdapter {
             for (int i=0; i<parsedModuleList.length; i++) {
                 switch(parsedModuleList[i]) {
                     case "sheetParser":
-
-                        new SheetParser(serverId);
+                        new SheetParser(null, serverId,2);
                         break;
                     case "covidUpdate":
                         // **requires db
