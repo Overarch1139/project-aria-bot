@@ -183,6 +183,7 @@ public class SheetParser {
         clubMembers=db.getClubMembers(Main.constants.config.get(serverId).getConfigName());
         HashMap<Long, String> verifiedUsers;
         verifiedUsers=db.getGuildVerified(serverId);
+        Role memberRole = guild.getRoleById(Main.constants.config.get(serverId).getRoleClubMemberId());
         for (HashMap.Entry<Long, String> entry : verifiedUsers.entrySet()) {
             Long discordId = entry.getKey();
             String email = entry.getValue();
@@ -190,7 +191,9 @@ public class SheetParser {
                 if (clubMembers.contains(email)) {
                     // check if member already has role, if not then assign role
                     Member member = guild.getMemberById(discordId);
-                    member.getRoles();
+                    if (!member.getRoles().contains(memberRole)) {
+                        manageMemberRole(member.getId(), 0);
+                    }
                 }
             }
         }
