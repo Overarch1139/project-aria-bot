@@ -239,7 +239,7 @@ public class Main extends ListenerAdapter {
                     misc.sendServiceModeMsg(verify, "Aria has reactivated the ability to verify and has exited maintenance mode.");
                     activityLog.sendActivityMsg("[MAIN] Aria bot has exited service mode", 2, serverId);
                 } else if (msgContents.contains(">parseSheet")) {
-                    new SheetParser(msg.getAttachments().get(0), serverId);
+                    new SheetParser(msg.getAttachments().get(0), serverId, 1);
                     activityLog.sendActivityMsg("[MAIN] Parse sheet active!", 1, serverId);
                 } else if (msgContents.contains(">checkManual")) {
                     if (Main.constants.config.get(event.getGuild().getId()).getSheetParserModuleEnabled()) {

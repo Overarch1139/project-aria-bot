@@ -24,7 +24,8 @@ public class SheetParser {
     String serverId;
     Message.Attachment msgattached;
     public SheetParser(Message.Attachment msgattached, String serverId, int modeset) {
-        initClassVariables(serverId);
+        this.serverId=serverId;
+        guild=Main.constants.jda.getGuildById(serverId);
         this.msgattached=msgattached;
         switchActiveState(modeset);
     }
@@ -60,26 +61,19 @@ public class SheetParser {
     }
 
     public void initSpreadsheetParser() {
-        InputStream stream;
         String fileName="";
         CompletableFuture<InputStream> futureStream = new CompletableFuture<InputStream>();
         // using input stream instead of file due to given file not being stored & current file impl being changed in DiscordJDA
         try {
             fileName=msgattached.getFileName();
-            msgattached.getProxy().download();
+            futureStream=msgattached.getProxy().download();
             parser(futureStream.get(), serverId);
         } catch (Exception e) {
             //activityLog.sendActivityMsg("[SHEET_PARSER] "+e.getMessage(),3, null);
             System.out.println(e.getMessage());
-
         }
     }
 
-    // Doing it this way because there are two constructors. Means that I don't need to repeat the same code in both constructors
-    public void initClassVariables(String serverId) {
-        serverId=this.serverId;
-        guild=Main.constants.jda.getGuildById(serverId);
-    }
 
     public void parser(InputStream msgattached, String serverId) {
         try {
