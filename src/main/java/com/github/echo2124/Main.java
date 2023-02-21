@@ -240,8 +240,11 @@ public class Main extends ListenerAdapter {
                     activityLog.sendActivityMsg("[MAIN] Aria bot has exited service mode", 2, serverId);
                 } else if (msgContents.contains(">parseSheet")) {
                     new SheetParser(msg.getAttachments().get(0), serverId);
-                    activityLog.sendActivityMsg("[MAIN] Parse sheet active!",1, serverId);
+                    activityLog.sendActivityMsg("[MAIN] Parse sheet active!", 1, serverId);
+                } else if (msgContents.contains(">checkManual")) {
+                    if (Main.constants.config.get(event.getGuild().getId()).getSheetParserModuleEnabled()) {
 
+                    }
                 } else if (msgContents.contains(">help")) {
                     EmbedBuilder embed = new EmbedBuilder();
                     embed.setColor(Color.MAGENTA);

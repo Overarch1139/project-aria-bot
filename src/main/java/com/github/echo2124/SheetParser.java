@@ -22,8 +22,44 @@ public class SheetParser {
     int rowIndex = -1;
     Guild guild;
     String serverId;
-    public SheetParser(Message.Attachment msgattached, String serverId) {
+    Message.Attachment msgattached;
+    public SheetParser(Message.Attachment msgattached, String serverId, int modeset) {
         initClassVariables(serverId);
+        this.msgattached=msgattached;
+        switchActiveState(modeset);
+    }
+
+
+    // 0=trigger scheduler; 1=add spreadsheet; 2=add spreadsheet (test method)
+    public void switchActiveState(int modeset) {
+        switch (modeset) {
+            case 0:
+
+                break;
+            case 1:
+                initSpreadsheetParser();
+                break;
+            case 2:
+                initTestSpreadsheetParser();
+                break;
+            default:
+                System.out.println("Invalid modeset selected for sheetparser");
+        }
+    }
+
+    public void initTestSpreadsheetParser() {
+        File file= new File(System.getProperty("TEST_ENV_PATH")+"test.xlsx");
+        InputStream targetStream=null;
+        System.out.println(serverId);
+        try {
+            targetStream = new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            System.out.println(ExceptionUtils.getStackTrace(e));
+        }
+        parser(targetStream, serverId);
+    }
+
+    public void initSpreadsheetParser() {
         InputStream stream;
         String fileName="";
         CompletableFuture<InputStream> futureStream = new CompletableFuture<InputStream>();
@@ -37,21 +73,6 @@ public class SheetParser {
             System.out.println(e.getMessage());
 
         }
-    }
-
-
-    // test constructor
-    public SheetParser(String serverId) {
-        initClassVariables(serverId);
-        File file= new File(System.getProperty("TEST_ENV_PATH")+"test.xlsx");
-        InputStream targetStream=null;
-        System.out.println(serverId);
-        try {
-            targetStream = new FileInputStream(file);
-        } catch (FileNotFoundException e) {
-            System.out.println(ExceptionUtils.getStackTrace(e));
-        }
-        parser(targetStream, serverId);
     }
 
     // Doing it this way because there are two constructors. Means that I don't need to repeat the same code in both constructors
