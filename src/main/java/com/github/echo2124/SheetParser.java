@@ -184,6 +184,18 @@ public class SheetParser {
     }
 
 
+    // test method (for testing class functionality)
+    private void loadTestData() {
+
+
+    }
+
+    private void clearTestData() {
+
+
+    }
+
+
     // Handles checking current verified users against club member list
     private void clubMemberSupervisor() {
         /* grab all members from verified db table that have wired guild id
@@ -191,6 +203,8 @@ public class SheetParser {
 
         also get everyone with member role and check them against member list.
         Drop role from user no longer in member list.
+             - Ways to do this:
+                -
          */
         // make new method within DB interface to get club members since dbgetentry method services different way
         // something to look at later I guess
