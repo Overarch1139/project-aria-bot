@@ -199,13 +199,15 @@ public class SheetParser {
         HashMap<Long, String> verifiedUsers;
         verifiedUsers=db.getGuildVerified(serverId);
         Role memberRole = guild.getRoleById(Main.constants.config.get(serverId).getRoleClubMemberId());
+        // compute & time expensive loop, look at a more efficient method
         for (HashMap.Entry<Long, String> entry : verifiedUsers.entrySet()) {
             Long discordId = entry.getKey();
             String email = entry.getValue();
             for (int i=0; i<clubMembers.size(); i++) {
-                if (clubMembers.contains(email)) {
+                if (clubMembers.get(i).contains(email)) {
                     // check if member already has role, if not then assign role
                     Member member = guild.getMemberById(discordId);
+                    // if problem then its probably this. members are cached by jda, may need to force update cache
                     if (!member.getRoles().contains(memberRole)) {
                         manageMemberRole(member.getId(), 0);
                     }
@@ -221,7 +223,7 @@ public class SheetParser {
     When we parse a new spreadsheet we remove all data that has "club_name" from CLUB_MEMBERS table
     Then insert all relevant data from spreadsheet into table.
 
-    - if verified person is in spreadsheet then add them to a "wired member role"
+    - if verified person is in spreadsheet then add them to a "wired member role" [done]
     - check for people to add every 24hrs or on request
     - show statistics (on request/every week): wired_members/verified,
                        wired_members/wired_members (spreadsheet),
