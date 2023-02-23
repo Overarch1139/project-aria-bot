@@ -27,8 +27,10 @@ public class Database {
             if (!tableExists("CERT_MODULE", tempConnection)) {
                 setupDB(tempConnection);
             }
-            //migrateDB(tempConnection);
+            //migrateDB(tempConnection)
+        if (!System.getProperty("IS_DEV").contains("true")) {
             upstreamSchemaChanges(tempConnection);
+        }
             disconnect(tempConnection);
     }
 
@@ -50,9 +52,9 @@ public class Database {
                 throw new Exception();
             }
         } catch (Exception e) {
-            DB_URL="localhost:5432/postgres";
-            USERNAME="postgres";
-            PASSWORD="2008";
+            DB_URL="localhost:5432/testdb";
+            USERNAME="testuser";
+            PASSWORD="";
         }
         }
 
@@ -97,8 +99,7 @@ public class Database {
             String sqlQuery = "CREATE TABLE WARN_MODULE (discordID bigint, issuerID bigint, warnDesc text, issueTime TIMESTAMP);"+
                             "CREATE TABLE CERT_MODULE (discordID bigint, name VARCHAR(2048), emailAddr VARCHAR(100), isVerified bool, verifiedTime TIMESTAMP);"+
                             "CREATE TABLE NEWS (origin VARCHAR(50), lastTitle text);"+
-                            "CREATE TABLE EXPOSURE (origin VARCHAR(50), len NUMERIC(15));"+
-                            "CREATE TABLE ONCAMPUS (discordID bigint, )";
+                    "CREATE TABLE CLUB_MEMBERS (club_name text, first_name text, email text)";
             stmt.executeUpdate(sqlQuery);
             stmt.close();
 

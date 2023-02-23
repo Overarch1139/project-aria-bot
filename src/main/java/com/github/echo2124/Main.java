@@ -32,22 +32,20 @@ public class Main extends ListenerAdapter {
         ConfigParser parser = new ConfigParser();
         LinkedHashMap<String, Config> config =parser.parseDefaults();
         Main.constants.config=config;
-        if (System.getProperty("IS_DEV").contains("true")) {
-            initDevMode();
-            return;
-        }
-
         String activity="Loading...";
-
-        constants.jda = initJDA(activity);
-        initModules();
+        if (System.getProperty("IS_DEV").contains("true")) {
+            constants.jda = initJDA(activity);
+            initDevMode();
+            initModules();
+        }
     }
 
 
     public static JDA initJDA(String activity) {
+        JDA jda=null;
         try {
             String BOT_TOKEN = System.getProperty("DISCORD_CLIENT_SECRET");
-            JDA jda = JDABuilder.createLight(BOT_TOKEN, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES)
+             jda = JDABuilder.createLight(BOT_TOKEN, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES)
                     .addEventListeners(new Main())
                     .setActivity(Activity.playing(activity))
                     .enableIntents(GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MEMBERS, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT)
@@ -55,6 +53,8 @@ public class Main extends ListenerAdapter {
                     .build();
             jda.awaitReady();
         } catch (Exception e) {
+            System.out.println(e);
+
             System.out.println("[ERROR] UNABLE TO INIT JDA");
         }
         return jda;
@@ -87,7 +87,7 @@ public class Main extends ListenerAdapter {
             for (int i=0; i<parsedModuleList.length; i++) {
                 switch(parsedModuleList[i]) {
                     case "sheetParser":
-                        new SheetParser(null, serverId,2);
+                        //new SheetParser(null, serverId,2);
                         break;
                     case "covidUpdate":
                         // **requires db
