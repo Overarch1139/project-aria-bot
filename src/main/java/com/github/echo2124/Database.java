@@ -201,12 +201,14 @@ public class Database {
                     }
                 } else if (action.equals("remove")) {
                     try {
-                        activityLog.sendActivityMsg("[DATABASE] Removing entry from verify table",1, data.get("guildID").toString());
+                        activityLog.sendActivityMsg("[DATABASE] Removing entry from verify table",1, null);
                         sqlQuery=connection.prepareStatement("DELETE FROM CERT_MODULE WHERE club_name=?");
+                        System.out.println("CONFIG NAME:  "+data.get("club_name"));
                         sqlQuery.setString(1, data.get("club_name").toString());
                     } catch (Exception e) {
-                        activityLog.sendActivityMsg("[DATABASE] Unable to remove verify data from table", 3, data.get("guildID").toString());
+                        activityLog.sendActivityMsg("[DATABASE] Unable to remove verify data from table", 3, null);
                         System.out.println("Unable to Modify DB: "+ e.getMessage());
+                        e.printStackTrace();
                     }
                 }
 
