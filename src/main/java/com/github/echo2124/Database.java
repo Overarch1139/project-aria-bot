@@ -24,9 +24,6 @@ public class Database {
     public Database() {
             checkEnv();
             Connection tempConnection=connect();
-            if (!tableExists("CERT_MODULE", tempConnection)) {
-                setupDB(tempConnection);
-            }
             //migrateDB(tempConnection)
         if (!System.getProperty("IS_DEV").contains("true")) {
             upstreamSchemaChanges(tempConnection);
@@ -52,9 +49,10 @@ public class Database {
                 throw new Exception();
             }
         } catch (Exception e) {
-            DB_URL="localhost:5432/testdb";
-            USERNAME="testuser";
+            DB_URL="jdbc:postgresql://localhost:5432/testdb";
+            USERNAME="";
             PASSWORD="";
+
         }
         }
 
@@ -77,10 +75,31 @@ public class Database {
     }
 
     public Connection connect() {
+
         Connection connect = null;
         try {
             connect = DriverManager.getConnection(DB_URL,
                     USERNAME, PASSWORD);
+
+            Statement stmt = connect.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT datname FROM pg_database");
+
+            boolean databaseExists = false;
+            while (rs.next()) {
+                String dbName = rs.getString("datname");
+                if (dbName.equals("project_aria_bot")) {
+                    databaseExists = true;
+                    break;
+                }
+            }
+
+            if (!databaseExists) {
+                stmt.executeUpdate("CREATE DATABASE project_aria_bot");
+                setupDB(connect);
+            }
+
+            rs.close();
+            stmt.close();
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println(e.getClass().getName()+": "+e.getMessage());
