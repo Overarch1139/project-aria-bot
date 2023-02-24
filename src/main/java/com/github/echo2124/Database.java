@@ -49,9 +49,10 @@ public class Database {
                 throw new Exception();
             }
         } catch (Exception e) {
-            DB_URL="jdbc:postgresql://localhost:5432/testdb";
-            USERNAME="";
-            PASSWORD="";
+            // todo move to config
+            DB_URL="jdbc:postgresql://localhost:5432/d87d7mdp7isu0m";
+            USERNAME="system";
+            PASSWORD="test1234";
 
         }
         }
@@ -87,7 +88,7 @@ public class Database {
             boolean databaseExists = false;
             while (rs.next()) {
                 String dbName = rs.getString("datname");
-                if (dbName.equals("project_aria_bot")) {
+                if (dbName.equals("d87d7mdp7isu0m")) {
                     databaseExists = true;
                     break;
                 }
@@ -116,7 +117,7 @@ public class Database {
             // sanitisation not needed here as no inputs are received
             Statement stmt = connect.createStatement();
             String sqlQuery = "CREATE TABLE WARN_MODULE (discordID bigint, issuerID bigint, warnDesc text, issueTime TIMESTAMP);"+
-                            "CREATE TABLE CERT_MODULE (discordID bigint, name VARCHAR(2048), emailAddr VARCHAR(100), isVerified bool, verifiedTime TIMESTAMP);"+
+                            "CREATE TABLE CERT_MODULE (discordID bigint, name VARCHAR(2048), emailAddr VARCHAR(100), isVerified bool, verifiedTime TIMESTAMP, guildID VARCHAR(64));"+
                             "CREATE TABLE NEWS (origin VARCHAR(50), lastTitle text);"+
                     "CREATE TABLE CLUB_MEMBERS (club_name text, first_name text, email text)";
             stmt.executeUpdate(sqlQuery);
