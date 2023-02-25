@@ -1,11 +1,13 @@
 package com.github.echo2124;
 
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.awt.Color;
 import java.io.*;
 import java.sql.SQLOutput;
 import java.util.*;
@@ -250,6 +252,30 @@ public class SheetParser {
 
 
      */
+
+
+    // 0=processing, 1=success, 2=failure
+    private void moduleEmbedResponses(int modeset, int membersAdded) {
+        EmbedBuilder embed = new EmbedBuilder();
+        switch (modeset) {
+            case 0:
+                embed.setColor(Color.orange);
+                embed.setTitle("Processing spreadsheet...");
+                embed.setDescription("Parsing spreadsheet based on provided schema");
+                break;
+            case 1:
+                embed.setColor(Color.green);
+                embed.setTitle("Spreadsheet has been parsed successfully!");
+                embed.setDescription("Number of club members added to DB: "+membersAdded);
+                break;
+            case 2:
+                embed.setColor(Color.red);
+                embed.setTitle("Invalid Spreadsheet Detected!");
+                embed.setDescription("Make sure that spreadsheet matches schema and it is using the correct format (xlsx). If issues still persist contact Joshua.");
+                break;
+        }
+        Main.constants.jda.getTextChannelById(Main.constants.config.get(serverId).getChannelAdminId()).sendMessageEmbeds(embed.build());
+    }
     private String queryEntry(String email, String firstName, String guildId) {
         String data=null;
         data=(firstName+DELIMITER+email+DELIMITER+guildId);
