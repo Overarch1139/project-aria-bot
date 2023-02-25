@@ -84,10 +84,10 @@ public class SheetParser {
             Workbook workbook = new XSSFWorkbook(msgattached);
             Sheet sheet = workbook.getSheetAt(0);
             if (getColumnIndexes(sheet)) {
-                getTableData(sheet);
                 HashMap<String, String> data = new HashMap<>();
                 data.put("club_name", Main.constants.config.get(serverId).getConfigName());
                 db.modifyDB("CLUB_MEMBERS", "remove", data);
+                getTableData(sheet);
             }
         } catch (Exception e) {
             System.out.println(ExceptionUtils.getStackTrace(e));
