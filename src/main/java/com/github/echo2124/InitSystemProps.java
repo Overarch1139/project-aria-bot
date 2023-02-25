@@ -7,10 +7,11 @@ public class InitSystemProps {
 
     public InitSystemProps() {
         // Local properties
-        System.setProperty("IS_DEV", "true");
-        System.setProperty("EMULATED_GUILD", "878943527608938508");
+        System.setProperty("IS_DEV", "false");
+     /*   System.setProperty("EMULATED_GUILD", "878943527608938508");
         System.setProperty("ENABLED_MODULES", "sheetParser");
         System.setProperty("TEST_ENV_PATH", "/Users/Joshua/Documents/aria/project-aria-bot/src/main/java/com/github/echo2124/");
+        */
         // inherited environment vars (doing this way as to not expose API keys)
 
         if (!System.getProperty("IS_DEV").contains("true")) {

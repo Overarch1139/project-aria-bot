@@ -147,7 +147,7 @@ public class Database {
     public void upstreamSchemaChanges(Connection connect) {
         try {
             Statement stmt = connect.createStatement();
-            String query = "CREATE TABLE CLUB_MEMBERS (club_name text, first_name text, email text)";
+            String query = "CREATE TABLE CLUB_MEMBERS (club_name text, first_name text, email text);";
             stmt.executeUpdate(query);
             stmt.close();
         } catch (Exception e) {
