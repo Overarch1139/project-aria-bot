@@ -14,5 +14,6 @@
   "channelActivityLogId": "1069880166052020264",
   "verifiedModuleEnabled": true,
   "newsModuleEnabled": false,
-  "onCampusModuleEnabled": false
+  "onCampusModuleEnabled": false,
+  "sheetParserModuleEnabled": false
 }
