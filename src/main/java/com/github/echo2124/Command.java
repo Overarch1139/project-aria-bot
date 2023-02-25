@@ -150,8 +150,8 @@ public class Command {
             new SheetParser(msg.getAttachments().get(0), serverId, 1);
             activityLog.sendActivityMsg("[MAIN] Parse sheet active!", 1, serverId);
         } else if (msgContents.contains(">checkManual")) {
-            if (Main.constants.config.get(event.getGuild().getId()).getSheetParserModuleEnabled()) {
-
+            if (Main.constants.config.get(serverId).getSheetParserModuleEnabled()) {
+                new SheetParser(null, serverId, 0);
             }
         } else if (msgContents.contains(">help")) {
             EmbedBuilder embed = new EmbedBuilder();

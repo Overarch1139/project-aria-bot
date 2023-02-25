@@ -73,6 +73,7 @@ public class SheetParser {
         try {
             fileName=msgattached.getFileName();
             futureStream=msgattached.getProxy().download();
+            moduleEmbedResponses(0, 0);
             parser(futureStream.get(), serverId);
         } catch (Exception e) {
             //activityLog.sendActivityMsg("[SHEET_PARSER] "+e.getMessage(),3, null);
@@ -142,7 +143,8 @@ public class SheetParser {
         int i=rowIndex+1;
         System.out.println("First name index:"+firstNameIndex);
         System.out.println("Email index:"+emailIndex);
-
+        Boolean processDone=false;
+        int x=0;
         while (i<sheet.getLastRowNum()) {
             Row row = sheet.getRow(i);
             String firstName=null, email=null;
@@ -153,11 +155,16 @@ public class SheetParser {
                 email= row.getCell(emailIndex).getStringCellValue();
             }
             if (firstName!=null && email!=null) {
+                processDone=true;
                 // Print the values
                 System.out.println("First name: " + firstName + ", email: " + email);
                 insertEntry(email, firstName);
+                x++;
             }
             i++;
+        }
+        if (processDone) {
+            moduleEmbedResponses(1, x);
         }
     }
 
@@ -192,25 +199,22 @@ public class SheetParser {
 
     // test method (for testing class functionality)
     private void loadTestData() {
-
-
-    }
-
-    private void clearTestData() {
-
+/*
+    INSERT INTO cert_module VALUES ("Aria Test Server", "Test_First_Name", "test0@student.monash.edu
+    INSERT INTO cert_module (discordID, name, emailAddr, isVerified, verifiedTime, guildID) VALUES (538660576704856075, Joshua, test0@student.monash.edu, true, current_timestamp,878943527608938508);
+    INSERT INTO cert_module (discordID, name, emailAddr, isVerified, verifiedTime, guildID) VALUES (257468559309930509, 'Test1', 'test1@student.monash.edu', true, current_timestamp,878943527608938508);
+    INSERT INTO cert_module (discordID, name, emailAddr, isVerified, verifiedTime, guildID) VALUES (538660576704856075, 'Test2', 'test2@student.monash.edu', true, current_timestamp,878943527608938508);
+INSERT INTO cert_module (discordID, name, emailAddr, isVerified, verifiedTime, guildID) VALUES (538660576704856075, 'Joshua', 'test0@student.monash.edu', true, current_timestamp,878943527608938508);
+ */
 
     }
 
 
     // Handles checking current verified users against club member list
     private void clubMemberSupervisor() {
-        /* grab all members from verified db table that have wired guild id
-        check it against club member list and if match add member
-
-        also get everyone with member role and check them against member list.
+        /*
+        TODO         also get everyone with member role and check them against member list.
         Drop role from user no longer in member list.
-             - Ways to do this:
-                -
          */
         // make new method within DB interface to get club members since dbgetentry method services different way
         // something to look at later I guess
@@ -219,38 +223,39 @@ public class SheetParser {
         HashMap<Long, String> verifiedUsers;
         verifiedUsers=db.getGuildVerified(serverId);
         Role memberRole = guild.getRoleById(Main.constants.config.get(serverId).getRoleClubMemberId());
-        // compute & time expensive loop, look at a more efficient method
-        for (HashMap.Entry<Long, String> entry : verifiedUsers.entrySet()) {
-            Long discordId = entry.getKey();
-            String email = entry.getValue();
-            for (int i=0; i<clubMembers.size(); i++) {
-                if (clubMembers.get(i).contains(email)) {
-                    // check if member already has role, if not then assign role
-                    Member member = guild.getMemberById(discordId);
-                    // if problem then its probably this. members are cached by jda, may need to force update cache
-                    if (!member.getRoles().contains(memberRole)) {
-                        manageMemberRole(member.getId(), 0);
+        Thread checkMembers = new Thread(){
+            public void run(){
+                moduleEmbedResponses(3,0);
+                guild.loadMembers().get();
+                // compute & time expensive loop, look at a more efficient method
+                for (HashMap.Entry<Long, String> entry : verifiedUsers.entrySet()) {
+                    Long discordId = entry.getKey();
+                    String email = entry.getValue();
+                    for (int i=0; i<clubMembers.size(); i++) {
+                        if (clubMembers.get(i).contains(email)) {
+                            // check if member already has role, if not then assign role
+                            System.out.println("Discord ID:"+discordId);
+                            Member member = guild.getMemberById(discordId);
+                            System.out.println("Avatar ID:"+member.getAvatarId());
+                            // if problem then its probably this. members are cached by jda, may need to force update cache
+                            if (!member.getRoles().contains(memberRole)) {
+                                manageMemberRole(member.getId(), 0);
+                            }
+                        }
                     }
                 }
             }
-        }
-
+        };
+        checkMembers.start();
     }
 
 
 
     /* TODO
-    When we parse a new spreadsheet we remove all data that has "club_name" from CLUB_MEMBERS table
-    Then insert all relevant data from spreadsheet into table.
-
-    - if verified person is in spreadsheet then add them to a "wired member role" [done]
-    - check for people to add every 24hrs or on request
+    - check for people to add every 24hrs or on request (to implement)
     - show statistics (on request/every week): wired_members/verified,
                        wired_members/wired_members (spreadsheet),
                        verified/discord_members
-
-
-
      */
 
 
@@ -261,7 +266,7 @@ public class SheetParser {
             case 0:
                 embed.setColor(Color.orange);
                 embed.setTitle("Processing spreadsheet...");
-                embed.setDescription("Parsing spreadsheet based on provided schema");
+                embed.setDescription("Parsing spreadsheet based on provided schema.");
                 break;
             case 1:
                 embed.setColor(Color.green);
@@ -273,8 +278,13 @@ public class SheetParser {
                 embed.setTitle("Invalid Spreadsheet Detected!");
                 embed.setDescription("Make sure that spreadsheet matches schema and it is using the correct format (xlsx). If issues still persist contact Joshua.");
                 break;
+            case 3:
+                embed.setColor(Color.CYAN);
+                embed.setTitle("Running Club Member Supervisor...");
+                embed.setDescription("Will check club members against verified table and add any newly detected club members to role.");
+                break;
         }
-        Main.constants.jda.getTextChannelById(Main.constants.config.get(serverId).getChannelAdminId()).sendMessageEmbeds(embed.build());
+        Main.constants.jda.getTextChannelById(Main.constants.config.get(serverId).getChannelAdminId()).sendMessageEmbeds(embed.build()).queue();
     }
     private String queryEntry(String email, String firstName, String guildId) {
         String data=null;
