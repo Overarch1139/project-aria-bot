@@ -15,7 +15,7 @@
   "channelActivityLogId": "981456425530298429",
   "verifiedModuleEnabled": true,
   "newsModuleEnabled": true,
-  "onCampusModuleEnabled": true,
+  "onCampusModuleEnabled": false,
   "sheetParserModuleEnabled": true,
   "sheetParserParentColumns": [
     "First name",

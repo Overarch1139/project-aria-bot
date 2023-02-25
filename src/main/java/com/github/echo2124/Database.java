@@ -192,26 +192,30 @@ public class Database {
                 if (action.equals("add")) {
                     try {
                         sqlQuery=connection.prepareStatement("INSERT INTO CLUB_MEMBERS VALUES (?,?,?)");
+                        System.out.println("Data dump:"+data.get("club_name")+";"+data.get("first_name")+";"+data.get("email"));
                         sqlQuery.setString(1, data.get("club_name").toString());
                         sqlQuery.setString(2, data.get("first_name").toString());
                         sqlQuery.setString(3, data.get("email").toString());
                     } catch (Exception e) {
+                        e.printStackTrace();
+
                         activityLog.sendActivityMsg("[DATABASE] Unable to insert verify data into table", 3, data.get("guildID").toString());
-                        System.out.println("Unable to Modify DB: "+ e.getMessage());
+                        System.out.println("(ADD) Unable to Modify DB: "+ e.getMessage());
                     }
                 } else if (action.equals("remove")) {
                     try {
                         activityLog.sendActivityMsg("[DATABASE] Removing entry from verify table",1, null);
-                        sqlQuery=connection.prepareStatement("DELETE FROM CERT_MODULE WHERE club_name=?");
+                        sqlQuery=connection.prepareStatement("DELETE FROM CLUB_MEMBERS WHERE club_name=?");
                         System.out.println("CONFIG NAME:  "+data.get("club_name"));
                         sqlQuery.setString(1, data.get("club_name").toString());
                     } catch (Exception e) {
-                        activityLog.sendActivityMsg("[DATABASE] Unable to remove verify data from table", 3, null);
-                        System.out.println("Unable to Modify DB: "+ e.getMessage());
                         e.printStackTrace();
+                        activityLog.sendActivityMsg("[DATABASE] Unable to remove verify data from table", 3, null);
+                        System.out.println("(REMOVE) Unable to Modify DB: "+ e.getMessage());
+
                     }
                 }
-
+                break;
             case "NEWS":
                     try {
                         if (Boolean.parseBoolean(this.getDBEntry("NEWS_CHECK_CATEGORY", action))) {

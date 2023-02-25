@@ -14,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
 import static com.github.echo2124.Main.constants.activityLog;
 import static com.github.echo2124.Main.constants.db;
 
+
 public class SheetParser {
 
     final String DELIMITER="##";
@@ -49,7 +50,7 @@ public class SheetParser {
     }
 
     public void initTestSpreadsheetParser() {
-        File file= new File(System.getProperty("TEST_ENV_PATH")+"test.xlsx");
+       File file= new File(System.getProperty("TEST_ENV_PATH")+"test.xlsx");
         InputStream targetStream=null;
         System.out.println(serverId);
         try {
@@ -58,7 +59,10 @@ public class SheetParser {
             System.out.println(ExceptionUtils.getStackTrace(e));
         }
         parser(targetStream, serverId);
+
     }
+
+
 
     public void initSpreadsheetParser() {
         String fileName="";
