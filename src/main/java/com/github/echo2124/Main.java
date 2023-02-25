@@ -34,8 +34,10 @@ public class Main extends ListenerAdapter {
         Main.constants.config=config;
         String activity="Loading...";
         if (System.getProperty("IS_DEV").contains("true")) {
-            constants.jda = initJDA(activity);
             initDevMode();
+            initModules();
+        } else {
+            constants.jda = initJDA(activity);
             initModules();
         }
     }
