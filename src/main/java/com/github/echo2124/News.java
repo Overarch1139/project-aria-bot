@@ -49,7 +49,7 @@ public class News {
         this.db=db;
         if (newsType.equals("Covid")) {
             feedOrg = "ABC";
-            if (!Boolean.parseBoolean(System.getenv("IS_DEV"))) {
+            if (!Boolean.parseBoolean(System.getProperty("IS_DEV"))) {
                 getLatestTweet();
             }
         } else if (newsType.equals("Monash")) {
@@ -104,10 +104,10 @@ public class News {
     public void getLatestTweet() {
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
-                .setOAuthConsumerKey(System.getenv("TWITTER_CONSUMER_KEY"))
-                .setOAuthConsumerSecret(System.getenv("TWITTER_CONSUMER_SECRET"))
-                .setOAuthAccessToken(System.getenv("TWITTER_ACCESS_TOKEN"))
-                .setOAuthAccessTokenSecret(System.getenv("TWITTER_ACCESS_SECRET"));
+                .setOAuthConsumerKey(System.getProperty("TWITTER_CONSUMER_KEY"))
+                .setOAuthConsumerSecret(System.getProperty("TWITTER_CONSUMER_SECRET"))
+                .setOAuthAccessToken(System.getProperty("TWITTER_ACCESS_TOKEN"))
+                .setOAuthAccessTokenSecret(System.getProperty("TWITTER_ACCESS_SECRET"));
 
         TwitterStream ts = new TwitterStreamFactory(cb.build()).getInstance();
         StatusListener listener = new StatusListener() {

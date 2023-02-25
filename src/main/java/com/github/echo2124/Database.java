@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import java.net.URI;
 import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -23,10 +24,10 @@ public class Database {
     public Database() {
             checkEnv();
             Connection tempConnection=connect();
-            if (!tableExists("CERT_MODULE", tempConnection)) {
-                setupDB(tempConnection);
-            }
-            //migrateDB(tempConnection);
+            //migrateDB(tempConnection)
+        if (!System.getProperty("IS_DEV").contains("true")) {
+            upstreamSchemaChanges(tempConnection);
+        }
             disconnect(tempConnection);
     }
 
@@ -37,10 +38,9 @@ public class Database {
             System.out.println("Unable to disconnect from db");
         }
     }
-
     public void checkEnv() {
         try {
-            URI dbUri = new URI(System.getenv("DATABASE_URL"));
+            URI dbUri = new URI(System.getProperty("DATABASE_URL"));
             if (dbUri!=null) {
                 DB_URL= "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath() + "?sslmode=require";
                 USERNAME=dbUri.getUserInfo().split(":")[0];
@@ -49,9 +49,11 @@ public class Database {
                 throw new Exception();
             }
         } catch (Exception e) {
-            DB_URL="localhost:5432/postgres";
-            USERNAME="postgres";
-            PASSWORD="2008";
+            // todo move to config
+            DB_URL="jdbc:postgresql://localhost:5432/d87d7mdp7isu0m";
+            USERNAME="system";
+            PASSWORD="test1234";
+
         }
         }
 
@@ -74,10 +76,31 @@ public class Database {
     }
 
     public Connection connect() {
+
         Connection connect = null;
         try {
             connect = DriverManager.getConnection(DB_URL,
                     USERNAME, PASSWORD);
+
+            Statement stmt = connect.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT datname FROM pg_database");
+
+            boolean databaseExists = false;
+            while (rs.next()) {
+                String dbName = rs.getString("datname");
+                if (dbName.equals("d87d7mdp7isu0m")) {
+                    databaseExists = true;
+                    break;
+                }
+            }
+
+            if (!databaseExists) {
+                stmt.executeUpdate("CREATE DATABASE project_aria_bot");
+                setupDB(connect);
+            }
+
+            rs.close();
+            stmt.close();
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println(e.getClass().getName()+": "+e.getMessage());
@@ -94,10 +117,9 @@ public class Database {
             // sanitisation not needed here as no inputs are received
             Statement stmt = connect.createStatement();
             String sqlQuery = "CREATE TABLE WARN_MODULE (discordID bigint, issuerID bigint, warnDesc text, issueTime TIMESTAMP);"+
-                            "CREATE TABLE CERT_MODULE (discordID bigint, name VARCHAR(2048), emailAddr VARCHAR(100), isVerified bool, verifiedTime TIMESTAMP);"+
+                            "CREATE TABLE CERT_MODULE (discordID bigint, name VARCHAR(2048), emailAddr VARCHAR(100), isVerified bool, verifiedTime TIMESTAMP, guildID VARCHAR(64));"+
                             "CREATE TABLE NEWS (origin VARCHAR(50), lastTitle text);"+
-                            "CREATE TABLE EXPOSURE (origin VARCHAR(50), len NUMERIC(15));"+
-                            "CREATE TABLE ONCAMPUS (discordID bigint, )";
+                    "CREATE TABLE CLUB_MEMBERS (club_name text, first_name text, email text)";
             stmt.executeUpdate(sqlQuery);
             stmt.close();
 
@@ -115,6 +137,17 @@ public class Database {
             Statement stmt = connect.createStatement();
             String query = "ALTER TABLE CERT_MODULE ADD guildID VARCHAR(64);"+
                            "UPDATE CERT_MODULE SET guildID=CAST(802526304745553930 AS VARCHAR);";
+            stmt.executeUpdate(query);
+            stmt.close();
+        } catch (Exception e) {
+            System.out.println("Unable to migrate db schema"+ e.getMessage());
+        }
+    }
+
+    public void upstreamSchemaChanges(Connection connect) {
+        try {
+            Statement stmt = connect.createStatement();
+            String query = "CREATE TABLE CLUB_MEMBERS (club_name text, first_name text, email text)";
             stmt.executeUpdate(query);
             stmt.close();
         } catch (Exception e) {
@@ -154,6 +187,34 @@ public class Database {
                             System.out.println("Unable to Modify DB: "+ e.getMessage());
                         }
                     }
+                break;
+            case "CLUB_MEMBERS":
+                if (action.equals("add")) {
+                    try {
+                        sqlQuery=connection.prepareStatement("INSERT INTO CLUB_MEMBERS VALUES (?,?,?)");
+                        System.out.println("Data dump:"+data.get("club_name")+";"+data.get("first_name")+";"+data.get("email"));
+                        sqlQuery.setString(1, data.get("club_name").toString());
+                        sqlQuery.setString(2, data.get("first_name").toString());
+                        sqlQuery.setString(3, data.get("email").toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+
+                        activityLog.sendActivityMsg("[DATABASE] Unable to insert verify data into table", 3, data.get("guildID").toString());
+                        System.out.println("(ADD) Unable to Modify DB: "+ e.getMessage());
+                    }
+                } else if (action.equals("remove")) {
+                    try {
+                        activityLog.sendActivityMsg("[DATABASE] Removing entry from verify table",1, null);
+                        sqlQuery=connection.prepareStatement("DELETE FROM CLUB_MEMBERS WHERE club_name=?");
+                        System.out.println("CONFIG NAME:  "+data.get("club_name"));
+                        sqlQuery.setString(1, data.get("club_name").toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        activityLog.sendActivityMsg("[DATABASE] Unable to remove verify data from table", 3, null);
+                        System.out.println("(REMOVE) Unable to Modify DB: "+ e.getMessage());
+
+                    }
+                }
                 break;
             case "NEWS":
                     try {
@@ -199,6 +260,7 @@ public class Database {
         System.out.println("Grabbing DB Entry");
         String ret="";
         String[] parsed;
+        ResultSet rs;
         PreparedStatement sqlQuery;
         Connection connection=connect();
         try {
@@ -210,7 +272,7 @@ public class Database {
                 sqlQuery.setLong(1,Long.parseLong(parsed[0]));
                 sqlQuery.setString(2, parsed[1]);
                 if (sqlQuery!=null) {
-                    ResultSet rs = sqlQuery.executeQuery();
+                    rs = sqlQuery.executeQuery();
                     System.out.println("Ran query");
                     // loop through the result set
                     while (rs.next()) {
@@ -224,12 +286,54 @@ public class Database {
                     }
                 }
                 break;
+                // alternate method (using name & email to fetch entry)
+                case "CERT_ALT":
+                    activityLog.sendActivityMsg("[DATABASE] Fetching verify data from verify table",1, null);
+                    sqlQuery=connection.prepareStatement("SELECT * FROM CERT_MODULE WHERE name=? AND email=? AND guildID=?");
+                    parsed=req.split("##");
+                    sqlQuery.setString(1,parsed[0]);
+                    sqlQuery.setString(2, parsed[1]);
+                    sqlQuery.setString(3, parsed[2]);
+                       rs = sqlQuery.executeQuery();
+                        System.out.println("Ran query");
+                        // loop through the result set
+                        while (rs.next()) {
+                            ret="Name: "+rs.getString(2)+"\n";
+                            ret+="Verified Status: "+rs.getBoolean(4)+"\n";
+                            ret+="Time of Verification: "+rs.getTimestamp(5)+"\n";
+                        }
+                        System.out.println("Query result: \n"+req);
+                        if (ret=="") {
+                            ret = "No results found";
+                        }
+                    break;
+                case "CLUB_MEMBERS":
+                    activityLog.sendActivityMsg("[DATABASE] Fetching verify data from verify table",1, null);
+                    sqlQuery=connection.prepareStatement("SELECT * FROM CLUB_MEMBERS WHERE club_name=? AND first_name=? AND email=?");
+                    parsed=req.split("##");
+                    sqlQuery.setString(1,parsed[0]);
+                    sqlQuery.setString(2, parsed[1]);
+                    sqlQuery.setString(3, parsed[2]);
+                    rs = sqlQuery.executeQuery();
+                    System.out.println("Ran query");
+                    // loop through the result set
+                    while (rs.next()) {
+                        ret="Name: "+rs.getString(2)+"\n";
+                        ret+="Verified Status: "+rs.getBoolean(4)+"\n";
+                        ret+="Time of Verification: "+rs.getTimestamp(5)+"\n";
+                    }
+                    System.out.println("Query result: \n"+req);
+                    if (ret=="") {
+                        ret = "No results found";
+                    }
+                    break;
+
                 case "NEWS_CHECK_CATEGORY":
                     activityLog.sendActivityMsg("[DATABASE] Fetching news data from news table",1, null);
                     sqlQuery=connection.prepareStatement("SELECT * FROM NEWS WHERE origin=?");
                     sqlQuery.setString(1, req);
                     if (sqlQuery!=null) {
-                        ResultSet rs = sqlQuery.executeQuery();
+                         rs = sqlQuery.executeQuery();
                         while (rs.next()) {
                             ret=rs.getString(1);
                         }
@@ -250,7 +354,7 @@ public class Database {
                     sqlQuery.setString(1, parsed[0]);
                     sqlQuery.setString(2,parsed[1]);
                     if (sqlQuery!=null) {
-                        ResultSet rs = sqlQuery.executeQuery();
+                        rs = sqlQuery.executeQuery();
                         while (rs.next()) {
                             ret=rs.getString(2);
                         }
@@ -265,7 +369,7 @@ public class Database {
                 case "CHECK_EXPOSURE_INDEX":
                     activityLog.sendActivityMsg("[DATABASE] Fetching exposure data from exposure table",1, null);
                     //TODO check for origin instead (there is probably an issue with the current method of checking for a table which is causing these sorts of problems that exist currently)
-                    ResultSet rs = connection.prepareStatement("SELECT EXISTS ( SELECT FROM pg_tables WHERE tablename='exposure');").executeQuery();
+                    rs = connection.prepareStatement("SELECT EXISTS ( SELECT FROM pg_tables WHERE tablename='exposure');").executeQuery();
                     while (rs.next()) {
                         if (rs.getBoolean(1)) {
                             System.out.println("[Database] checking db for exposure info");
@@ -295,5 +399,47 @@ public class Database {
         activityLog.sendActivityMsg("[DATABASE] Connection closed",1, null);
         disconnect(connection);
         return ret;
+    }
+
+    // TODO Merge getClubMembers and getGuildVerified
+    public ArrayList<String> getClubMembers(String clubName) {
+        ResultSet rs;
+        PreparedStatement sqlQuery;
+        Connection connection=connect();
+        ArrayList<String> data= new ArrayList<String>();
+        try {
+            sqlQuery=connection.prepareStatement("SELECT * FROM CLUB_MEMBERS WHERE club_name=?;");
+            sqlQuery.setString(1, clubName);
+            rs = sqlQuery.executeQuery();
+            System.out.println("Ran query");
+            // loop through the result set
+            while (rs.next()) {
+                data.add(rs.getString(3));
+            }
+            } catch(SQLException e){
+            System.out.println(e);
+            }
+        return data;
+    }
+
+    // Hashmap (discordId, email)
+    public HashMap<Long, String> getGuildVerified(String guildId) {
+        ResultSet rs;
+        PreparedStatement sqlQuery;
+        Connection connection=connect();
+        HashMap<Long, String> data= new HashMap<Long, String>();
+        try {
+            sqlQuery=connection.prepareStatement("SELECT * FROM CERT_MODULE WHERE guildId=?;");
+            sqlQuery.setString(1, guildId);
+            rs = sqlQuery.executeQuery();
+            System.out.println("Ran query");
+            // loop through the result set
+            while (rs.next()) {
+                data.put(rs.getLong(1),rs.getString(3));
+            }
+        } catch(SQLException e){
+            System.out.println(e);
+        }
+        return data;
     }
 }

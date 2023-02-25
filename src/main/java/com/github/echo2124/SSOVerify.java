@@ -19,12 +19,10 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
 import java.awt.*;
 import java.io.IOException;
-import java.sql.Connection;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 import static com.github.echo2124.Main.constants.*;
-import static com.github.echo2124.Main.constants.db;
 
 public class SSOVerify extends Thread {
     private static final String NETWORK_NAME = "Google";
@@ -186,8 +184,8 @@ public class SSOVerify extends Thread {
     }
 
     public void verify() throws IOException, InterruptedException, ExecutionException {
-        final String clientId = System.getenv("GOOGLE_SSO_CLIENT_ID");
-        final String clientSecret = System.getenv("GOOGLE_SSO_CLIENT_SECRET");
+        final String clientId = System.getProperty("GOOGLE_SSO_CLIENT_ID");
+        final String clientSecret = System.getProperty("GOOGLE_SSO_CLIENT_SECRET");
         service = new ServiceBuilder(clientId)
                 .debug()
                 .apiSecret(clientSecret)
@@ -213,7 +211,7 @@ public class SSOVerify extends Thread {
             if (verifyEmail(parsedObj) == true) {
                 /// insert into db > add role > notify user
                 if (parsedObj.getString("given_name").length() <= MAX_NAME_LEN) {
-                    modifiyVerifiedRole(user.getId(),0);
+                    modifyVerifiedRole(user.getId(),0);
                     HashMap<String, String> parsedData = new HashMap<String, String>();
                     parsedData.put("discordID", user.getId());
                     parsedData.put("name", parsedObj.getString("given_name"));
@@ -243,7 +241,7 @@ public class SSOVerify extends Thread {
     }
 
     // 0=add, 1=remove
-    public void modifiyVerifiedRole(String discordID, int modeset) {
+    public void modifyVerifiedRole(String discordID, int modeset) {
         // get member here check whole guild (even non-cached members). Queue up REST action with method code appended to end
         Member member = guild.retrieveMemberById(discordID).complete();
         User user = Main.constants.jda.getUserById(discordID);
@@ -344,7 +342,7 @@ public class SSOVerify extends Thread {
             System.out.println("DiscordID: "+discordID);
             switch (mode) {
                 case 0:
-                    modifiyVerifiedRole(discordID,0);
+                    modifyVerifiedRole(discordID,0);
                     db.modifyDB("CERT", "add", parsedData);
                     if (!db.getDBEntry("CERT", discordID+"##"+guildID).contains("No results found")) {
                         manualVerifyEmbed(parsedData, author, 0, true);
@@ -354,7 +352,7 @@ public class SSOVerify extends Thread {
                     }
                     break;
                 case 1:
-                    modifiyVerifiedRole(discordID, 1);
+                    modifyVerifiedRole(discordID, 1);
                     db.modifyDB("CERT", "remove", parsedData);
                     if (db.getDBEntry("CERT", discordID+"##"+guildID).contains("No results found")) {
                         manualVerifyEmbed(parsedData, author, 1, true);

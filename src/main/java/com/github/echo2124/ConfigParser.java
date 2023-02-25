@@ -15,13 +15,18 @@ public class ConfigParser {
         LinkedHashMap<String, Config> configs= new LinkedHashMap<String, Config>();
         try {
             // can grab multiple configs now
-            String target=System.getenv("CONFIG_FILE");
+            String target=System.getProperty("CONFIG_FILE");
             String[] parsedConfigs=target.split(",");
             System.out.println("Attempting config load...");
-            // likely the culprit, tbd
+
             for (int i=0; i< parsedConfigs.length; i++) {
                 Gson parser = new Gson();
-                Config config=parser.fromJson(new BufferedReader(new FileReader("src/main/java/com/github/echo2124/"+parsedConfigs[i])),Config.class);
+                Config config = null;
+                if (!System.getProperty("IS_DEV").contains("true")) {
+                  config = parser.fromJson(new BufferedReader(new FileReader("src/main/java/com/github/echo2124/" + parsedConfigs[i])), Config.class);
+                } else {
+                    config = parser.fromJson(new BufferedReader(new FileReader(System.getProperty("TEST_ENV_PATH")+ parsedConfigs[i])), Config.class);
+                }
                 System.out.println("Config Detected: "+config.getConfigName());
                 configs.put(config.getServerId(),config);
             }
