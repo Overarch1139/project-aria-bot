@@ -1,0 +1,9 @@
+[Unit]
+After=postgresql.service
+
+[Service]
+ExecStart=/usr/bin/init_bot.sh
+
+[Install]
+WantedBy=default.target
+
