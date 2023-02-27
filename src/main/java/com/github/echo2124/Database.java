@@ -15,6 +15,7 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 
 import static com.github.echo2124.Main.constants.activityLog;
+import static com.github.echo2124.Main.constants.db;
 
 public class Database {
     private String DB_URL;
@@ -25,9 +26,6 @@ public class Database {
             checkEnv();
             Connection tempConnection=connect();
             //migrateDB(tempConnection)
-        if (!System.getProperty("IS_DEV").contains("true")) {
-            upstreamSchemaChanges(tempConnection);
-        }
             disconnect(tempConnection);
     }
 
@@ -41,8 +39,12 @@ public class Database {
     public void checkEnv() {
         try {
             URI dbUri = new URI(System.getProperty("DATABASE_URL"));
+            System.out.println("Host:"+dbUri.getHost());
+            System.out.println("Port:"+dbUri.getPort());
+            System.out.println("User:"+dbUri.getUserInfo());
+            System.out.println("Path:"+dbUri.getPath());
             if (dbUri!=null) {
-                DB_URL= "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath() + "?sslmode=require";
+                DB_URL= "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
                 USERNAME=dbUri.getUserInfo().split(":")[0];
                 PASSWORD = dbUri.getUserInfo().split(":")[1];
             } else {
@@ -50,7 +52,7 @@ public class Database {
             }
         } catch (Exception e) {
             // todo move to config
-            DB_URL="jdbc:postgresql://localhost:5432/d87d7mdp7isu0m";
+            DB_URL="jdbc:postgresql://localhost:5432/project_aria_bot";
             USERNAME="system";
             PASSWORD="test1234";
 
@@ -88,7 +90,7 @@ public class Database {
             boolean databaseExists = false;
             while (rs.next()) {
                 String dbName = rs.getString("datname");
-                if (dbName.equals("d87d7mdp7isu0m")) {
+                if (dbName.equals("project_aria_bot")) {
                     databaseExists = true;
                     break;
                 }

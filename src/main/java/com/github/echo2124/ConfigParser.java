@@ -23,7 +23,7 @@ public class ConfigParser {
                 Gson parser = new Gson();
                 Config config = null;
                 if (!System.getProperty("IS_DEV").contains("true")) {
-                  config = parser.fromJson(new BufferedReader(new FileReader("src/main/java/com/github/echo2124/" + parsedConfigs[i])), Config.class);
+                  config = parser.fromJson(new BufferedReader(new FileReader("/home/ubuntu/aria/project-aria-bot/src/main/java/com/github/echo2124/" + parsedConfigs[i])), Config.class);
                 } else {
                     config = parser.fromJson(new BufferedReader(new FileReader(System.getProperty("TEST_ENV_PATH")+ parsedConfigs[i])), Config.class);
                 }

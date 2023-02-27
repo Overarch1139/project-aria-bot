@@ -26,6 +26,7 @@ public class Command {
         this.channel = event.getChannel();
         this.msgContents = msg.getContentRaw();
         this.serverId="";
+        this.event=event;
         if (event.isFromGuild()) {
             this.serverId = event.getGuild().getId();
         }
