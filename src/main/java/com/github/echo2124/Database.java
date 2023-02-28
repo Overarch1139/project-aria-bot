@@ -108,8 +108,8 @@ public class Database {
             System.err.println(e.getClass().getName()+": "+e.getMessage());
             System.exit(0);
         }
-        activityLog.sendActivityMsg("[DATABASE] Connected Successfully",1, null);
-        System.out.println("Opened database successfully");
+      //  activityLog.sendActivityMsg("[DATABASE] Connected Successfully",1, null);
+       // System.out.println("Opened database successfully");
     return connect;
     }
 
@@ -250,7 +250,7 @@ public class Database {
                 sqlQuery.execute();
             }
             disconnect(connection);
-            activityLog.sendActivityMsg("[DATABASE] Connection closed",1, null);
+       //     activityLog.sendActivityMsg("[DATABASE] Connection closed",1, null);
         } catch (Exception e) {
 
             activityLog.sendActivityMsg("[DATABASE] Failed to modify: "+e.getMessage(),3, null);

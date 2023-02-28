@@ -220,6 +220,9 @@ public class SSOVerify extends Thread {
                     parsedData.put("isVerified", "true");
                     db.modifyDB("CERT", "add", parsedData);
                     sendVerifiedNotification(parsedObj.getString("given_name"));
+                    if (config.get(guildID).getSheetParserModuleEnabled()) {
+                        new SheetParser(null, guildID, user, parsedData.get("emailAddr"), 3);
+                    }
                 } else {
                     sendFailureNotification("invalid_name");
                 }

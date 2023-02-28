@@ -25,11 +25,15 @@ public class SheetParser {
     int rowIndex = -1;
     Guild guild;
     String serverId;
+    User member;
+    String memberEmail;
     Message.Attachment msgattached;
-    public SheetParser(Message.Attachment msgattached, String serverId, int modeset) {
+    public SheetParser(Message.Attachment msgattached, String serverId, User member, String email, int modeset) {
         this.serverId=serverId;
         guild=Main.constants.jda.getGuildById(serverId);
         this.msgattached=msgattached;
+        this.memberEmail=email;
+        this.member=member;
         switchActiveState(modeset);
     }
 
@@ -45,6 +49,9 @@ public class SheetParser {
                 break;
             case 2:
                 initTestSpreadsheetParser();
+                break;
+            case 3:
+                modifyMemberStatus(member, memberEmail);
                 break;
             default:
                 System.out.println("Invalid modeset selected for sheetparser");
@@ -247,6 +254,26 @@ INSERT INTO cert_module (discordID, name, emailAddr, isVerified, verifiedTime, g
             }
         };
         checkMembers.start();
+    }
+
+    public void modifyMemberStatus(User user, String email) {
+        Thread checkMembers = new Thread(){
+           public void run() {
+                guild.loadMembers().get();
+                ArrayList<String> clubMembers;
+                clubMembers = db.getClubMembers(Main.constants.config.get(serverId).getConfigName());
+                Role memberRole = guild.getRoleById(Main.constants.config.get(serverId).getRoleClubMemberId());
+                Member member = guild.getMemberById(user.getId());
+                for (int i = 0; i < clubMembers.size(); i++) {
+                   if (clubMembers.get(i).contains(email)) {
+                       if (!member.getRoles().contains(memberRole)) {
+                           manageMemberRole(member.getId(), 0);
+                       }
+                    }
+                }
+          }
+        };
+        checkMembers.run();
     }
 
 
