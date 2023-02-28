@@ -259,6 +259,7 @@ INSERT INTO cert_module (discordID, name, emailAddr, isVerified, verifiedTime, g
     public void modifyMemberStatus(User user, String email) {
         Thread checkMembers = new Thread(){
            public void run() {
+               System.out.println("modified member status for: "+user.getId());
                 guild.loadMembers().get();
                 ArrayList<String> clubMembers;
                 clubMembers = db.getClubMembers(Main.constants.config.get(serverId).getConfigName());
@@ -275,6 +276,7 @@ INSERT INTO cert_module (discordID, name, emailAddr, isVerified, verifiedTime, g
         };
         checkMembers.run();
     }
+
 
 
 
