@@ -143,7 +143,7 @@ public class SSOVerify extends Thread {
                 break;
             case "timeout":
                 embed.setTitle("Verification timeout");
-                embed.setDescription("Aria has noticed that the provided token was not used within the allocated timeframe. This is likely because you might of not followed the aforementioned steps. Please try to generate a new token by typing >verify at the specified verification channel on the IT @ Monash server.");
+                embed.setDescription("Aria has noticed that the provided token was not used within the allocated timeframe. This is likely because you might of not followed the aforementioned steps. Please try to generate a new token by typing >verify at the specified verification channel on the " + guild.getName() +  " server.");
                 activityLog.sendActivityMsg("[VERIFY] REASON: User did not verify in time",1, guildID);
                 break;
         }
