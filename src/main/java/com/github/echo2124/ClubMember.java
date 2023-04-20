@@ -4,12 +4,10 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.awt.Color;
 import java.io.*;
-import java.sql.SQLOutput;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -17,7 +15,7 @@ import static com.github.echo2124.Main.constants.activityLog;
 import static com.github.echo2124.Main.constants.db;
 
 
-public class SheetParser {
+public class ClubMember {
 
     final String DELIMITER="##";
     int firstNameIndex = -1;
@@ -28,7 +26,7 @@ public class SheetParser {
     User member;
     String memberEmail;
     Message.Attachment msgattached;
-    public SheetParser(Message.Attachment msgattached, String serverId, User member, String email, int modeset) {
+    public ClubMember(Message.Attachment msgattached, String serverId, User member, String email, int modeset) {
         this.serverId=serverId;
         guild=Main.constants.jda.getGuildById(serverId);
         this.msgattached=msgattached;
@@ -269,6 +267,7 @@ INSERT INTO cert_module (discordID, name, emailAddr, isVerified, verifiedTime, g
                    if (clubMembers.get(i).contains(email)) {
                        if (!member.getRoles().contains(memberRole)) {
                            manageMemberRole(member.getId(), 0);
+                           privateUserResponse(user);
                        }
                     }
                 }
@@ -314,6 +313,18 @@ INSERT INTO cert_module (discordID, name, emailAddr, isVerified, verifiedTime, g
                 break;
         }
         Main.constants.jda.getTextChannelById(Main.constants.config.get(serverId).getChannelAdminId()).sendMessageEmbeds(embed.build()).queue();
+    }
+
+    // handles sending embed to user upon club membership confirmation
+    private void privateUserResponse(User user) {
+        EmbedBuilder embed = new EmbedBuilder();
+        activityLog.sendActivityMsg("[VERIFY] Send club membership notification via DMs",1, guild.getId());
+        embed.setTitle("Club Membership Confirmed");
+        embed.setColor(Color.ORANGE);
+        embed.setDescription("You have been confirmed to be part of "+ Main.constants.config.get(serverId).getConfigName() + " club, you can now access channels that are exclusive for verified "+Main.constants.config.get(serverId).getConfigName()+" club members only. \n Thanks once again for verifying!");
+        embed.setFooter("If you have any problems please contact Echo2124#3778 (creator of Aria)");
+        user.openPrivateChannel().flatMap(channel -> channel.sendMessageEmbeds(embed.build())).queue();
+
     }
     private String queryEntry(String email, String firstName, String guildId) {
         String data=null;

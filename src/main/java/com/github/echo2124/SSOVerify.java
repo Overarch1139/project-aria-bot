@@ -116,7 +116,6 @@ public class SSOVerify extends Thread {
         msgChannel.sendMessage(user.getAsMention() + " , Please check your DMs, you should receive the verification instructions there.").queue();
     }
 
-    // TODO: Consider moving a lot of this text to a JSON object
     public void sendVerifiedNotification(String name) {
         activityLog.sendActivityMsg("[VERIFY] Send verified notification via DMs",1, guildID);
         EmbedBuilder embed = new EmbedBuilder();
@@ -221,7 +220,7 @@ public class SSOVerify extends Thread {
                     db.modifyDB("CERT", "add", parsedData);
                     sendVerifiedNotification(parsedObj.getString("given_name"));
                     if (config.get(guildID).getSheetParserModuleEnabled()) {
-                        new SheetParser(null, guildID, user, parsedData.get("emailAddr"), 3);
+                        new ClubMember(null, guildID, user, parsedData.get("emailAddr"), 3);
                     }
                 } else {
                     sendFailureNotification("invalid_name");

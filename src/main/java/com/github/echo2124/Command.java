@@ -148,11 +148,11 @@ public class Command {
             misc.sendServiceModeMsg(verify, "Aria has reactivated the ability to verify and has exited maintenance mode.");
             activityLog.sendActivityMsg("[MAIN] Aria bot has exited service mode", 2, serverId);
         } else if (msgContents.contains(">parseSheet")) {
-            new SheetParser(msg.getAttachments().get(0), serverId, null, null, 1);
+            new ClubMember(msg.getAttachments().get(0), serverId, null, null, 1);
             activityLog.sendActivityMsg("[MAIN] Parse sheet active!", 1, serverId);
         } else if (msgContents.contains(">activateClubSupervisor")) {
             if (Main.constants.config.get(serverId).getSheetParserModuleEnabled()) {
-                new SheetParser(null, serverId, null, null, 0);
+                new ClubMember(null, serverId, null, null, 0);
             }
         } else if (msgContents.contains(">help")) {
             EmbedBuilder embed = new EmbedBuilder();
