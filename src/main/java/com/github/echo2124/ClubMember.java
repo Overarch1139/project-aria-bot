@@ -202,27 +202,10 @@ public class ClubMember {
     }
 
 
-    // test method (for testing class functionality)
-    private void loadTestData() {
-/*
-    INSERT INTO cert_module VALUES ("Aria Test Server", "Test_First_Name", "test0@student.monash.edu
-    INSERT INTO cert_module (discordID, name, emailAddr, isVerified, verifiedTime, guildID) VALUES (538660576704856075, Joshua, test0@student.monash.edu, true, current_timestamp,878943527608938508);
-    INSERT INTO cert_module (discordID, name, emailAddr, isVerified, verifiedTime, guildID) VALUES (257468559309930509, 'Test1', 'test1@student.monash.edu', true, current_timestamp,878943527608938508);
-    INSERT INTO cert_module (discordID, name, emailAddr, isVerified, verifiedTime, guildID) VALUES (538660576704856075, 'Test2', 'test2@student.monash.edu', true, current_timestamp,878943527608938508);
-INSERT INTO cert_module (discordID, name, emailAddr, isVerified, verifiedTime, guildID) VALUES (538660576704856075, 'Joshua', 'test0@student.monash.edu', true, current_timestamp,878943527608938508);
- */
-
-    }
 
 
     // Handles checking current verified users against club member list
     private void clubMemberSupervisor() {
-        /*
-        TODO         also get everyone with member role and check them against member list.
-        Drop role from user no longer in member list.
-         */
-        // make new method within DB interface to get club members since dbgetentry method services different way
-        // something to look at later I guess
         ArrayList<String> clubMembers;
         clubMembers=db.getClubMembers(Main.constants.config.get(serverId).getConfigName());
         HashMap<Long, String> verifiedUsers;
@@ -238,11 +221,9 @@ INSERT INTO cert_module (discordID, name, emailAddr, isVerified, verifiedTime, g
                     String email = entry.getValue();
                     for (int i=0; i<clubMembers.size(); i++) {
                         if (clubMembers.get(i).contains(email)) {
-                            // check if member already has role, if not then assign role
                             System.out.println("Discord ID:"+discordId);
                             Member member = guild.getMemberById(discordId);
                             System.out.println("Avatar ID:"+member.getAvatarId());
-                            // if problem then its probably this. members are cached by jda, may need to force update cache
                             if (!member.getRoles().contains(memberRole)) {
                                 manageMemberRole(member.getId(), 0);
                             }
@@ -280,7 +261,6 @@ INSERT INTO cert_module (discordID, name, emailAddr, isVerified, verifiedTime, g
 
 
     /* TODO
-    - check for people to add every 24hrs or on request (to implement)
     - show statistics (on request/every week): wired_members/verified,
                        wired_members/wired_members (spreadsheet),
                        verified/discord_members
