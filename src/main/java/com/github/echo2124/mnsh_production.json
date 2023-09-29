@@ -1,0 +1,20 @@
+{
+  "configName":"MNSH Server",
+  "serverId":"1079694316936630303",
+  "activityState":"Routines!",
+  "roleVerifiedId":"1079694316936630305",
+  "roleClubMemberId": "1075548759896891433",
+  "roleOnCampusId": null,
+  "roleDevTeamId": null,
+  "channelVerifyId":"1079694317314117642",
+  "channelAdminId":"1079694318148788297",
+  "channelMonashNewsId": null,
+  "channelCovidUpdateId":null,
+  "channelOnCampusId": null,
+  "channelExposureSiteId":null,
+  "channelActivityLogId": "1079694318148788298",
+  "verifiedModuleEnabled": true,
+  "newsModuleEnabled": false,
+  "onCampusModuleEnabled": false,
+  "sheetParserModuleEnabled": false
+}
